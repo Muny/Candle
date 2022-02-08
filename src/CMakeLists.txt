@@ -26,6 +26,9 @@ file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/*.cpp
                     ${PROJECT_SOURCE_DIR}/parser/*.cpp
                     ${PROJECT_SOURCE_DIR}/widgets/*.cpp
                     ${PROJECT_SOURCE_DIR}/tables/*.cpp
+if(APPLE)
+                    ${PROJECT_SOURCE_DIR}/images/candle.icns
+endif()
                     )
 
 qt5_add_resources(SHADER_RSC 
@@ -35,6 +38,9 @@ qt5_add_resources(SHADER_RSC
     )
 
 if(APPLE)
+    set(APP_ICON_MACOSX ${PROJECT_SOURCE_DIR}/images/candle.icns)
+    set_source_files_properties(${APP_ICON_MACOSX} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+
     add_executable(Candle MACOSX_BUNDLE ${SRC_FILES} ${SHADER_RSC})
     set_target_properties(Candle PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/Info.plist)
 else()

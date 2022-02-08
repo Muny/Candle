@@ -6,5 +6,7 @@
 <string>NSApplication</string>
 <key>NSHighResolutionCapable</key>
 <string>True</string>
+<key>CFBundleIconFile</key>
+<string>candle.icns</string>
     </dict>
 </plist>
