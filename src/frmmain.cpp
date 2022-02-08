@@ -32,8 +32,14 @@
 #include <QAction>
 #include <QLayout>
 #include <QMimeData>
+#include <QRegularExpression>
 #include "frmmain.h"
 #include "ui_frmmain.h"
+
+namespace {
+    const QRegularExpression cmdUser("cmdUser\\d");
+    const QRegularExpression cmdJogFeed("cmdJogFeed\\d");
+}
 
 frmMain::frmMain(QWidget *parent) :
     QMainWindow(parent),
@@ -140,7 +146,7 @@ frmMain::frmMain(QWidget *parent) :
 
     connect(ui->cboCommand, SIGNAL(returnPressed()), this, SLOT(onCboCommandReturnPressed()));
 
-    foreach (StyledToolButton* button, this->findChildren<StyledToolButton*>(QRegExp("cmdUser\\d"))) {
+    foreach (StyledToolButton* button, findChildren<StyledToolButton*>(cmdUser)) {
         connect(button, SIGNAL(clicked(bool)), this, SLOT(onCmdUserClicked(bool)));
     }
 
@@ -239,7 +245,7 @@ frmMain::frmMain(QWidget *parent) :
     updateControlsState();
 
     // Prepare jog buttons
-    foreach (StyledToolButton* button, ui->grpJog->findChildren<StyledToolButton*>(QRegExp("cmdJogFeed\\d")))
+    foreach (StyledToolButton* button, ui->grpJog->findChildren<StyledToolButton*>(cmdJogFeed))
     {
         connect(button, SIGNAL(clicked(bool)), this, SLOT(onCmdJogFeedClicked()));
     }
@@ -426,7 +432,7 @@ void frmMain::loadSettings()
     m_settings->setTouchCommand(set.value("touchCommand").toString());
     m_settings->setSafePositionCommand(set.value("safePositionCommand").toString());
 
-    foreach (StyledToolButton* button, this->findChildren<StyledToolButton*>(QRegExp("cmdUser\\d"))) {
+    foreach (StyledToolButton* button, findChildren<StyledToolButton*>(cmdUser)) {
         int i = button->objectName().right(1).toInt();
         m_settings->setUserCommands(i, set.value(QString("userCommands%1").arg(i)).toString());
     }
@@ -557,7 +563,7 @@ void frmMain::saveSettings()
     set.setValue("spindleOverride", ui->slbSpindleOverride->isChecked());
     set.setValue("spindleOverrideValue", ui->slbSpindleOverride->value());
 
-    foreach (StyledToolButton* button, this->findChildren<StyledToolButton*>(QRegExp("cmdUser\\d"))) {
+    foreach (StyledToolButton* button, findChildren<StyledToolButton*>(cmdUser)) {
         int i = button->objectName().right(1).toInt();
         set.setValue(QString("userCommands%1").arg(i), m_settings->userCommands(i));
     }
@@ -1648,7 +1654,7 @@ void frmMain::resetHeightmap()
 
 void frmMain::loadFile(QList<QString> data)
 {
-    QTime time;
+    QElapsedTimer time;
     time.start();
 
     // Reset tables
@@ -2273,7 +2279,7 @@ void frmMain::applySettings() {
     ui->cmdClearConsole->setFixedHeight(ui->cboCommand->height());
     ui->cmdCommandSend->setFixedHeight(ui->cboCommand->height());
 
-    foreach (StyledToolButton* button, this->findChildren<StyledToolButton*>(QRegExp("cmdUser\\d"))) {
+    foreach (StyledToolButton* button, findChildren<StyledToolButton*>(cmdUser)) {
         button->setToolTip(m_settings->userCommands(button->objectName().right(1).toInt()));
         button->setEnabled(!button->toolTip().isEmpty());
     }
@@ -2281,7 +2287,7 @@ void frmMain::applySettings() {
 
 void frmMain::updateParser()
 {
-    QTime time;
+    QElapsedTimer time;
 
     qDebug() << "updating parser:" << m_currentModel << m_currentDrawer;
     time.start();
@@ -2483,7 +2489,7 @@ void frmMain::on_cmdFileReset_clicked()
     m_probeIndex = -1;
 
     if (!m_heightMapMode) {
-        QTime time;
+        QElapsedTimer time;
 
         time.start();
 
@@ -3525,7 +3531,7 @@ void frmMain::on_chkHeightMapUse_clicked(bool checked)
         progress.setStyleSheet("QProgressBar {text-align: center; qproperty-format: \"\"}");
 
         // Performance test
-        QTime time;
+        QElapsedTimer time;
 
         // Store fileChanged state
 //        fileChanged = m_fileChanged;
@@ -3834,7 +3840,7 @@ bool frmMain::compareCoordinates(double x, double y, double z)
     return ui->txtMPosX->text().toDouble() == x && ui->txtMPosY->text().toDouble() == y && ui->txtMPosZ->text().toDouble() == z;
 }
 
-void frmMain::onCmdUserClicked(bool checked)
+void frmMain::onCmdUserClicked(bool /*checked*/)
 {
     int i = sender()->objectName().right(1).toInt();
 
@@ -3845,7 +3851,7 @@ void frmMain::onCmdUserClicked(bool checked)
     }
 }
 
-void frmMain::onOverridingToggled(bool checked)
+void frmMain::onOverridingToggled(bool /*checked*/)
 {
     ui->grpOverriding->setProperty("overrided", ui->slbFeedOverride->isChecked()
                                    || ui->slbRapidOverride->isChecked() || ui->slbSpindleOverride->isChecked());
