@@ -227,7 +227,7 @@ frmMain::frmMain(QWidget *parent) :
     ui->tblProgram->setModel(&m_programModel);
     ui->tblProgram->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
     connect(ui->tblProgram->verticalScrollBar(), SIGNAL(actionTriggered(int)), this, SLOT(onScroolBarAction(int)));
-    connect(ui->tblProgram->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(onTableCurrentChanged(QModelIndex,QModelIndex)));    
+    connect(ui->tblProgram->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(onTableCurrentChanged(QModelIndex,QModelIndex)));
     clearTable();
 
     // Console window handling
@@ -293,7 +293,7 @@ frmMain::frmMain(QWidget *parent) :
 }
 
 frmMain::~frmMain()
-{    
+{
     saveSettings();
 
     delete m_senderErrorBox;
@@ -354,7 +354,7 @@ void frmMain::loadSettings()
     m_settings->setSimplifyPrecision(set.value("simplifyPrecision", 0).toDouble());
     m_settings->setGrayscaleSegments(set.value("grayscaleSegments", false).toBool());
     m_settings->setGrayscaleSCode(set.value("grayscaleSCode", true).toBool());
-    m_settings->setDrawModeVectors(set.value("drawModeVectors", true).toBool());    
+    m_settings->setDrawModeVectors(set.value("drawModeVectors", true).toBool());
     m_settings->setMoveOnRestore(set.value("moveOnRestore", false).toBool());
     m_settings->setRestoreMode(set.value("restoreMode", 0).toInt());
     m_settings->setLineWidth(set.value("lineWidth", 1).toDouble());
@@ -531,7 +531,7 @@ void frmMain::saveSettings()
     set.setValue("header", ui->tblProgram->horizontalHeader()->saveState());
     set.setValue("splitter", ui->splitter->saveState());
     set.setValue("formGeometry", this->saveGeometry());
-    set.setValue("formSettingsSize", m_settings->size());    
+    set.setValue("formSettingsSize", m_settings->size());
     set.setValue("userCommandsPanel", ui->grpUserCommands->isChecked());
     set.setValue("heightmapPanel", ui->grpHeightMap->isChecked());
     set.setValue("spindlePanel", ui->grpSpindle->isChecked());
@@ -729,7 +729,7 @@ void frmMain::updateControlsState() {
 
     ui->cmdFileSend->menu()->actions().first()->setEnabled(!ui->cmdHeightMapMode->isChecked());
 
-    m_selectionDrawer.setVisible(!ui->cmdHeightMapMode->isChecked());    
+    m_selectionDrawer.setVisible(!ui->cmdHeightMapMode->isChecked());
 }
 
 void frmMain::openPort()
@@ -1037,7 +1037,7 @@ void frmMain::onSerialPortReadyRead()
             // Get overridings
             static QRegExp ov("Ov:([^,]*),([^,]*),([^,^>^|]*)");
             if (ov.indexIn(data) != -1)
-            {                
+            {
                 updateOverride(ui->slbFeedOverride, ov.cap(1).toInt(), 0x91);
                 updateOverride(ui->slbSpindleOverride, ov.cap(3).toInt(), 0x9a);
 
@@ -1088,7 +1088,7 @@ void frmMain::onSerialPortReadyRead()
             }
 
             // Get feed/spindle values
-            static QRegExp fs("FS:([^,]*),([^,^|^>]*)");            
+            static QRegExp fs("FS:([^,]*),([^,^|^>]*)");
             if (fs.indexIn(data) != -1) {
                 ui->glwVisualizer->setSpeedState((QString(tr("F/S: %1 / %2")).arg(fs.cap(1)).arg(fs.cap(2))));
             }
@@ -1262,7 +1262,7 @@ void frmMain::onSerialPortReadyRead()
                         if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) {
                             if (m_taskBarProgress) m_taskBarProgress->setValue(m_fileProcessedCommandIndex);
                         }
-#endif                                               
+#endif
                         // Process error messages
                         static bool holding = false;
                         static QString errors;
@@ -1577,7 +1577,7 @@ void frmMain::dragEnterEvent(QDragEnterEvent *dee)
 }
 
 void frmMain::dropEvent(QDropEvent *de)
-{    
+{
     QString fileName = de->mimeData()->urls().at(0).toLocalFile();
 
     if (!m_heightMapMode) {
@@ -1996,7 +1996,7 @@ void frmMain::on_cmdFileAbort_clicked()
 }
 
 void frmMain::storeParserState()
-{    
+{
     m_storedParserStatus = ui->glwVisualizer->parserStatus().remove(
                 QRegExp("GC:|\\[|\\]|G[01234]\\s|M[0345]+\\s|\\sF[\\d\\.]+|\\sS[\\d\\.]+"));
 }
@@ -2240,7 +2240,7 @@ void frmMain::applySettings() {
     m_codeDrawer->setDrawMode(m_settings->drawModeVectors() ? GcodeDrawer::Vectors : GcodeDrawer::Raster);
     m_codeDrawer->setGrayscaleMin(m_settings->laserPowerMin());
     m_codeDrawer->setGrayscaleMax(m_settings->laserPowerMax());
-    m_codeDrawer->update();    
+    m_codeDrawer->update();
 
     m_selectionDrawer.setColor(m_settings->colors("ToolpathHighlight"));
 
@@ -2794,7 +2794,7 @@ bool frmMain::eventFilter(QObject *obj, QEvent *event)
                 && !static_cast<QKeyEvent*>(event)->isAutoRepeat()) {
 
             switch (static_cast<QKeyEvent*>(event)->key()) {
-            case Qt::Key_4:                
+            case Qt::Key_4:
                 if (event->type() == QEvent::KeyPress) emit ui->cmdXMinus->pressed(); else emit ui->cmdXMinus->released();
                 break;
             case Qt::Key_6:

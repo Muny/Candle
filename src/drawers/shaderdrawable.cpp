@@ -57,7 +57,7 @@ void ShaderDrawable::updateGeometry(QOpenGLShaderProgram *shaderProgram)
         vertexData += m_points;
         m_vbo.allocate(vertexData.constData(), vertexData.count() * sizeof(VertexData));
     } else {
-        m_vbo.release();        
+        m_vbo.release();
         if (m_vao.isCreated()) m_vao.release();
         m_needsUpdateGeometry = false;
         return;

@@ -5,7 +5,7 @@ SliderBox::SliderBox(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SliderBox)
 {
-    ui->setupUi(this);    
+    ui->setupUi(this);
 
     ui->chkTitle->setVisible(false);
 

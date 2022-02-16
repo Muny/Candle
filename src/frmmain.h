@@ -166,7 +166,7 @@ private slots:
     void on_cmdHeightMapCreate_clicked();
     void on_cmdHeightMapBorderAuto_clicked();
     void on_cmdFileAbort_clicked();
-    void on_cmdSpindle_clicked(bool checked);   
+    void on_cmdSpindle_clicked(bool checked);
 
     void on_cmdYPlus_pressed();
 
@@ -212,7 +212,7 @@ private:
 
     OriginDrawer *m_originDrawer;
 
-    GcodeDrawer *m_codeDrawer;    
+    GcodeDrawer *m_codeDrawer;
     GcodeDrawer *m_probeDrawer;
     GcodeDrawer *m_currentDrawer;
 

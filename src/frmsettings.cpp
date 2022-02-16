@@ -671,7 +671,7 @@ void frmSettings::on_cmdDefaults_clicked()
     setPanelOverriding(true);
     setPanelHeightmap(true);
     setPanelJog(true);
-    setPanelSpindle(true);   
+    setPanelSpindle(true);
 
     ui->clpTool->setColor(QColor(255, 153, 0));
 

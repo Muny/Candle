@@ -47,7 +47,7 @@ private:
     QVector3D m_min, m_max;
     double m_minLength;
     QList<LineSegment*> m_lines;
-    QVector<QList<int>> m_lineIndexes;    
+    QVector<QList<int>> m_lineIndexes;
 
     // Parsing state.
     QVector3D lastPoint;

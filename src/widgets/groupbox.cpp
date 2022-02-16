@@ -12,7 +12,7 @@ GroupBox::GroupBox(QWidget *parent) : QGroupBox(parent)
 }
 
 void GroupBox::mouseMoveEvent(QMouseEvent *event)
-{    
+{
     QGroupBox::mouseMoveEvent(event);
 
     if (!m_pressedPos.isNull()) {

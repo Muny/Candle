@@ -4,7 +4,7 @@
 #include "shaderdrawable.h"
 
 class SelectionDrawer : public ShaderDrawable
-{        
+{
 public:
     SelectionDrawer();
 

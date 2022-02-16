@@ -31,7 +31,7 @@ if(APPLE)
 endif()
                     )
 
-qt5_add_resources(SHADER_RSC 
+qt5_add_resources(SHADER_RSC
     ${PROJECT_SOURCE_DIR}/shaders.qrc
     ${PROJECT_SOURCE_DIR}/images.qrc
     ${PROJECT_SOURCE_DIR}/fonts.qrc
