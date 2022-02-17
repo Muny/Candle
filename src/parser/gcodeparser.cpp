@@ -164,7 +164,7 @@ PointSegment *GcodeParser::processCommand(const QStringList &args)
     QVector3D ijkPoint(m_currentPoint);
     bool haveIJK = false;
     double r = 0;
-    double dwell = qQNaN();
+    //double dwell = qQNaN();
     enum {
         MOVE_NONE,
         MOVE_G0,
@@ -204,7 +204,7 @@ PointSegment *GcodeParser::processCommand(const QStringList &args)
             break;
 
         case 'P':
-            dwell = v;
+            //dwell = v;
             break;
 
         case 'X':

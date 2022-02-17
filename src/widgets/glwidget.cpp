@@ -523,16 +523,22 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void GLWidget::wheelEvent(QWheelEvent *we)
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    QPoint pos = we->pos();
+#else
+    QPointF pos = we->position();
+#endif
+
     if (m_zoom > 0.1 && we->angleDelta().y() < 0) {
-        m_xPan -= ((double)we->position().x() / width() - 0.5 + m_xPan) * (1 - 1 / ZOOMSTEP);
-        m_yPan += ((double)we->position().y() / height() - 0.5 - m_yPan) * (1 - 1 / ZOOMSTEP);
+        m_xPan -= ((double)pos.x() / width() - 0.5 + m_xPan) * (1 - 1 / ZOOMSTEP);
+        m_yPan += ((double)pos.y() / height() - 0.5 - m_yPan) * (1 - 1 / ZOOMSTEP);
 
         m_zoom /= ZOOMSTEP;
     }
     else if (m_zoom < 10 && we->angleDelta().y() > 0)
     {
-        m_xPan -= ((double)we->position().x() / width() - 0.5 + m_xPan) * (1 - ZOOMSTEP);
-        m_yPan += ((double)we->position().y() / height() - 0.5 - m_yPan) * (1 - ZOOMSTEP);
+        m_xPan -= ((double)pos.x() / width() - 0.5 + m_xPan) * (1 - ZOOMSTEP);
+        m_yPan += ((double)pos.y() / height() - 0.5 - m_yPan) * (1 - ZOOMSTEP);
 
         m_zoom *= ZOOMSTEP;
     }

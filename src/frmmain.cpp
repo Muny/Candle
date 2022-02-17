@@ -3711,7 +3711,7 @@ void frmMain::on_chkHeightMapUse_clicked(bool checked)
         // Select first row
         ui->tblProgram->selectRow(0);
     }
-    catch (CancelException) {                       // Cancel modification
+    catch (const CancelException&) {                       // Cancel modification
         m_programHeightmapModel.clear();
         m_currentModel = &m_programModel;
 

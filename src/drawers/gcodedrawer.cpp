@@ -52,6 +52,8 @@ bool GcodeDrawer::updateData()
         else
             return updateRaster();
     }
+
+    return false;
 }
 
 bool GcodeDrawer::prepareVectors()
