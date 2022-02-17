@@ -22,16 +22,17 @@ public:
     explicit GcodeViewParse(QObject *parent = 0);
     ~GcodeViewParse();
 
-    QVector3D &getMinimumExtremes();
-    QVector3D &getMaximumExtremes();
+    const QVector3D &getMinimumExtremes() const { return m_min; }
+    const QVector3D &getMaximumExtremes() const { return m_max; }
+
     double getMinLength() const;
     QSize getResolution() const;
-    QList<LineSegment*> toObjRedux(QList<QString> gcode, double arcPrecision, bool arcDegreeMode);
-    QList<LineSegment*> getLineSegmentList();
-    QList<LineSegment*> getLinesFromParser(GcodeParser *gp, double arcPrecision, bool arcDegreeMode);
+    QList<LineSegment*> toObjRedux(const QList<QString>& gcode, double arcPrecision, bool arcDegreeMode);
+    const QList<LineSegment*>& getLineSegmentList() const { return m_lines; }
+    const QList<LineSegment*>& getLinesFromParser(const GcodeParser& gp, double arcPrecision, bool arcDegreeMode);
 
-    QList<LineSegment*> *getLines();
-    QVector<QList<int>> &getLinesIndexes();
+    QList<LineSegment*>& getLines() { return m_lines; }
+    const QVector<QList<int>> &getLinesIndexes() const { return m_lineIndexes; }
 
     void reset();
 
@@ -55,7 +56,7 @@ private:
 
     // Debug
     bool debug;
-    void testExtremes(QVector3D p3d);
+    void testExtremes(const QVector3D& p3d);
     void testExtremes(double x, double y, double z);
     void testLength(const QVector3D &start, const QVector3D &end);
 };

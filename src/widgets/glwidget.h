@@ -12,6 +12,7 @@
 
 #include <QTimer>
 #include <QTime>
+#include <QScopedPointer>
 #include "drawers/shaderdrawable.h"
 
 #ifdef GLES
@@ -25,8 +26,8 @@ public:
     explicit GLWidget(QWidget *parent = 0);
     ~GLWidget();
     void addDrawable(ShaderDrawable *drawable);
-    void updateExtremes(ShaderDrawable *drawable);
-    void fitDrawable(ShaderDrawable *drawable = NULL);
+    void updateExtremes(const ShaderDrawable *drawable);
+    void fitDrawable(const ShaderDrawable *drawable = NULL);
     bool antialiasing() const;
     void setAntialiasing(bool antialiasing);
 
@@ -44,13 +45,13 @@ public:
     void setFrontView();
     void setLeftView();
 
-    int fps();
+    int fps() const { return m_targetFps; }
     void setFps(int fps);
 
-    QString parserStatus() const;
+    const QString& parserStatus() const { return m_parserStatus; }
     void setParserStatus(const QString &parserStatus);
 
-    QString bufferState() const;
+    const QString& bufferState() const { return m_bufferState; }
     void setBufferState(const QString &bufferState);
 
     bool zBuffer() const;
@@ -74,10 +75,10 @@ public:
     bool vsync() const;
     void setVsync(bool vsync);
 
-    QString speedState() const;
+    const QString& speedState() const { return m_speedState; }
     void setSpeedState(const QString &speedState);
 
-    QString pinState() const;
+    const QString& pinState() const { return m_pinState; }
     void setPinState(const QString &pinState);
 
 signals:
@@ -126,7 +127,7 @@ private:
     void stopViewAnimation();
 
     QList<ShaderDrawable*> m_shaderDrawables;
-    QOpenGLShaderProgram *m_shaderProgram;
+    QScopedPointer<QOpenGLShaderProgram> m_shaderProgram;
     QMatrix4x4 m_projectionMatrix;
     QMatrix4x4 m_viewMatrix;
 

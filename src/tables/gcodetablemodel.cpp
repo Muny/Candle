@@ -128,8 +128,3 @@ Qt::ItemFlags GCodeTableModel::flags(const QModelIndex &index) const
     if (index.column() == 1) return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
     else return QAbstractTableModel::flags(index);
 }
-
-QList<GCodeItem> &GCodeTableModel::data()
-{
-    return m_data;
-}

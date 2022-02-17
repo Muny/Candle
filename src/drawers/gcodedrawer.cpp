@@ -3,7 +3,8 @@
 
 #include "gcodedrawer.h"
 
-GcodeDrawer::GcodeDrawer() : QObject()
+GcodeDrawer::GcodeDrawer(GcodeViewParse* viewParser) : QObject(),
+    m_viewParser(viewParser)
 {
     m_geometryUpdated = false;
     m_pointSize = 6;
@@ -25,7 +26,13 @@ void GcodeDrawer::update()
     ShaderDrawable::update();
 }
 
-void GcodeDrawer::update(QList<int> indexes)
+void GcodeDrawer::update(int index)
+{
+    // Store segments to update
+    m_indexes += index;
+}
+
+void GcodeDrawer::update(const QList<int>& indexes)
 {
     // Store segments to update
     m_indexes += indexes;
@@ -35,9 +42,15 @@ bool GcodeDrawer::updateData()
 {
     switch (m_drawMode) {
     case GcodeDrawer::Vectors:
-        if (m_indexes.isEmpty()) return prepareVectors(); else return updateVectors();
+        if (m_indexes.isEmpty())
+            return prepareVectors();
+        else
+            return updateVectors();
     case GcodeDrawer::Raster:
-        if (m_indexes.isEmpty()) return prepareRaster(); else return updateRaster();
+        if (m_indexes.isEmpty())
+            return prepareRaster();
+        else
+            return updateRaster();
     }
 }
 
@@ -45,10 +58,10 @@ bool GcodeDrawer::prepareVectors()
 {
     qDebug() << "preparing vectors" << this;
 
-    QList<LineSegment*> *list = m_viewParser->getLines();
+    const QList<LineSegment*>& list = m_viewParser->getLineSegmentList();
     VertexData vertex;
 
-    qDebug() << "lines count" << list->count();
+    qDebug() << "lines count" << list.count();
 
     // Clear all vertex data
     m_lines.clear();
@@ -63,20 +76,21 @@ bool GcodeDrawer::prepareVectors()
     }
 
     bool drawFirstPoint = true;
-    for (int i = 0; i < list->count(); i++) {
+    for (int i = 0; i < list.count(); i++) {
+        LineSegment* ls = list.at(i);
 
-        if (qIsNaN(list->at(i)->getEnd().z())) {
+        if (qIsNaN(ls->getEnd().z())) {
             continue;
         }
 
         // Find first point of toolpath
         if (drawFirstPoint) {
 
-            if (qIsNaN(list->at(i)->getEnd().x()) || qIsNaN(list->at(i)->getEnd().y())) continue;
+            if (qIsNaN(ls->getEnd().x()) || qIsNaN(ls->getEnd().y())) continue;
 
             // Draw first toolpath point
             vertex.color = Util::colorToVector(m_colorStart);
-            vertex.position = list->at(i)->getEnd();
+            vertex.position = ls->getEnd();
             if (m_ignoreZ) vertex.position.setZ(0);
             vertex.start = QVector3D(sNan, sNan, m_pointSize);
             m_points.append(vertex);
@@ -86,50 +100,52 @@ bool GcodeDrawer::prepareVectors()
         }
 
         // Prepare vertices
-        if (list->at(i)->isFastTraverse()) vertex.start = list->at(i)->getStart();
+        if (ls->isFastTraverse()) vertex.start = ls->getStart();
         else vertex.start = QVector3D(sNan, sNan, sNan);
 
         // Simplify geometry
         int j = i;
-        if (m_simplify && i < list->count() - 1) {
-            QVector3D start = list->at(i)->getEnd() - list->at(i)->getStart();
+        if (m_simplify && i < list.count() - 1) {
+            QVector3D start = ls->getEnd() - ls->getStart();
             QVector3D next;
             double length = start.length();
             bool straight = false;
 
             do {
-                list->at(i)->setVertexIndex(m_lines.count()); // Store vertex index
+                ls->setVertexIndex(m_lines.count()); // Store vertex index
                 i++;
-                if (i < list->count() - 1) {
-                    next = list->at(i)->getEnd() - list->at(i)->getStart();
+                ls = list.at(i);
+                if (i < list.count() - 1) {
+                    next = ls->getEnd() - ls->getStart();
                     length += next.length();
 //                    straight = start.crossProduct(start.normalized(), next.normalized()).length() < 0.025;
                 }
             // Split short & straight lines
-            } while ((length < m_simplifyPrecision || straight) && i < list->count()
-                     && getSegmentType(list->at(i)) == getSegmentType(list->at(j)));
+            } while ((length < m_simplifyPrecision || straight) && i < list.count()
+                     && getSegmentType(*ls) == getSegmentType(*list.at(j)));
             i--;
+            ls = list.at(i);
         } else {
-            list->at(i)->setVertexIndex(m_lines.count()); // Store vertex index
+            ls->setVertexIndex(m_lines.count()); // Store vertex index
         }
 
         // Set color
-        vertex.color = getSegmentColorVector(list->at(i));
+        vertex.color = getSegmentColorVector(*ls);
 
         // Line start
-        vertex.position = list->at(j)->getStart();
+        vertex.position = list.at(j)->getStart();
         if (m_ignoreZ) vertex.position.setZ(0);
         m_lines.append(vertex);
 
         // Line end
-        vertex.position = list->at(i)->getEnd();
+        vertex.position = ls->getEnd();
         if (m_ignoreZ) vertex.position.setZ(0);
         m_lines.append(vertex);
 
         // Draw last toolpath point
-        if (i == list->count() - 1) {
+        if (i == list.count() - 1) {
             vertex.color = Util::colorToVector(m_colorEnd);
-            vertex.position = list->at(i)->getEnd();
+            vertex.position = ls->getEnd();
             if (m_ignoreZ) vertex.position.setZ(0);
             vertex.start = QVector3D(sNan, sNan, m_pointSize);
             m_points.append(vertex);
@@ -143,7 +159,7 @@ bool GcodeDrawer::prepareVectors()
 bool GcodeDrawer::updateVectors()
 {
     // Update vertices
-    QList<LineSegment*> *list = m_viewParser->getLines();
+    const QList<LineSegment*>& list = m_viewParser->getLineSegmentList();
 
     // Map buffer
     VertexData *data = (VertexData*)m_vbo.map(QOpenGLBuffer::WriteOnly);
@@ -152,15 +168,18 @@ bool GcodeDrawer::updateVectors()
     int vertexIndex;
     foreach (int i, m_indexes) {
         // Update vertex pair
-        if (i < 0 || i > list->count() - 1) continue;
-        vertexIndex = list->at(i)->vertexIndex();
+        if (i < 0 || i > list.count() - 1) continue;
+
+        const LineSegment* ls = list.at(i);
+
+        vertexIndex = ls->vertexIndex();
         if (vertexIndex >= 0) {
             // Update vertex array
             if (data) {
-                data[vertexIndex].color = getSegmentColorVector(list->at(i));
+                data[vertexIndex].color = getSegmentColorVector(*ls);
                 data[vertexIndex + 1].color = data[vertexIndex].color;
             } else {
-                m_lines[vertexIndex].color = getSegmentColorVector(list->at(i));
+                m_lines[vertexIndex].color = getSegmentColorVector(*ls);
                 m_lines[vertexIndex + 1].color = m_lines.at(vertexIndex).color;
             }
         }
@@ -186,16 +205,16 @@ bool GcodeDrawer::prepareRaster()
         image = QImage(m_viewParser->getResolution(), QImage::Format_RGB888);
         image.fill(Qt::white);
 
-        QList<LineSegment*> *list = m_viewParser->getLines();
-        qDebug() << "lines count" << list->count();
+        const QList<LineSegment*>& list = m_viewParser->getLineSegmentList();
+        qDebug() << "lines count" << list.count();
 
         double pixelSize = m_viewParser->getMinLength();
         QVector3D origin = m_viewParser->getMinimumExtremes();
 
-        for (int i = 0; i < list->count(); i++) {
-            if (!qIsNaN(list->at(i)->getEnd().length())) {
-                setImagePixelColor(image, (list->at(i)->getEnd().x() - origin.x()) / pixelSize,
-                                   (list->at(i)->getEnd().y() - origin.y()) / pixelSize, getSegmentColor(list->at(i)).rgb());
+        foreach (const LineSegment* ls, list) {
+            if (!qIsNaN(ls->getEnd().length())) {
+                setImagePixelColor(image, (ls->getEnd().x() - origin.x()) / pixelSize,
+                                   (ls->getEnd().y() - origin.y()) / pixelSize, getSegmentColor(*ls).rgb());
             }
         }
     }
@@ -262,13 +281,13 @@ bool GcodeDrawer::updateRaster()
 {
     if (!m_image.isNull()) {
 
-        QList<LineSegment*> *list = m_viewParser->getLines();
+        const QList<LineSegment*>& list = m_viewParser->getLineSegmentList();
 
         double pixelSize = m_viewParser->getMinLength();
         QVector3D origin = m_viewParser->getMinimumExtremes();
 
-        foreach (int i, m_indexes) setImagePixelColor(m_image, (list->at(i)->getEnd().x() - origin.x()) / pixelSize,
-                                                      (list->at(i)->getEnd().y() - origin.y()) / pixelSize, getSegmentColor(list->at(i)).rgb());
+        foreach (int i, m_indexes) setImagePixelColor(m_image, (list.at(i)->getEnd().x() - origin.x()) / pixelSize,
+                                                      (list.at(i)->getEnd().y() - origin.y()) / pixelSize, getSegmentColor(*list.at(i)).rgb());
 
         if (m_texture) m_texture->setData(QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *) m_image.bits());
     }
@@ -291,32 +310,33 @@ void GcodeDrawer::setImagePixelColor(QImage &image, double x, double y, QRgb col
     *(pixel + (int)x * 3 + 2) = qBlue(color);
 }
 
-QVector3D GcodeDrawer::getSegmentColorVector(LineSegment *segment)
+QVector3D GcodeDrawer::getSegmentColorVector(const LineSegment& segment) const
 {
     return Util::colorToVector(getSegmentColor(segment));
 }
 
-QColor GcodeDrawer::getSegmentColor(LineSegment *segment)
+QColor GcodeDrawer::getSegmentColor(const LineSegment& segment) const
 {
-    if (segment->drawn()) return m_colorDrawn;//QVector3D(0.85, 0.85, 0.85);
-    else if (segment->isHightlight()) return m_colorHighlight;//QVector3D(0.57, 0.51, 0.9);
-    else if (segment->isFastTraverse()) return m_colorNormal;// QVector3D(0.0, 0.0, 0.0);
-    else if (segment->isZMovement()) return m_colorZMovement;//QVector3D(1.0, 0.0, 0.0);
-    else if (m_grayscaleSegments) switch (m_grayscaleCode) {
-    case GrayscaleCode::S:
-        return QColor::fromHsl(0, 0, qBound<int>(0, 255 - 255.0 / (m_grayscaleMax - m_grayscaleMin) * segment->getSpindleSpeed(), 255));
-    case GrayscaleCode::Z:
-        return QColor::fromHsl(0, 0, qBound<int>(0, 255 - 255.0 / (m_grayscaleMax - m_grayscaleMin) * segment->getStart().z(), 255));
-    }
+    if (segment.drawn()) return m_colorDrawn;//QVector3D(0.85, 0.85, 0.85);
+    if (segment.isHightlight()) return m_colorHighlight;//QVector3D(0.57, 0.51, 0.9);
+    if (segment.isFastTraverse()) return m_colorNormal;// QVector3D(0.0, 0.0, 0.0);
+    if (segment.isZMovement()) return m_colorZMovement;//QVector3D(1.0, 0.0, 0.0);
+    if (m_grayscaleSegments)
+        switch (m_grayscaleCode) {
+        case GrayscaleCode::S:
+            return QColor::fromHsl(0, 0, qBound<int>(0, 255 - 255.0 / (m_grayscaleMax - m_grayscaleMin) * segment.getSpindleSpeed(), 255));
+        case GrayscaleCode::Z:
+            return QColor::fromHsl(0, 0, qBound<int>(0, 255 - 255.0 / (m_grayscaleMax - m_grayscaleMin) * segment.getStart().z(), 255));
+        }
     return m_colorNormal;//QVector3D(0.0, 0.0, 0.0);
 }
 
-int GcodeDrawer::getSegmentType(LineSegment* segment)
+int GcodeDrawer::getSegmentType(const LineSegment& segment) const
 {
-    return segment->isFastTraverse() + segment->isZMovement() * 2;
+    return (segment.isFastTraverse() ? 1 : 0) + (segment.isZMovement() ? 2 : 0);
 }
 
-QVector3D GcodeDrawer::getSizes()
+QVector3D GcodeDrawer::getSizes() const
 {
     QVector3D min = m_viewParser->getMinimumExtremes();
     QVector3D max = m_viewParser->getMaximumExtremes();
@@ -324,7 +344,7 @@ QVector3D GcodeDrawer::getSizes()
     return QVector3D(max.x() - min.x(), max.y() - min.y(), max.z() - min.z());
 }
 
-QVector3D GcodeDrawer::getMinimumExtremes()
+QVector3D GcodeDrawer::getMinimumExtremes() const
 {
     QVector3D v = m_viewParser->getMinimumExtremes();
     if (m_ignoreZ) v.setZ(0);
@@ -332,7 +352,7 @@ QVector3D GcodeDrawer::getMinimumExtremes()
     return v;
 }
 
-QVector3D GcodeDrawer::getMaximumExtremes()
+QVector3D GcodeDrawer::getMaximumExtremes() const
 {
     QVector3D v = m_viewParser->getMaximumExtremes();
     if (m_ignoreZ) v.setZ(0);
@@ -340,15 +360,11 @@ QVector3D GcodeDrawer::getMaximumExtremes()
     return v;
 }
 
-void GcodeDrawer::setViewParser(GcodeViewParse* viewParser)
-{
-    m_viewParser = viewParser;
-}
-
 GcodeViewParse *GcodeDrawer::viewParser()
 {
     return m_viewParser;
 }
+
 bool GcodeDrawer::simplify() const
 {
     return m_simplify;
@@ -358,6 +374,7 @@ void GcodeDrawer::setSimplify(bool simplify)
 {
     m_simplify = simplify;
 }
+
 double GcodeDrawer::simplifyPrecision() const
 {
     return m_simplifyPrecision;
@@ -368,11 +385,12 @@ void GcodeDrawer::setSimplifyPrecision(double simplifyPrecision)
     m_simplifyPrecision = simplifyPrecision;
 }
 
-bool GcodeDrawer::geometryUpdated()
+bool GcodeDrawer::geometryUpdated() const
 {
     return m_geometryUpdated;
 }
-QColor GcodeDrawer::colorNormal() const
+
+const QColor& GcodeDrawer::colorNormal() const
 {
     return m_colorNormal;
 }
@@ -382,7 +400,7 @@ void GcodeDrawer::setColorNormal(const QColor &colorNormal)
     m_colorNormal = colorNormal;
 }
 
-QColor GcodeDrawer::colorHighlight() const
+const QColor& GcodeDrawer::colorHighlight() const
 {
     return m_colorHighlight;
 }
@@ -391,7 +409,8 @@ void GcodeDrawer::setColorHighlight(const QColor &colorHighlight)
 {
     m_colorHighlight = colorHighlight;
 }
-QColor GcodeDrawer::colorZMovement() const
+
+const QColor& GcodeDrawer::colorZMovement() const
 {
     return m_colorZMovement;
 }
@@ -401,7 +420,7 @@ void GcodeDrawer::setColorZMovement(const QColor &colorZMovement)
     m_colorZMovement = colorZMovement;
 }
 
-QColor GcodeDrawer::colorDrawn() const
+const QColor& GcodeDrawer::colorDrawn() const
 {
     return m_colorDrawn;
 }
@@ -410,7 +429,8 @@ void GcodeDrawer::setColorDrawn(const QColor &colorDrawn)
 {
     m_colorDrawn = colorDrawn;
 }
-QColor GcodeDrawer::colorStart() const
+
+const QColor& GcodeDrawer::colorStart() const
 {
     return m_colorStart;
 }
@@ -419,7 +439,8 @@ void GcodeDrawer::setColorStart(const QColor &colorStart)
 {
     m_colorStart = colorStart;
 }
-QColor GcodeDrawer::colorEnd() const
+
+const QColor& GcodeDrawer::colorEnd() const
 {
     return m_colorEnd;
 }
@@ -493,12 +514,3 @@ void GcodeDrawer::setGrayscaleSegments(bool grayscaleSegments)
 {
     m_grayscaleSegments = grayscaleSegments;
 }
-
-
-
-
-
-
-
-
-

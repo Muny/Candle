@@ -29,10 +29,10 @@ public:
     bool needsUpdateGeometry() const;
     void updateGeometry(QOpenGLShaderProgram *shaderProgram = 0);
 
-    virtual QVector3D getSizes();
-    virtual QVector3D getMinimumExtremes();
-    virtual QVector3D getMaximumExtremes();
-    virtual int getVertexCount();
+    virtual QVector3D getSizes() const;
+    virtual QVector3D getMinimumExtremes() const;
+    virtual QVector3D getMaximumExtremes() const;
+    virtual int getVertexCount() const;
 
     double lineWidth() const;
     void setLineWidth(double lineWidth);

@@ -17,17 +17,17 @@ public:
     enum GrayscaleCode { S, Z };
     enum DrawMode { Vectors, Raster };
 
-    explicit GcodeDrawer();
+    explicit GcodeDrawer(GcodeViewParse* viewParser);
 
     void update();
-    void update(QList<int> indexes);
-    bool updateData();
+    void update(int index);
+    void update(const QList<int>& indexes);
+    bool updateData() override;
 
-    QVector3D getSizes();
-    QVector3D getMinimumExtremes();
-    QVector3D getMaximumExtremes();
+    QVector3D getSizes() const override;
+    QVector3D getMinimumExtremes() const override;
+    QVector3D getMaximumExtremes() const override;
 
-    void setViewParser(GcodeViewParse* viewParser);
     GcodeViewParse* viewParser();
 
     bool simplify() const;
@@ -36,24 +36,24 @@ public:
     double simplifyPrecision() const;
     void setSimplifyPrecision(double simplifyPrecision);
 
-    bool geometryUpdated();
+    bool geometryUpdated() const;
 
-    QColor colorNormal() const;
+    const QColor& colorNormal() const;
     void setColorNormal(const QColor &colorNormal);
 
-    QColor colorHighlight() const;
+    const QColor& colorHighlight() const;
     void setColorHighlight(const QColor &colorHighlight);
 
-    QColor colorZMovement() const;
+    const QColor& colorZMovement() const;
     void setColorZMovement(const QColor &colorZMovement);
 
-    QColor colorDrawn() const;
+    const QColor& colorDrawn() const;
     void setColorDrawn(const QColor &colorDrawn);
 
-    QColor colorStart() const;
+    const QColor& colorStart() const;
     void setColorStart(const QColor &colorStart);
 
-    QColor colorEnd() const;
+    const QColor& colorEnd() const;
     void setColorEnd(const QColor &colorEnd);
 
     bool getIgnoreZ() const;
@@ -82,7 +82,7 @@ private slots:
     void onTimerVertexUpdate();
 
 private:
-    GcodeViewParse *m_viewParser;
+    GcodeViewParse* m_viewParser;
 
     DrawMode m_drawMode;
 
@@ -112,9 +112,9 @@ private:
     bool prepareRaster();
     bool updateRaster();
 
-    int getSegmentType(LineSegment *segment);
-    QVector3D getSegmentColorVector(LineSegment *segment);
-    QColor getSegmentColor(LineSegment *segment);
+    int getSegmentType(const LineSegment& segment) const;
+    QVector3D getSegmentColorVector(const LineSegment& segment) const;
+    QColor getSegmentColor(const LineSegment& segment) const;
     void setImagePixelColor(QImage &image, double x, double y, QRgb color) const;
 };
 

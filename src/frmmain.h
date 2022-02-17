@@ -323,8 +323,8 @@ private:
     QStringList m_recentFiles;
     QStringList m_recentHeightmaps;
 
-    void loadFile(QString fileName);
-    void loadFile(QList<QString> data);
+    void loadFile(const QString& fileName);
+    void loadFile(const QList<QString>& data);
     void clearTable();
     void preloadSettings();
     void loadSettings();
@@ -338,12 +338,12 @@ private:
     void sendNextFileCommands();
     void applySettings();
     void updateParser();
-    bool dataIsFloating(QString data);
-    bool dataIsEnd(QString data);
-    bool dataIsReset(QString data);
+    bool dataIsFloating(const QString& data);
+    bool dataIsEnd(const QString& data);
+    bool dataIsReset(const QString& data);
 
-    QTime updateProgramEstimatedTime(QList<LineSegment *> lines);
-    bool saveProgramToFile(QString fileName, GCodeTableModel *model);
+    QTime updateProgramEstimatedTime(const QList<LineSegment *>& lines);
+    bool saveProgramToFile(const QString& fileName, GCodeTableModel *model);
     QString feedOverride(QString command);
 
     bool eventFilter(QObject *obj, QEvent *event);
@@ -351,19 +351,19 @@ private:
     void resizeCheckBoxes();
     void updateLayouts();
     void updateRecentFilesMenu();
-    void addRecentFile(QString fileName);
-    void addRecentHeightmap(QString fileName);
+    void addRecentFile(const QString& fileName);
+    void addRecentHeightmap(const QString& fileName);
     double toMetric(double value);
 
     QRectF borderRectFromTextboxes();
     QRectF borderRectFromExtremes();
     void updateHeightMapBorderDrawer();
     bool updateHeightMapGrid();
-    void loadHeightMap(QString fileName);
-    bool saveHeightMap(QString fileName);
+    void loadHeightMap(const QString& fileName);
+    bool saveHeightMap(const QString& fileName);
 
     GCodeTableModel *m_currentModel;
-    QList<LineSegment *> subdivideSegment(LineSegment *segment);
+    QList<LineSegment *> subdivideSegment(const LineSegment *segment);
     void resizeTableHeightMapSections();
     void updateHeightMapGrid(double arg1);
     void resetHeightmap();
@@ -371,8 +371,8 @@ private:
     void restoreParserState();
     void storeOffsets();
     void restoreOffsets();
-    bool isGCodeFile(QString fileName);
-    bool isHeightmapFile(QString fileName);
+    bool isGCodeFile(const QString& fileName);
+    bool isHeightmapFile(const QString& fileName);
     bool compareCoordinates(double x, double y, double z);
     int getConsoleMinHeight();
     void updateOverride(SliderBox *slider, int value, char command);

@@ -172,22 +172,22 @@ void ShaderDrawable::draw(QOpenGLShaderProgram *shaderProgram)
     if (m_vao.isCreated()) m_vao.release(); else m_vbo.release();
 }
 
-QVector3D ShaderDrawable::getSizes()
+QVector3D ShaderDrawable::getSizes() const
 {
     return QVector3D(0, 0, 0);
 }
 
-QVector3D ShaderDrawable::getMinimumExtremes()
+QVector3D ShaderDrawable::getMinimumExtremes() const
 {
     return QVector3D(0, 0, 0);
 }
 
-QVector3D ShaderDrawable::getMaximumExtremes()
+QVector3D ShaderDrawable::getMaximumExtremes() const
 {
     return QVector3D(0, 0, 0);
 }
 
-int ShaderDrawable::getVertexCount()
+int ShaderDrawable::getVertexCount() const
 {
     return m_lines.count() + m_points.count() + m_triangles.count();
 }

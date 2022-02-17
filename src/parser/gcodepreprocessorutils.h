@@ -26,13 +26,8 @@ public:
     static QList<int> parseGCodes(QString command);
     static QList<int> parseMCodes(QString command);
     static QStringList splitCommand(const QString &command);
-    static double parseCoord(QStringList argList, char c);
-    static QVector3D updatePointWithCommand(const QVector3D &initial, double x, double y, double z, bool absoluteMode);
-    static QVector3D updatePointWithCommand(const QStringList &commandArgs, const QVector3D &initial, bool absoluteMode);
-    static QVector3D updatePointWithCommand(const QString &command, const QVector3D &initial, bool absoluteMode);
-    static QVector3D convertRToCenter(QVector3D start, QVector3D end, double radius, bool absoluteIJK, bool clockwise);
-    static QVector3D updateCenterWithCommand(QStringList commandArgs, QVector3D initial, QVector3D nextPoint, bool absoluteIJKMode, bool clockwise);
-    static QString generateG1FromPoints(QVector3D start, QVector3D end, bool absoluteMode, int precision);
+    static QVector3D convertRToCenter(const QVector3D& start, const QVector3D& end, double radius, PointSegment::planes plane, bool clockwise);
+    static QString generateG1FromPoints(const QVector3D& start, const QVector3D& end, bool absoluteMode, int precision);
     static double getAngle(QVector3D start, QVector3D end);
     static double calculateSweep(double startAngle, double endAngle, bool isCw);
     static QList<QVector3D> generatePointsAlongArcBDring(PointSegment::planes plane, QVector3D start, QVector3D end, QVector3D center, bool clockwise, double R, double minArcLength, double arcPrecision, bool arcDegreeMode);

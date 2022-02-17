@@ -15,9 +15,9 @@
 #define ZOOMSTEP 1.1
 
 #ifdef GLES
-GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent), m_shaderProgram(0)
+GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent)
 #else
-GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent), m_shaderProgram(0)
+GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent)
 #endif
 
 {
@@ -64,9 +64,6 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent), m_shaderProgram(0)
 
 GLWidget::~GLWidget()
 {
-    if (m_shaderProgram) {
-        delete m_shaderProgram;
-    }
 }
 
 double GLWidget::calculateVolume(QVector3D size) {
@@ -78,7 +75,7 @@ void GLWidget::addDrawable(ShaderDrawable *drawable)
     m_shaderDrawables.append(drawable);
 }
 
-void GLWidget::fitDrawable(ShaderDrawable *drawable)
+void GLWidget::fitDrawable(const ShaderDrawable *drawable)
 {
     stopViewAnimation();
 
@@ -123,14 +120,17 @@ void GLWidget::fitDrawable(ShaderDrawable *drawable)
     updateView();
 }
 
-void GLWidget::updateExtremes(ShaderDrawable *drawable)
+void GLWidget::updateExtremes(const ShaderDrawable *drawable)
 {
-    if (!qIsNaN(drawable->getMinimumExtremes().x())) m_xMin = drawable->getMinimumExtremes().x(); else m_xMin = 0;
-    if (!qIsNaN(drawable->getMaximumExtremes().x())) m_xMax = drawable->getMaximumExtremes().x(); else m_xMax = 0;
-    if (!qIsNaN(drawable->getMinimumExtremes().y())) m_yMin = drawable->getMinimumExtremes().y(); else m_yMin = 0;
-    if (!qIsNaN(drawable->getMaximumExtremes().y())) m_yMax = drawable->getMaximumExtremes().y(); else m_yMax = 0;
-    if (!qIsNaN(drawable->getMinimumExtremes().z())) m_zMin = drawable->getMinimumExtremes().z(); else m_zMin = 0;
-    if (!qIsNaN(drawable->getMaximumExtremes().z())) m_zMax = drawable->getMaximumExtremes().z(); else m_zMax = 0;
+    QVector3D min = drawable->getMinimumExtremes();
+    QVector3D max = drawable->getMaximumExtremes();
+
+    m_xMin = qIsNaN(min.x()) ? 0 : min.x();
+    m_xMax = qIsNaN(max.x()) ? 0 : max.x();
+    m_yMin = qIsNaN(min.y()) ? 0 : min.y();
+    m_yMax = qIsNaN(max.y()) ? 0 : max.y();
+    m_zMin = qIsNaN(min.z()) ? 0 : min.z();
+    m_zMax = qIsNaN(max.z()) ? 0 : max.z();
 
     m_xSize = m_xMax - m_xMin;
     m_ySize = m_yMax - m_yMin;
@@ -170,19 +170,9 @@ void GLWidget::viewAnimation()
     updateView();
 }
 
-QString GLWidget::pinState() const
-{
-    return m_pinState;
-}
-
 void GLWidget::setPinState(const QString &pinState)
 {
     m_pinState = pinState;
-}
-
-QString GLWidget::speedState() const
-{
-    return m_speedState;
 }
 
 void GLWidget::setSpeedState(const QString &additionalStatus)
@@ -230,19 +220,9 @@ void GLWidget::setZBuffer(bool zBuffer)
     m_zBuffer = zBuffer;
 }
 
-QString GLWidget::bufferState() const
-{
-    return m_bufferState;
-}
-
 void GLWidget::setBufferState(const QString &bufferState)
 {
     m_bufferState = bufferState;
-}
-
-QString GLWidget::parserStatus() const
-{
-    return m_parserStatus;
 }
 
 void GLWidget::setParserStatus(const QString &parserStatus)
@@ -282,11 +262,6 @@ void GLWidget::setLeftView()
     beginViewAnimation();
 }
 
-int GLWidget::fps()
-{
-    return m_targetFps;
-}
-
 void GLWidget::setIsometricView()
 {
     m_xRotTarget = 45;
@@ -304,6 +279,7 @@ void GLWidget::beginViewAnimation() {
 void GLWidget::stopViewAnimation() {
     m_animateView = false;
 }
+
 QColor GLWidget::colorText() const
 {
     return m_colorText;
@@ -361,7 +337,7 @@ void GLWidget::initializeGL()
 #endif
 
     // Create shader program
-    m_shaderProgram = new QOpenGLShaderProgram();
+    m_shaderProgram.reset(new QOpenGLShaderProgram());
 
     if (m_shaderProgram) {
         // Compile vertex shader
@@ -434,7 +410,9 @@ void GLWidget::paintEvent(QPaintEvent *pe) {
 
     // Update settings
     if (m_antialiasing) {
-        if (m_msaa) glEnable(GL_MULTISAMPLE); else {
+        if (m_msaa) {
+            glEnable(GL_MULTISAMPLE);
+        } else {
             glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
             glEnable(GL_LINE_SMOOTH);
             glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
@@ -456,11 +434,11 @@ void GLWidget::paintEvent(QPaintEvent *pe) {
 
         // Update geometries in current opengl context
         foreach (ShaderDrawable *drawable, m_shaderDrawables)
-            if (drawable->needsUpdateGeometry()) drawable->updateGeometry(m_shaderProgram);
+            if (drawable->needsUpdateGeometry()) drawable->updateGeometry(m_shaderProgram.get());
 
         // Draw geometries
         foreach (ShaderDrawable *drawable, m_shaderDrawables) {
-            drawable->draw(m_shaderProgram);
+            drawable->draw(m_shaderProgram.get());
             if (drawable->visible()) vertices += drawable->getVertexCount();
         }
 

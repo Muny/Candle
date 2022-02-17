@@ -5,6 +5,7 @@
 #define INTERPOLATION
 
 #include <QVector>
+#include <QVector3D>
 #include <QRectF>
 #include <QAbstractTableModel>
 #include <cmath>
@@ -12,23 +13,23 @@
 class Interpolation
 {
 public:
-    static double cubicInterpolate(double p[4], double x)
+    static double cubic(const double p[4], double x)
     {
         return p[1] + 0.5 * x * (p[2] - p[0] + x *(2.0 * p[0] - 5.0 * p[1]
                 + 4.0 * p[2] - p[3] + x * (3.0 * (p[1] - p[2]) + p[3] - p[0])));
     }
 
-    static double bicubicInterpolate(double p[4][4], double x, double y)
+    static double bicubic(const double p[4][4], double x, double y)
     {
         double arr[4];
-        arr[0] = cubicInterpolate(p[0], x);
-        arr[1] = cubicInterpolate(p[1], x);
-        arr[2] = cubicInterpolate(p[2], x);
-        arr[3] = cubicInterpolate(p[3], x);
-        return cubicInterpolate(arr, y);
+        arr[0] = cubic(p[0], x);
+        arr[1] = cubic(p[1], x);
+        arr[2] = cubic(p[2], x);
+        arr[3] = cubic(p[3], x);
+        return cubic(arr, y);
     }
 
-    static double bicubicInterpolate(QRectF borderRect, QAbstractTableModel *basePoints, double x, double y)
+    static double bicubic(const QRectF& borderRect, const QAbstractTableModel *basePoints, double x, double y)
     {
         // Setup grid
         int gridPointsX = basePoints->columnCount();
@@ -70,7 +71,13 @@ public:
         p[3][3] = basePoints->data(basePoints->index(iy < basePoints->rowCount() - 2 ? iy + 2 : iy + 1, ix < basePoints->columnCount() - 2 ? ix + 2 : ix + 1), Qt::UserRole).toDouble();
 
         // Interpolate
-        return Interpolation::bicubicInterpolate(p, x / gridStepX - ix, y / gridStepY - iy);
+        return Interpolation::bicubic(p, x / gridStepX - ix, y / gridStepY - iy);
+    }
+
+    static QVector3D bicubic(const QRectF& borderRect, const QAbstractTableModel *basePoints, const QVector3D& p)
+    {
+        return QVector3D(p.x(), p.y(),
+            p.z() + bicubic(borderRect, basePoints, p.x(), p.y()));
     }
 };
 

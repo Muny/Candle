@@ -8,77 +8,43 @@
 #ifndef POINTSEGMENT_H
 #define POINTSEGMENT_H
 
+#include <QVector>
 #include <QVector3D>
+#include <QScopedPointer>
 
 #include "arcproperties.h"
+#include "basesegment.h"
 
-class PointSegment
+class PointSegment : public BaseSegment
 {
 public:
-    enum planes {
-        XY,
-        ZX,
-        YZ
-    };
+    PointSegment() { }
 
-    PointSegment();
-    PointSegment(PointSegment *ps);
-    PointSegment(const QVector3D *b, int num);
-    PointSegment(QVector3D *point, int num, QVector3D *center, double radius, bool clockwise);
-    ~PointSegment();
-    void setPoint(QVector3D m_point);
-    QVector3D* point();
+    PointSegment(const PointSegment &ps) : BaseSegment(ps)
+    {
+        if (isArc()) {
+            m_arcProperties.reset(new ArcProperties{ps.getRadius(), ps.center()});
+        }
+    }
 
-    QVector<double> points();
-    void setToolHead(int head);
-    int getToolhead();
-    void setLineNumber(int num);
-    int getLineNumber();
-    void setSpeed(double s);
-    double getSpeed();
-    void setIsZMovement(bool isZ);
-    bool isZMovement();
-    void setIsMetric(bool m_isMetric);
-    bool isMetric();
-    void setIsArc(bool isA);
-    bool isArc();
-    void setIsFastTraverse(bool isF);
-    bool isFastTraverse();
-    void setArcCenter(QVector3D *center);
-    QVector<double> centerPoints();
-    QVector3D *center();
-    void setIsClockwise(bool clockwise);
-    bool isClockwise();
-    void setRadius(double rad);
-    double getRadius();
-    void convertToMetric();
+    PointSegment(const QVector3D& p, int num) : BaseSegment(p, num) { }
+    PointSegment(const QVector3D& p, int num, const QVector3D& center, double radius, bool clockwise) :
+        BaseSegment(p, num),
+        m_arcProperties(new ArcProperties{radius, center})
+    {
+        setIsArc(true);
+        setIsClockwise(clockwise);
+    }
 
-    bool isAbsolute() const;
-    void setIsAbsolute(bool isAbsolute);
+    const QVector3D& point() const { return getPoint(); }
+    QVector<double> points() const { return QVector<double>({ point().x(), point().y() }); }
 
-    planes plane() const;
-    void setPlane(const planes &plane);
+    const QVector3D& center() const { return m_arcProperties ? m_arcProperties->center : point(); }
 
-    double getSpindleSpeed() const;
-    void setSpindleSpeed(double spindleSpeed);
-
-    double getDwell() const;
-    void setDwell(double dwell);
+    double getRadius() const { return m_arcProperties ? m_arcProperties->radius : 0; }
 
 private:
-    ArcProperties *m_arcProperties;
-    int m_toolhead;
-    double m_speed;
-    double m_spindleSpeed;
-    double m_dwell;
-    QVector3D *m_point;
-    bool m_isMetric;
-    bool m_isZMovement;
-    bool m_isArc;
-    bool m_isFastTraverse;
-    bool m_isAbsolute;
-    int m_lineNumber;
-    planes m_plane;
+    QScopedPointer<ArcProperties> m_arcProperties;
 };
 
 #endif // POINTSEGMENT_H

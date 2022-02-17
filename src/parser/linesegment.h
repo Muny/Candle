@@ -11,84 +11,57 @@
 #include <QVector3D>
 #include "pointsegment.h"
 
-class LineSegment
+class LineSegment : public BaseSegment
 {
 public:
-    LineSegment();
-    LineSegment(QVector3D a, QVector3D b, int num);
-    LineSegment(LineSegment *initial);
-    ~LineSegment();
+    LineSegment() : BaseSegment(),
+        m_drawn(false),
+        m_isHightlight(false),
+        m_vertexIndex(-1)
+    { }
 
-    int getLineNumber();
-    QList<QVector3D> getPointArray();
-    QList<double> getPoints();
+    LineSegment(const QVector3D& a, const QVector3D& b, int num) :
+        BaseSegment(a, num),
+        m_second(b),
+        m_drawn(false),
+        m_isHightlight(false),
+        m_vertexIndex(-1)
+    { }
 
-    QVector3D &getStart();
-    void setStart(QVector3D vector);
+    LineSegment(const QVector3D& a, const QVector3D& b, int num, const BaseSegment& bs) :
+        BaseSegment(a, num, bs),
+        m_second(b),
+        m_drawn(false),
+        m_isHightlight(false),
+        m_vertexIndex(-1)
+    { }
 
-    QVector3D &getEnd();
-    void setEnd(QVector3D vector);
+    QList<QVector3D> getPointArray() const;
+    QList<double> getPoints() const;
 
-    void setToolHead(int head);
-    int getToolhead();
-    void setSpeed(double s);
-    double getSpeed();
-    void setIsZMovement(bool isZ);
-    bool isZMovement();
-    void setIsArc(bool isA);
-    bool isArc();
-    void setIsFastTraverse(bool isF);
-    bool isFastTraverse();
+    const QVector3D &getStart() const { return getPoint(); }
+    void setStart(const QVector3D& vector) { setPoint(vector); }
 
-    bool contains(const QVector3D &point);
+    const QVector3D &getEnd() const { return m_second; }
+    void setEnd(const QVector3D& vector) { m_second = vector; }
 
-    bool drawn() const;
-    void setDrawn(bool drawn);
+    bool contains(const QVector3D &point) const;
 
-    bool isMetric() const;
-    void setIsMetric(bool isMetric);
+    bool isHightlight() const { return m_isHightlight; }
+    void setIsHightlight(bool isHightlight) { m_isHightlight = isHightlight; }
 
-    bool isAbsolute() const;
-    void setIsAbsolute(bool isAbsolute);
+    int vertexIndex() const { return m_vertexIndex; }
+    void setVertexIndex(int vertexIndex) { m_vertexIndex = vertexIndex; }
 
-    bool isHightlight() const;
-    void setIsHightlight(bool isHightlight);
-
-    int vertexIndex() const;
-    void setVertexIndex(int vertexIndex);
-
-    double getSpindleSpeed() const;
-    void setSpindleSpeed(double spindleSpeed);
-
-    double getDwell() const;
-    void setDwell(double dwell);
-
-    bool isClockwise() const;
-    void setIsClockwise(bool isClockwise);
-
-    PointSegment::planes plane() const;
-    void setPlane(const PointSegment::planes &plane);
+    bool drawn() const { return m_drawn; }
+    void setDrawn(bool b) { m_drawn = b; }
 
 private:
-    int m_toolhead;
-    double m_speed;
-    double m_spindleSpeed;
-    double m_dwell;
-    QVector3D m_first, m_second;
+    QVector3D m_second;
 
-    // Line properties
-    bool m_isZMovement;
-    bool m_isArc;
-    bool m_isClockwise;
-    bool m_isFastTraverse;
-    int m_lineNumber;
     bool m_drawn;
-    bool m_isMetric;
-    bool m_isAbsolute;
     bool m_isHightlight;
     int m_vertexIndex;
-
-    PointSegment::planes m_plane;
 };
 
 #endif // LINESEGMENT_H

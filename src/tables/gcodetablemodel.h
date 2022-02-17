@@ -11,6 +11,10 @@ struct GCodeItem
 {
     enum States { InQueue, Sent, Processed, Skipped };
 
+    GCodeItem() : state(InQueue), line(0) { }
+    GCodeItem(const QString& c) : command(c), state(InQueue), line(0) { }
+    GCodeItem(const QString& c, int l) : command(c), state(InQueue), line(l) { }
+
     QString command;
     char state;
     QString response;
@@ -37,7 +41,8 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
-    QList<GCodeItem> &data();
+    QList<GCodeItem> &data() { return m_data; }
+    const QList<GCodeItem> &data() const { return m_data; }
 
 signals:
 

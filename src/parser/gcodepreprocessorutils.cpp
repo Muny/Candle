@@ -128,103 +128,7 @@ QList<int> GcodePreprocessorUtils::parseMCodes(QString command)
     return codes;
 }
 
-/**
-* Update a point given the arguments of a command.
-*/
-QVector3D GcodePreprocessorUtils::updatePointWithCommand(const QString &command, const QVector3D &initial, bool absoluteMode)
-{
-    QStringList l = splitCommand(command);
-    return updatePointWithCommand(l, initial, absoluteMode);
-}
-
-/**
-* Update a point given the arguments of a command, using a pre-parsed list.
-*/
-QVector3D GcodePreprocessorUtils::updatePointWithCommand(const QStringList &commandArgs, const QVector3D &initial,
-                                                         bool absoluteMode)
-{
-    double x = qQNaN();
-    double y = qQNaN();
-    double z = qQNaN();
-    char c;
-
-    for (int i = 0; i < commandArgs.length(); i++) {
-        if (commandArgs.at(i).length() > 0) {
-            c = commandArgs.at(i).at(0).toUpper().toLatin1();
-            switch (c) {
-            case 'X':
-                x = commandArgs.at(i).mid(1).toDouble();;
-                break;
-            case 'Y':
-                y = commandArgs.at(i).mid(1).toDouble();;
-                break;
-            case 'Z':
-                z = commandArgs.at(i).mid(1).toDouble();;
-                break;
-            }
-        }
-    }
-
-    return updatePointWithCommand(initial, x, y, z, absoluteMode);
-}
-
-/**
-* Update a point given the new coordinates.
-*/
-QVector3D GcodePreprocessorUtils::updatePointWithCommand(const QVector3D &initial, double x, double y, double z, bool absoluteMode)
-{
-    QVector3D newPoint(initial.x(), initial.y(), initial.z());
-
-    if (absoluteMode) {
-        if (!qIsNaN(x)) newPoint.setX(x);
-        if (!qIsNaN(y)) newPoint.setY(y);
-        if (!qIsNaN(z)) newPoint.setZ(z);
-    } else {
-        if (!qIsNaN(x)) newPoint.setX(newPoint.x() + x);
-        if (!qIsNaN(y)) newPoint.setY(newPoint.y() + y);
-        if (!qIsNaN(z)) newPoint.setZ(newPoint.z() + z);
-    }
-
-    return newPoint;
-}
-
-QVector3D GcodePreprocessorUtils::updateCenterWithCommand(QStringList commandArgs, QVector3D initial, QVector3D nextPoint, bool absoluteIJKMode, bool clockwise)
-{
-    double i = qQNaN();
-    double j = qQNaN();
-    double k = qQNaN();
-    double r = qQNaN();
-    char c;
-
-    foreach (QString t, commandArgs)
-    {
-        if (t.length() > 0) {
-            c = t[0].toUpper().toLatin1();
-            switch (c) {
-            case 'I':
-                i = t.mid(1).toDouble();
-                break;
-            case 'J':
-                j = t.mid(1).toDouble();
-                break;
-            case 'K':
-                k = t.mid(1).toDouble();
-                break;
-            case 'R':
-                r = t.mid(1).toDouble();
-                break;
-            }
-        }
-    }
-
-    if (qIsNaN(i) && qIsNaN(j) && qIsNaN(k)) {
-        return convertRToCenter(initial, nextPoint, r, absoluteIJKMode, clockwise);
-    }
-
-    return updatePointWithCommand(initial, i, j, k, absoluteIJKMode);
-}
-
-QString GcodePreprocessorUtils::generateG1FromPoints(QVector3D start, QVector3D end, bool absoluteMode, int precision)
+QString GcodePreprocessorUtils::generateG1FromPoints(const QVector3D& start, const QVector3D& end, bool absoluteMode, int precision)
 {
     QString sb("G1");
 
@@ -292,30 +196,7 @@ QStringList GcodePreprocessorUtils::splitCommand(const QString &command) {
     return l;
 }
 
-// TODO: Replace everything that uses this with a loop that loops through
-// the string and creates a hash with all the values.
-double GcodePreprocessorUtils::parseCoord(QStringList argList, char c)
-{
-//    int n = argList.length();
-
-//    for (int i = 0; i < n; i++) {
-//        if (argList[i].length() > 0 && argList[i][0].toUpper() == c) return argList[i].mid(1).toDouble();
-//    }
-
-    foreach (QString t, argList)
-    {
-        if (t.length() > 0 && t[0].toUpper() == c) return t.mid(1).toDouble();
-    }
-    return qQNaN();
-}
-
-//static public List<String> convertArcsToLines(Point3d start, Point3d end) {
-//    List<String> l = new ArrayList<String>();
-
-//    return l;
-//}
-
-QVector3D GcodePreprocessorUtils::convertRToCenter(QVector3D start, QVector3D end, double radius, bool absoluteIJK, bool clockwise) {
+QVector3D GcodePreprocessorUtils::convertRToCenter(const QVector3D& start, const QVector3D& end, double radius, PointSegment::planes /*plane*/, bool clockwise) {
     double R = radius;
     QVector3D center;
 
@@ -339,13 +220,8 @@ QVector3D GcodePreprocessorUtils::convertRToCenter(QVector3D start, QVector3D en
     double offsetX = 0.5 * (x - (y * h_x2_div_d));
     double offsetY = 0.5 * (y + (x * h_x2_div_d));
 
-    if (!absoluteIJK) {
-        center.setX(start.x() + offsetX);
-        center.setY(start.y() + offsetY);
-    } else {
-        center.setX(offsetX);
-        center.setY(offsetY);
-    }
+    center.setX(start.x() + offsetX);
+    center.setY(start.y() + offsetY);
 
     return center;
 }
