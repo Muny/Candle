@@ -51,9 +51,16 @@ class frmMain;
 }
 
 struct CommandAttributes {
+    CommandAttributes(const QString& c) :
+        length(c.length() + 1),
+        command(c)
+    { }
+
     int length;
-    int consoleIndex;
-    int tableIndex;
+    int consoleIndex = -1;
+    int tableIndex = -1;
+    bool isCTRL_X = false;
+    bool containsEnd = false;
     QString command;
 };
 
@@ -332,9 +339,9 @@ private:
     bool saveChanges(bool heightMapMode);
     void updateControlsState();
     void openPort();
-    void sendCommand(QString command, int tableIndex = -1, bool showInConsole = true);
+    void sendCommand(const QString& command, int tableIndex = -1, bool showInConsole = true);
     void grblReset();
-    int bufferLength();
+    int bufferLength() const;
     void sendNextFileCommands();
     void applySettings();
     void updateParser();

@@ -40,6 +40,7 @@
 namespace {
     const QRegularExpression cmdUser("cmdUser\\d");
     const QRegularExpression cmdJogFeed("cmdJogFeed\\d");
+    const QString strCTRL_X("[CTRL+X]");
 }
 
 frmMain::frmMain(QWidget *parent) :
@@ -741,11 +742,9 @@ void frmMain::openPort()
     }
 }
 
-void frmMain::sendCommand(QString command, int tableIndex, bool showInConsole)
+void frmMain::sendCommand(const QString& command, int tableIndex, bool showInConsole)
 {
     if (!m_serialPort.isOpen() || !m_resetCompleted) return;
-
-    command = command.toUpper();
 
     // Commands queue
     if ((bufferLength() + command.length() + 1) > BUFFERLENGTH) {
@@ -761,26 +760,26 @@ void frmMain::sendCommand(QString command, int tableIndex, bool showInConsole)
         return;
     }
 
-    CommandAttributes ca;
+    CommandAttributes ca(command.toUpper());
 
 //    if (!(command == "$G" && tableIndex < -1) && !(command == "$#" && tableIndex < -1)
 //            && (!m_transferringFile || (m_transferringFile && m_showAllCommands) || tableIndex < 0)) {
     if (showInConsole) {
-        ui->txtConsole->appendPlainText(command);
+        ui->txtConsole->appendPlainText(ca.command);
         ca.consoleIndex = ui->txtConsole->blockCount() - 1;
     } else {
         ca.consoleIndex = -1;
     }
 
-    ca.command = command;
-    ca.length = command.length() + 1;
     ca.tableIndex = tableIndex;
+    ca.isCTRL_X = ca.command == strCTRL_X;
 
     m_commands.append(ca);
 
     // Processing spindle speed only from g-code program
-    QRegExp s("[Ss]0*(\\d+)");
-    if (s.indexIn(command) != -1 && ca.tableIndex > -2) {
+    static const QRegExp s("S0*(\\d+)");
+
+    if (ca.tableIndex > -2 && s.indexIn(ca.command) != -1) {
         int speed = s.cap(1).toInt();
         if (ui->slbSpindle->value() != speed) {
             ui->slbSpindle->setValue(speed);
@@ -788,11 +787,14 @@ void frmMain::sendCommand(QString command, int tableIndex, bool showInConsole)
     }
 
     // Set M2 & M30 commands sent flag
-    if (command.contains(QRegExp("M0*2|M30"))) {
+    static const QRegExp e("M0*2|M30");
+    ca.containsEnd = ca.command.contains(e);
+
+    if (ca.containsEnd) {
         m_fileEndSent = true;
     }
 
-    m_serialPort.write((command + "\r").toLatin1());
+    m_serialPort.write((ca.command + "\r").toLatin1());
 }
 
 void frmMain::grblReset()
@@ -818,22 +820,22 @@ void frmMain::grblReset()
     m_queue.clear();
 
     // Prepare reset response catch
-    CommandAttributes ca;
-    ca.command = "[CTRL+X]";
+    CommandAttributes ca(strCTRL_X);
+
     if (m_settings->showUICommands()) ui->txtConsole->appendPlainText(ca.command);
     ca.consoleIndex = m_settings->showUICommands() ? ui->txtConsole->blockCount() - 1 : -1;
     ca.tableIndex = -1;
-    ca.length = ca.command.length() + 1;
+    ca.isCTRL_X = true;
     m_commands.append(ca);
 
     updateControlsState();
 }
 
-int frmMain::bufferLength()
+int frmMain::bufferLength() const
 {
     int length = 0;
 
-    foreach (CommandAttributes ca, m_commands) {
+    foreach (const CommandAttributes& ca, m_commands) {
         length += ca.length;
     }
 
@@ -849,10 +851,9 @@ void frmMain::onSerialPortReadyRead()
         if (m_reseting) {
             qDebug() << "reseting filter:" << data;
             if (!dataIsReset(data)) continue;
-            else {
-                m_reseting = false;
-                m_timerStateQuery.setInterval(m_settings->queryStateTime());
-            }
+
+            m_reseting = false;
+            m_timerStateQuery.setInterval(m_settings->queryStateTime());
         }
 
         // Status response
@@ -1096,33 +1097,37 @@ void frmMain::onSerialPortReadyRead()
 
             // Processed commands
             if (m_commands.length() > 0 && !dataIsFloating(data)
-                    && !(m_commands[0].command != "[CTRL+X]" && dataIsReset(data))) {
+                    && !(!m_commands[0].isCTRL_X && dataIsReset(data))) {
 
                 static QString response; // Full response string
 
-                if ((m_commands[0].command != "[CTRL+X]" && dataIsEnd(data))
-                        || (m_commands[0].command == "[CTRL+X]" && dataIsReset(data))) {
+                if ((!m_commands[0].isCTRL_X && dataIsEnd(data))
+                        || (m_commands[0].isCTRL_X && dataIsReset(data))) {
 
                     response.append(data);
 
                     // Take command from buffer
-                    CommandAttributes ca = m_commands.takeFirst();
+                    const CommandAttributes ca(std::move(m_commands.first()));
+                    m_commands.removeFirst();
+
                     QTextBlock tb = ui->txtConsole->document()->findBlockByNumber(ca.consoleIndex);
                     QTextCursor tc(tb);
 
                     // Restore absolute/relative coordinate system after jog
-                    if (ca.command.toUpper() == "$G" && ca.tableIndex == -2) {
-                        if (ui->chkKeyboardControl->isChecked()) m_absoluteCoordinates = response.contains("G90");
-                        else if (response.contains("G90")) sendCommand("G90", -1, m_settings->showUICommands());
+                    if (ca.tableIndex == -2 && ca.command == "$G") {
+                        if (ui->chkKeyboardControl->isChecked())
+                            m_absoluteCoordinates = response.contains("G90");
+                        else if (response.contains("G90"))
+                            sendCommand("G90", -1, m_settings->showUICommands());
                     }
 
                     // Jog
-                    if (ca.command.toUpper().contains("$J=") && ca.tableIndex == -2) {
+                    if (ca.tableIndex == -2 && ca.command.contains("$J=")) {
                         jogStep();
                     }
 
                     // Process parser status
-                    if (ca.command.toUpper() == "$G" && ca.tableIndex == -3) {
+                    if (ca.tableIndex == -3 && ca.command == "$G") {
                         // Update status in visualizer window
                         ui->glwVisualizer->setParserStatus(response.left(response.indexOf("; ")));
 
@@ -1140,7 +1145,7 @@ void frmMain::onSerialPortReadyRead()
                     }
 
                     // Store origin
-                    if (ca.command == "$#" && ca.tableIndex == -2) {
+                    if (ca.tableIndex == -2 && ca.command == "$#") {
                         qDebug() << "Received offsets:" << response;
                         QRegExp rx(".*G92:([^,]*),([^,]*),([^\\]]*)");
 
@@ -1158,22 +1163,24 @@ void frmMain::onSerialPortReadyRead()
                     }
 
                     // Homing response
-                    if ((ca.command.toUpper() == "$H" || ca.command.toUpper() == "$T") && m_homing) m_homing = false;
+                    if (m_homing && (ca.command == "$H" || ca.command == "$T")) {
+                        m_homing = false;
+                    }
 
                     // Reset complete
-                    if (ca.command == "[CTRL+X]") {
+                    if (ca.isCTRL_X) {
                         m_resetCompleted = true;
                         m_updateParserStatus = true;
                     }
 
                     // Clear command buffer on "M2" & "M30" command (old firmwares)
-                    if ((ca.command.contains("M2") || ca.command.contains("M30")) && response.contains("ok") && !response.contains("[Pgm End]")) {
+                    if (ca.containsEnd && response.contains("ok") && !response.contains("[Pgm End]")) {
                         m_commands.clear();
                         m_queue.clear();
                     }
 
                     // Process probing on heightmap mode only from table commands
-                    if (ca.command.contains("G38.2") && m_heightMapMode && ca.tableIndex > -1) {
+                    if (m_heightMapMode && ca.tableIndex > -1 && ca.command.contains("G38.2")) {
                         // Get probe Z coordinate
                         // "[PRB:0.000,0.000,0.000:0];ok"
                         QRegExp rx(".*PRB:([^,]*),([^,]*),([^]^:]*)");
@@ -1206,7 +1213,7 @@ void frmMain::onSerialPortReadyRead()
                     }
 
                     // Change state query time on check mode on
-                    if (ca.command.contains(QRegExp("$[cC]"))) {
+                    if (ca.command.contains("$C")) {
                         m_timerStateQuery.setInterval(response.contains("Enable") ? 1000 : m_settings->queryStateTime());
                     }
 
@@ -1232,12 +1239,15 @@ void frmMain::onSerialPortReadyRead()
                     }
 
                     // Check queue
-                    if (m_queue.length() > 0) {
-                        CommandQueue cq = m_queue.takeFirst();
-                        while ((bufferLength() + cq.command.length() + 1) <= BUFFERLENGTH) {
-                            sendCommand(cq.command, cq.tableIndex, cq.showInConsole);
-                            if (m_queue.isEmpty()) break; else cq = m_queue.takeFirst();
+                    while (!m_queue.isEmpty()) {
+                        const CommandQueue& cq = m_queue.first();
+
+                        if ((bufferLength() + cq.command.length() + 1) > BUFFERLENGTH) {
+                            break;
                         }
+
+                        sendCommand(cq.command, cq.tableIndex, cq.showInConsole);
+                        m_queue.removeFirst();
                     }
 
                     // Add response to table, send next program commands
@@ -1289,14 +1299,16 @@ void frmMain::onSerialPortReadyRead()
                         }
 
                         // Check transfer complete (last row always blank, last command row = rowcount - 2)
-                        if (m_fileProcessedCommandIndex == m_currentModel->rowCount() - 2
-                                || ca.command.contains(QRegExp("M0*2|M30"))) m_transferCompleted = true;
+                        if (m_fileProcessedCommandIndex == m_currentModel->rowCount() - 2 || ca.containsEnd)
+                            m_transferCompleted = true;
                         // Send next program commands
-                        else if (!m_fileEndSent && (m_fileCommandIndex < m_currentModel->rowCount()) && !holding) sendNextFileCommands();
+                        else if (!m_fileEndSent && (m_fileCommandIndex < m_currentModel->rowCount()) && !holding)
+                            sendNextFileCommands();
                     }
 
                     // Scroll to first line on "M30" command
-                    if (ca.command.contains("M30")) ui->tblProgram->setCurrentIndex(m_currentModel->index(0, 1));
+                    if (ca.containsEnd && ca.command.contains("M30"))
+                        ui->tblProgram->setCurrentIndex(m_currentModel->index(0, 1));
 
                     // Toolpath shadowing on check mode
                     if (m_statusCaptions.indexOf(ui->txtStatus->text()) == CHECK) {
@@ -1922,7 +1934,7 @@ void frmMain::onActSendFromLineTriggered()
         int res = box.exec();
         if (res == QMessageBox::Cancel) return;
         else if (res == QMessageBox::Ok) {
-            foreach (QString command, commands) {
+            foreach (const QString& command, commands) {
                 sendCommand(command, -1, m_settings->showUICommands());
             }
         }
@@ -2019,13 +2031,13 @@ void frmMain::restoreOffsets()
 }
 
 void frmMain::sendNextFileCommands() {
-    if (m_queue.length() > 0) return;
+    if (!m_queue.isEmpty()) return;
 
     QString command = feedOverride(m_currentModel->data(m_currentModel->index(m_fileCommandIndex, 1)).toString());
 
     while ((bufferLength() + command.length() + 1) <= BUFFERLENGTH
            && m_fileCommandIndex < m_currentModel->rowCount() - 1
-           && !(!m_commands.isEmpty() && m_commands.last().command.contains(QRegExp("M0*2|M30")))) {
+           && !m_fileEndSent) {
         m_currentModel->setData(m_currentModel->index(m_fileCommandIndex, 2), GCodeItem::Sent);
         sendCommand(command, m_fileCommandIndex, m_settings->showProgramCommands());
         m_fileCommandIndex++;
@@ -2361,7 +2373,7 @@ void frmMain::updateParser()
 
 void frmMain::on_cmdCommandSend_clicked()
 {
-    QString command = ui->cboCommand->currentText();
+    const QString& command = ui->cboCommand->currentText();
     if (command.isEmpty()) return;
 
     ui->cboCommand->storeText();
@@ -2387,7 +2399,7 @@ void frmMain::on_cmdTouch_clicked()
 
     QStringList list = m_settings->touchCommand().split(";");
 
-    foreach (QString cmd, list) {
+    foreach (const QString& cmd, list) {
         sendCommand(cmd.trimmed(), -1, m_settings->showUICommands());
     }
 }
@@ -2733,7 +2745,8 @@ bool frmMain::dataIsFloating(const QString& data) {
 }
 
 bool frmMain::dataIsReset(const QString& data) {
-    return QRegExp("^GRBL|GCARVIN\\s\\d\\.\\d.").indexIn(data.toUpper()) != -1;
+    static const QRegExp reset("^GRBL|GCARVIN\\s\\d\\.\\d.");
+    return reset.indexIn(data.toUpper()) != -1;
 }
 
 QString frmMain::feedOverride(QString command)
@@ -3007,14 +3020,14 @@ void frmMain::addRecentFile(const QString& fileName)
 {
     m_recentFiles.removeAll(fileName);
     m_recentFiles.append(fileName);
-    if (m_recentFiles.count() > 5) m_recentFiles.takeFirst();
+    while (m_recentFiles.count() > 5) m_recentFiles.removeFirst();
 }
 
 void frmMain::addRecentHeightmap(const QString& fileName)
 {
     m_recentHeightmaps.removeAll(fileName);
     m_recentHeightmaps.append(fileName);
-    if (m_recentHeightmaps.count() > 5) m_recentHeightmaps.takeFirst();
+    while (m_recentHeightmaps.count() > 5) m_recentHeightmaps.removeFirst();
 }
 
 void frmMain::onActRecentFileTriggered()
@@ -3030,7 +3043,7 @@ void frmMain::onActRecentFileTriggered()
 
 void frmMain::onCboCommandReturnPressed()
 {
-    QString command = ui->cboCommand->currentText();
+    const QString& command = ui->cboCommand->currentText();
     if (command.isEmpty()) return;
 
     ui->cboCommand->setCurrentText("");
