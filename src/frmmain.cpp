@@ -4,19 +4,8 @@
 //#define INITTIME //QTime time; time.start();
 //#define PRINTTIME(x) //qDebug() << "time elapse" << QString("%1:").arg(x) << time.elapsed(); time.start();
 
-#define UNKNOWN 0
-#define IDLE 1
-#define ALARM 2
-#define RUN 3
-#define HOME 4
-#define HOLD0 5
-#define HOLD1 6
-#define QUEUE 7
-#define CHECK 8
-#define DOOR 9
-#define JOG 10
-
 #define PROGRESSMINLINES 10000
+#define PROGRESSDELAY    500
 #define PROGRESSSTEP     1000
 
 #include <QFileDialog>
@@ -43,55 +32,81 @@ namespace {
     const QString strCTRL_X("[CTRL+X]");
 }
 
+enum {
+    UNKNOWN = 0,
+    IDLE = 1,
+    ALARM = 2,
+    RUN = 3,
+    HOME = 4,
+    HOLD0 = 5,
+    HOLD1 = 6,
+    QUEUE = 7,
+    CHECK = 8,
+    DOOR = 9,
+    JOG = 10,
+};
+
+const QStringList frmMain::m_status({
+    "Unknown",
+    "Idle",
+    "Alarm",
+    "Run",
+    "Home",
+    "Hold:0",
+    "Hold:1",
+    "Queue",
+    "Check",
+    "Door",                     // TODO: Update "Door" state
+    "Jog"
+});
+
+const QStringList frmMain::m_statusCaptions({
+    tr("Unknown"),
+    tr("Idle"),
+    tr("Alarm"),
+    tr("Run"),
+    tr("Home"),
+    tr("Hold"),
+    tr("Hold"),
+    tr("Queue"),
+    tr("Check"),
+    tr("Door"),
+    tr("Jog")
+});
+
+const QStringList frmMain::m_statusBackColors({
+    "red",
+    "palette(button)",
+    "red",
+    "lime",
+    "lime",
+    "yellow",
+    "yellow",
+    "yellow",
+    "palette(button)",
+    "red",
+    "lime",
+});
+
+const QStringList frmMain::m_statusForeColors({
+    "white",
+    "palette(text)",
+    "white",
+    "black",
+    "black",
+    "black",
+    "black",
+    "black",
+    "palette(text)",
+    "white",
+    "black",
+});
+
+
 frmMain::frmMain(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::frmMain)
 {
-    m_status << "Unknown"
-             << "Idle"
-             << "Alarm"
-             << "Run"
-             << "Home"
-             << "Hold:0"
-             << "Hold:1"
-             << "Queue"
-             << "Check"
-             << "Door"                     // TODO: Update "Door" state
-             << "Jog";
-    m_statusCaptions << tr("Unknown")
-                     << tr("Idle")
-                     << tr("Alarm")
-                     << tr("Run")
-                     << tr("Home")
-                     << tr("Hold")
-                     << tr("Hold")
-                     << tr("Queue")
-                     << tr("Check")
-                     << tr("Door")
-                     << tr("Jog");
-    m_statusBackColors << "red"
-                       << "palette(button)"
-                       << "red"
-                       << "lime"
-                       << "lime"
-                       << "yellow"
-                       << "yellow"
-                       << "yellow"
-                       << "palette(button)"
-                       << "red"
-                       << "lime";
-    m_statusForeColors << "white"
-                       << "palette(text)"
-                       << "white"
-                       << "black"
-                       << "black"
-                       << "black"
-                       << "black"
-                       << "black"
-                       << "palette(text)"
-                       << "white"
-                       << "black";
-
     // Loading settings
     m_settingsFileName = qApp->applicationDirPath() + "/settings.ini";
     preloadSettings();
@@ -111,13 +126,7 @@ frmMain::frmMain(QWidget *parent) :
 #endif
 //    ui->scrollArea->updateMinimumWidth();
 
-    m_heightMapMode = false;
-    m_lastDrawnLineIndex = 0;
-    m_fileProcessedCommandIndex = 0;
-    m_cellChanged = false;
-    m_programLoading = false;
     m_currentModel = &m_programModel;
-    m_transferCompleted = true;
 
     ui->cmdXMinus->setBackColor(QColor(153, 180, 209));
     ui->cmdXPlus->setBackColor(ui->cmdXMinus->backColor());
@@ -742,6 +751,11 @@ void frmMain::openPort()
     }
 }
 
+void frmMain::sendCommand(const QString& command, int tableIndex)
+{
+    sendCommand(command, tableIndex, m_settings->showUICommands());
+}
+
 void frmMain::sendCommand(const QString& command, int tableIndex, bool showInConsole)
 {
     if (!m_serialPort.isOpen() || !m_resetCompleted) return;
@@ -760,7 +774,7 @@ void frmMain::sendCommand(const QString& command, int tableIndex, bool showInCon
         return;
     }
 
-    CommandAttributes ca(command.toUpper());
+    CommandAttributes ca(command);
 
 //    if (!(command == "$G" && tableIndex < -1) && !(command == "$#" && tableIndex < -1)
 //            && (!m_transferringFile || (m_transferringFile && m_showAllCommands) || tableIndex < 0)) {
@@ -773,8 +787,6 @@ void frmMain::sendCommand(const QString& command, int tableIndex, bool showInCon
 
     ca.tableIndex = tableIndex;
     ca.isCTRL_X = ca.command == strCTRL_X;
-
-    m_commands.append(ca);
 
     // Processing spindle speed only from g-code program
     static const QRegExp s("S0*(\\d+)");
@@ -790,9 +802,7 @@ void frmMain::sendCommand(const QString& command, int tableIndex, bool showInCon
     static const QRegExp e("M0*2|M30");
     ca.containsEnd = ca.command.contains(e);
 
-    if (ca.containsEnd) {
-        m_fileEndSent = true;
-    }
+    m_commands.append(ca);
 
     m_serialPort.write((ca.command + "\r").toLatin1());
 }
@@ -845,7 +855,7 @@ int frmMain::bufferLength() const
 void frmMain::onSerialPortReadyRead()
 {
     while (m_serialPort.canReadLine()) {
-        QString data = m_serialPort.readLine().trimmed();
+        const QString data = m_serialPort.readLine().trimmed();
 
         // Filter prereset responses
         if (m_reseting) {
@@ -1010,10 +1020,10 @@ void frmMain::onSerialPortReadyRead()
 
                 QList<int> drawnLines;
                 const QList<LineSegment*>& list = parser->getLineSegmentList();
+                const GCodeItem& gi = m_currentModel->data().at(m_fileProcessedCommandIndex);
 
                 for (int i = m_lastDrawnLineIndex; i < list.count()
-                     && list.at(i)->getLineNumber()
-                     <= (m_currentModel->data(m_currentModel->index(m_fileProcessedCommandIndex, 4)).toInt() + 1); i++) {
+                     && list.at(i)->getLineNumber() <= gi.line + 1; i++) {
                     if (list.at(i)->contains(toolPosition)) {
                         toolOntoolpath = true;
                         m_lastDrawnLineIndex = i;
@@ -1028,8 +1038,9 @@ void frmMain::onSerialPortReadyRead()
                     }
                     if (!drawnLines.isEmpty()) m_currentDrawer->update(drawnLines);
                 } else if (m_lastDrawnLineIndex < list.count()) {
-                    qDebug() << "tool missed:" << list.at(m_lastDrawnLineIndex)->getLineNumber()
-                             << m_currentModel->data(m_currentModel->index(m_fileProcessedCommandIndex, 4)).toInt()
+                    qDebug() << "tool missed:" << toolPosition
+                             << list.at(m_lastDrawnLineIndex)->getLineNumber()
+                             << gi.line
                              << m_fileProcessedCommandIndex;
                 }
             }
@@ -1118,7 +1129,7 @@ void frmMain::onSerialPortReadyRead()
                         if (ui->chkKeyboardControl->isChecked())
                             m_absoluteCoordinates = response.contains("G90");
                         else if (response.contains("G90"))
-                            sendCommand("G90", -1, m_settings->showUICommands());
+                            sendCommand("G90", -1);
                     }
 
                     // Jog
@@ -1135,7 +1146,7 @@ void frmMain::onSerialPortReadyRead()
                         if (m_processingFile) storeParserState();
 
                         // Spindle speed
-                        QRegExp rx(".*S([\\d\\.]+)");
+                        static QRegExp rx(".*S([\\d\\.]+)");
                         if (rx.indexIn(response) != -1) {
                             double speed = toMetric(rx.cap(1).toDouble()); //RPM in imperial?
                             ui->slbSpindle->setCurrentValue(speed);
@@ -1147,7 +1158,7 @@ void frmMain::onSerialPortReadyRead()
                     // Store origin
                     if (ca.tableIndex == -2 && ca.command == "$#") {
                         qDebug() << "Received offsets:" << response;
-                        QRegExp rx(".*G92:([^,]*),([^,]*),([^\\]]*)");
+                        static QRegExp rx(".*G92:([^,]*),([^,]*),([^\\]]*)");
 
                         if (rx.indexIn(response) != -1) {
                             if (m_settingZeroXY) {
@@ -1183,7 +1194,7 @@ void frmMain::onSerialPortReadyRead()
                     if (m_heightMapMode && ca.tableIndex > -1 && ca.command.contains("G38.2")) {
                         // Get probe Z coordinate
                         // "[PRB:0.000,0.000,0.000:0];ok"
-                        QRegExp rx(".*PRB:([^,]*),([^,]*),([^]^:]*)");
+                        static QRegExp rx(".*PRB:([^,]*),([^,]*),([^]^:]*)");
                         double z = qQNaN();
                         if (rx.indexIn(response) != -1) {
                             qDebug() << "probing coordinates:" << rx.cap(1) << rx.cap(2) << rx.cap(3);
@@ -1318,10 +1329,9 @@ void frmMain::onSerialPortReadyRead()
                         if (!m_transferCompleted && m_fileProcessedCommandIndex < m_currentModel->rowCount() - 1) {
                             int i;
                             QList<int> drawnLines;
+                            const GCodeItem& gi = m_currentModel->data().at(m_fileProcessedCommandIndex);
 
-                            for (i = m_lastDrawnLineIndex; i < list.count()
-                                 && list.at(i)->getLineNumber()
-                                 <= (m_currentModel->data(m_currentModel->index(m_fileProcessedCommandIndex, 4)).toInt()); i++) {
+                            for (i = m_lastDrawnLineIndex; i < list.count() && list.at(i)->getLineNumber() <= gi.line; i++) {
                                 drawnLines << i;
                             }
 
@@ -1404,7 +1414,7 @@ void frmMain::onTimerConnection()
     } else if (!m_homing/* && !m_reseting*/ && !ui->cmdFilePause->isChecked() && m_queue.length() == 0) {
         if (m_updateSpindleSpeed) {
             m_updateSpindleSpeed = false;
-            sendCommand(QString("S%1").arg(ui->slbSpindle->value()), -2, m_settings->showUICommands());
+            sendCommand(QString("S%1").arg(ui->slbSpindle->value()), -2);
         }
         if (m_updateParserStatus) {
             m_updateParserStatus = false;
@@ -1663,9 +1673,8 @@ void frmMain::resetHeightmap()
     m_heightMapChanged = false;
 }
 
-void frmMain::loadFile(const QList<QString>& data)
+void frmMain::preLoad(QElapsedTimer& time, GcodeParser& gp, QByteArray& headerState)
 {
-    QElapsedTimer time;
     time.start();
 
     // Reset tables
@@ -1691,11 +1700,11 @@ void frmMain::loadFile(const QList<QString>& data)
     ui->grpHeightMap->ensurePolished();
 
     // Reset tableview
-    QByteArray headerState = ui->tblProgram->horizontalHeader()->saveState();
+    headerState = ui->tblProgram->horizontalHeader()->saveState();
     ui->tblProgram->setModel(NULL);
 
-    // Prepare parser
-    GcodeParser gp;
+    m_programModel.data().clear();
+
     gp.setTraverseSpeed(m_settings->rapidSpeed());
     if (m_codeDrawer->getIgnoreZ()) gp.reset(QVector3D(qQNaN(), qQNaN(), 0));
 
@@ -1704,57 +1713,10 @@ void frmMain::loadFile(const QList<QString>& data)
 
     // Block parser updates on table changes
     m_programLoading = true;
+}
 
-    int n = 0;
-
-    // Prepare model
-    m_programModel.data().clear();
-    m_programModel.data().reserve(data.count());
-
-    QProgressDialog progress(tr("Opening file..."), tr("Abort"), 0, data.count(), this);
-    progress.setWindowModality(Qt::WindowModal);
-    progress.setFixedSize(progress.sizeHint());
-    if (data.count() > PROGRESSMINLINES) {
-        progress.show();
-        progress.setStyleSheet("QProgressBar {text-align: center; qproperty-format: \"\"}");
-    }
-
-    foreach (const QString& command, data)
-    {
-        // Trim command
-        QString trimmed = command.trimmed();
-
-        if (!trimmed.isEmpty()) {
-            // Split command
-            QString stripped = GcodePreprocessorUtils::removeComment(command);
-            QList<QString> args = GcodePreprocessorUtils::splitCommand(stripped);
-
-//            PointSegment *ps = gp.addCommand(args);
-            gp.addCommand(args);
-
-    //        if (ps && (qIsNaN(ps->point()->x()) || qIsNaN(ps->point()->y()) || qIsNaN(ps->point()->z())))
-    //                   qDebug() << "nan point segment added:" << *ps->point();
-
-            GCodeItem item;
-
-            item.command.swap(trimmed);
-            item.state = GCodeItem::InQueue;
-            item.line = gp.getCommandNumber();
-            item.args.swap(args);
-
-            m_programModel.data().append(item);
-        }
-
-        if (progress.isVisible() && (n % PROGRESSSTEP == 0)) {
-            progress.setValue(n);
-            qApp->processEvents();
-            if (progress.wasCanceled()) break;
-        }
-
-        ++n;
-    }
-    progress.close();
-
+void frmMain::postLoad(QElapsedTimer& time, GcodeParser& gp, QByteArray& headerState)
+{
     m_programModel.insertRow(m_programModel.rowCount());
 
     qDebug() << "model filled:" << time.elapsed();
@@ -1781,6 +1743,70 @@ void frmMain::loadFile(const QList<QString>& data)
     updateControlsState();
 }
 
+class ProgressDialog : public QProgressDialog {
+public:
+    ProgressDialog(const QString& label, const QString& cancel, int min, int max, QWidget *parent) :
+        QProgressDialog(label, cancel, min, max, parent)
+    {
+        setWindowModality(Qt::WindowModal);
+        setFixedSize(sizeHint());
+        time.start();
+    }
+
+    bool update(int n) {
+        if (!isVisible() && time.elapsed() > PROGRESSDELAY) {
+            show();
+            setStyleSheet("QProgressBar {text-align: center; qproperty-format: \"\"}");
+        }
+
+        if (isVisible()) {
+            setValue(n);
+            qApp->processEvents();
+            if (wasCanceled()) return false;
+        }
+
+        return true;
+    }
+
+private:
+    QElapsedTimer time;
+};
+
+void frmMain::loadFile(const QList<QString>& data)
+{
+    LoadGuard g(this);
+
+    // Prepare model
+    m_programModel.data().reserve(data.count());
+
+    ProgressDialog progress(tr("Opening file..."), tr("Abort"), 0, data.count(), this);
+
+    int n = 0;
+
+    foreach (const QString& command, data)
+    {
+        // Trim command
+        QString trimmed = command.trimmed();
+
+        if (!trimmed.isEmpty()) {
+            GCodeItem item(std::move(trimmed));
+
+            g.gp.addCommand(item.getArgs());
+
+            item.line = g.gp.getCommandNumber();
+
+            m_programModel.data().append(item);
+        }
+
+        if ((n % PROGRESSSTEP) == 0) {
+            if (!progress.update(n)) break;
+        }
+
+        ++n;
+    }
+    progress.close();
+}
+
 void frmMain::loadFile(const QString& fileName)
 {
     QFile file(fileName);
@@ -1796,12 +1822,39 @@ void frmMain::loadFile(const QString& fileName)
     // Prepare text stream
     QTextStream textStream(&file);
 
-    // Read lines
-    QList<QString> data;
-    while (!textStream.atEnd()) data.append(textStream.readLine());
+    LoadGuard g(this);
 
-    // Load lines
-    loadFile(data);
+    // Prepare model
+    m_programModel.data().reserve(file.size() / 32);
+
+    ProgressDialog progress(tr("Opening file..."), tr("Abort"), 0, file.size() / 32, this);
+
+    int n = 0;
+
+    // Read lines
+    while (!textStream.atEnd()) {
+        //data.append(textStream.readLine());
+        // Trim command
+        QString trimmed = textStream.readLine().trimmed();
+
+        if (!trimmed.isEmpty()) {
+            GCodeItem item(std::move(trimmed));
+
+            g.gp.addCommand(item.getArgs());
+
+            item.line = g.gp.getCommandNumber();
+
+            m_programModel.data().append(item);
+        }
+
+        if ((n % PROGRESSSTEP) == 0) {
+            if (!progress.update(file.pos() / 32)) break;
+        }
+
+        ++n;
+    }
+
+    progress.close();
 }
 
 QTime frmMain::updateProgramEstimatedTime(const QList<LineSegment*>& lines)
@@ -1888,6 +1941,7 @@ void frmMain::onActSendFromLineTriggered()
 
     //Line to start from
     int commandIndex = ui->tblProgram->currentIndex().row();
+    const GCodeItem& gi = m_currentModel->data().at(commandIndex);
 
     // Set parser state
     if (m_settings->autoLine()) {
@@ -1895,11 +1949,11 @@ void frmMain::onActSendFromLineTriggered()
         const QList<LineSegment*>& list = parser->getLineSegmentList();
         const QVector<QList<int>>& lineIndexes = parser->getLinesIndexes();
 
-        int lineNumber = m_currentModel->data(m_currentModel->index(commandIndex, 4)).toInt();
-        LineSegment* firstSegment = list.at(lineIndexes.at(lineNumber).first());
-        LineSegment* lastSegment = list.at(lineIndexes.at(lineNumber).last());
-        LineSegment* feedSegment = lastSegment;
-        int segmentIndex = list.indexOf(feedSegment);
+        int lineNumber = gi.line;
+        const LineSegment* firstSegment = list.at(lineIndexes.at(lineNumber).first());
+        const LineSegment* lastSegment = list.at(lineIndexes.at(lineNumber).last());
+        const LineSegment* feedSegment = lastSegment;
+        int segmentIndex = list.indexOf((LineSegment *) feedSegment);
         while (feedSegment->isFastTraverse() && segmentIndex > 0) feedSegment = list.at(--segmentIndex);
 
         QStringList commands;
@@ -1935,7 +1989,7 @@ void frmMain::onActSendFromLineTriggered()
         if (res == QMessageBox::Cancel) return;
         else if (res == QMessageBox::Ok) {
             foreach (const QString& command, commands) {
-                sendCommand(command, -1, m_settings->showUICommands());
+                sendCommand(command);
             }
         }
     }
@@ -1949,7 +2003,7 @@ void frmMain::onActSendFromLineTriggered()
 
     QList<int> indexes;
     for (int i = 0; i < list.count(); i++) {
-        list[i]->setDrawn(list.at(i)->getLineNumber() < m_currentModel->data().at(commandIndex).line);
+        list[i]->setDrawn(list.at(i)->getLineNumber() < gi.line);
         indexes.append(i);
     }
     m_codeDrawer->update(indexes);
@@ -1958,7 +2012,7 @@ void frmMain::onActSendFromLineTriggered()
 
     for (int i = 0; i < m_currentModel->data().count() - 1; i++) {
         m_currentModel->data()[i].state = i < commandIndex ? GCodeItem::Skipped : GCodeItem::InQueue;
-        m_currentModel->data()[i].response = QString();
+        m_currentModel->data()[i].response.clear();
     }
     ui->tblProgram->setUpdatesEnabled(true);
     ui->glwVisualizer->setSpendTime(QTime(0, 0, 0));
@@ -2004,19 +2058,19 @@ void frmMain::on_cmdFileAbort_clicked()
 
 void frmMain::storeParserState()
 {
-    m_storedParserStatus = ui->glwVisualizer->parserStatus();
-    m_storedParserStatus.remove(
-                QRegExp("GC:|\\[|\\]|G[01234]\\s|M[0345]+\\s|\\sF[\\d\\.]+|\\sS[\\d\\.]+"));
+    static QRegExp rx("GC:|\\[|\\]|G[01234]\\s|M[0345]+\\s|\\sF[\\d\\.]+|\\sS[\\d\\.]+");
+    m_storedParserStatus = ui->glwVisualizer->parserStatus().toUpper();
+    m_storedParserStatus.remove(rx);
 }
 
 void frmMain::restoreParserState()
 {
-    if (!m_storedParserStatus.isEmpty()) sendCommand(m_storedParserStatus, -1, m_settings->showUICommands());
+    if (!m_storedParserStatus.isEmpty()) sendCommand(m_storedParserStatus);
 }
 
 void frmMain::storeOffsets()
 {
-//    sendCommand("$#", -2, m_settings->showUICommands());
+//    sendCommand("$#", -2);
 }
 
 void frmMain::restoreOffsets()
@@ -2024,24 +2078,24 @@ void frmMain::restoreOffsets()
     // Still have pre-reset working position
     sendCommand(QString("G21G53G90X%1Y%2Z%3").arg(toMetric(ui->txtMPosX->text().toDouble()))
                                        .arg(toMetric(ui->txtMPosY->text().toDouble()))
-                                       .arg(toMetric(ui->txtMPosZ->text().toDouble())), -1, m_settings->showUICommands());
+                                       .arg(toMetric(ui->txtMPosZ->text().toDouble())));
     sendCommand(QString("G21G92X%1Y%2Z%3").arg(toMetric(ui->txtWPosX->text().toDouble()))
                                        .arg(toMetric(ui->txtWPosY->text().toDouble()))
-                                       .arg(toMetric(ui->txtWPosZ->text().toDouble())), -1, m_settings->showUICommands());
+                                       .arg(toMetric(ui->txtWPosZ->text().toDouble())));
 }
 
 void frmMain::sendNextFileCommands() {
     if (!m_queue.isEmpty()) return;
 
-    QString command = feedOverride(m_currentModel->data(m_currentModel->index(m_fileCommandIndex, 1)).toString());
+    const QString* command = &m_currentModel->data().at(m_fileCommandIndex).getUCommand();
 
-    while ((bufferLength() + command.length() + 1) <= BUFFERLENGTH
+    while ((bufferLength() + command->length() + 1) <= BUFFERLENGTH
            && m_fileCommandIndex < m_currentModel->rowCount() - 1
            && !m_fileEndSent) {
         m_currentModel->setData(m_currentModel->index(m_fileCommandIndex, 2), GCodeItem::Sent);
-        sendCommand(command, m_fileCommandIndex, m_settings->showProgramCommands());
+        sendCommand(*command, m_fileCommandIndex, m_settings->showProgramCommands());
         m_fileCommandIndex++;
-        command = feedOverride(m_currentModel->data(m_currentModel->index(m_fileCommandIndex, 1)).toString());
+        command = &m_currentModel->data().at(m_fileCommandIndex).getUCommand();
     }
 }
 
@@ -2076,7 +2130,7 @@ void frmMain::onTableCellChanged(QModelIndex i1, QModelIndex i2)
 
         // Hightlight w/o current cell changed event (double hightlight on current cell changed)
         const QList<LineSegment*>& list = m_viewParser.getLineSegmentList();
-        int i1_line = m_currentModel->data(m_currentModel->index(i1.row(), 4)).toInt();
+        int i1_line = m_currentModel->data().at(i1.row()).line;
         foreach (LineSegment *s, list) {
             if (s->getLineNumber() > i1_line) {
                 break;
@@ -2320,39 +2374,24 @@ void frmMain::updateParser()
 
     ui->tblProgram->setUpdatesEnabled(false);
 
-    QProgressDialog progress(tr("Updating..."), tr("Abort"), 0, m_currentModel->rowCount() - 2, this);
-    progress.setWindowModality(Qt::WindowModal);
-    progress.setFixedSize(progress.sizeHint());
-
-    if (m_currentModel->rowCount() > PROGRESSMINLINES) {
-        progress.show();
-        progress.setStyleSheet("QProgressBar {text-align: center; qproperty-format: \"\"}");
-    }
+    ProgressDialog progress(tr("Updating..."), tr("Abort"), 0, m_currentModel->rowCount() - 2, this);
 
     for (int i = 0; i < m_currentModel->rowCount() - 1; i++) {
         GCodeItem& gi = m_currentModel->data()[i];
 
         // Get stored args
-        QList<QString>& args = gi.args;
-
-        // Store args if none
-        if (args.isEmpty()) {
-            QString stripped = GcodePreprocessorUtils::removeComment(gi.command);
-            args = GcodePreprocessorUtils::splitCommand(stripped);
-        }
+        const GCodeArgList& args = gi.getArgs();
 
         // Add command to parser
         gp.addCommand(args);
 
         // Update table model
         gi.state = GCodeItem::InQueue;
-        gi.response = QString();
+        gi.response.clear();
         gi.line = gp.getCommandNumber();
 
-        if (progress.isVisible() && (i % PROGRESSSTEP == 0)) {
-            progress.setValue(i);
-            qApp->processEvents();
-            if (progress.wasCanceled()) break;
+        if ((i % PROGRESSSTEP) == 0) {
+            if (!progress.update(i)) break;
         }
     }
     progress.close();
@@ -2378,7 +2417,7 @@ void frmMain::on_cmdCommandSend_clicked()
 
     ui->cboCommand->storeText();
     ui->cboCommand->setCurrentText("");
-    sendCommand(command, -1);
+    sendCommand(command.toUpper(), -1, true);
 }
 
 void frmMain::on_actFileOpen_triggered()
@@ -2390,52 +2429,52 @@ void frmMain::on_cmdHome_clicked()
 {
     m_homing = true;
     m_updateSpindleSpeed = true;
-    sendCommand("$H", -1, m_settings->showUICommands());
+    sendCommand("$H");
 }
 
 void frmMain::on_cmdTouch_clicked()
 {
 //    m_homing = true;
 
-    QStringList list = m_settings->touchCommand().split(";");
+    QStringList list = m_settings->touchCommand().toUpper().split(";");
 
     foreach (const QString& cmd, list) {
-        sendCommand(cmd.trimmed(), -1, m_settings->showUICommands());
+        sendCommand(cmd.trimmed());
     }
 }
 
 void frmMain::on_cmdZeroXY_clicked()
 {
     m_settingZeroXY = true;
-    sendCommand("G92X0Y0", -1, m_settings->showUICommands());
-    sendCommand("$#", -2, m_settings->showUICommands());
+    sendCommand("G92X0Y0");
+    sendCommand("$#", -2);
 }
 
 void frmMain::on_cmdZeroZ_clicked()
 {
     m_settingZeroZ = true;
-    sendCommand("G92Z0", -1, m_settings->showUICommands());
-    sendCommand("$#", -2, m_settings->showUICommands());
+    sendCommand("G92Z0");
+    sendCommand("$#", -2);
 }
 
 void frmMain::on_cmdRestoreOrigin_clicked()
 {
     // Restore offset
-    sendCommand(QString("G21"), -1, m_settings->showUICommands());
+    sendCommand("G21");
     sendCommand(QString("G53G90G0X%1Y%2Z%3").arg(toMetric(ui->txtMPosX->text().toDouble()))
                                             .arg(toMetric(ui->txtMPosY->text().toDouble()))
-                                            .arg(toMetric(ui->txtMPosZ->text().toDouble())), -1, m_settings->showUICommands());
+                                            .arg(toMetric(ui->txtMPosZ->text().toDouble())));
     sendCommand(QString("G92X%1Y%2Z%3").arg(toMetric(ui->txtMPosX->text().toDouble()) - m_storedX)
                                         .arg(toMetric(ui->txtMPosY->text().toDouble()) - m_storedY)
-                                        .arg(toMetric(ui->txtMPosZ->text().toDouble()) - m_storedZ), -1, m_settings->showUICommands());
+                                        .arg(toMetric(ui->txtMPosZ->text().toDouble()) - m_storedZ));
 
     // Move tool
     if (m_settings->moveOnRestore()) switch (m_settings->restoreMode()) {
     case 0:
-        sendCommand("G0X0Y0", -1, m_settings->showUICommands());
+        sendCommand("G0X0Y0");
         break;
     case 1:
-        sendCommand("G0X0Y0Z0", -1, m_settings->showUICommands());
+        sendCommand("G0X0Y0Z0");
         break;
     }
 }
@@ -2448,15 +2487,15 @@ void frmMain::on_cmdReset_clicked()
 void frmMain::on_cmdUnlock_clicked()
 {
     m_updateSpindleSpeed = true;
-    sendCommand("$X", -1, m_settings->showUICommands());
+    sendCommand("$X");
 }
 
 void frmMain::on_cmdSafePosition_clicked()
 {
-    QStringList list = m_settings->safePositionCommand().split(";");
+    QStringList list = m_settings->safePositionCommand().toUpper().split(";");
 
     foreach (const QString &cmd, list) {
-        sendCommand(cmd.trimmed(), -1, m_settings->showUICommands());
+        sendCommand(cmd.trimmed());
     }
 }
 
@@ -2478,7 +2517,7 @@ void frmMain::on_cmdSpindle_clicked(bool checked)
     if (ui->cmdFilePause->isChecked()) {
         m_serialPort.write(QByteArray(1, char(0x9e)));
     } else {
-        sendCommand(checked ? QString("M3 S%1").arg(ui->slbSpindle->value()) : "M5", -1, m_settings->showUICommands());
+        sendCommand(checked ? QString("M3 S%1").arg(ui->slbSpindle->value()) : "M5");
     }
 }
 
@@ -2487,7 +2526,7 @@ void frmMain::on_chkTestMode_clicked(bool checked)
     if (checked) {
         storeOffsets();
         storeParserState();
-        sendCommand("$C", -1, m_settings->showUICommands());
+        sendCommand("$C");
     } else {
         m_aborting = true;
         grblReset();
@@ -2749,15 +2788,6 @@ bool frmMain::dataIsReset(const QString& data) {
     return reset.indexIn(data.toUpper()) != -1;
 }
 
-QString frmMain::feedOverride(QString command)
-{
-    // Feed override if not in heightmap probing mode
-//    if (!ui->cmdHeightMapMode->isChecked()) command = GcodePreprocessorUtils::overrideSpeed(command, ui->chkFeedOverride->isChecked() ?
-//        ui->txtFeed->value() : 100, &m_originalFeed);
-
-    return command;
-}
-
 void frmMain::on_grpOverriding_toggled(bool checked)
 {
     if (checked) {
@@ -2953,9 +2983,9 @@ void frmMain::on_chkKeyboardControl_toggled(bool checked)
 
     // Store/restore coordinate system
     if (checked) {
-        sendCommand("$G", -2, m_settings->showUICommands());
+        sendCommand("$G", -2);
     } else {
-        if (m_absoluteCoordinates) sendCommand("G90", -1, m_settings->showUICommands());
+        if (m_absoluteCoordinates) sendCommand("G90");
     }
 
     if (!m_processingFile) m_storedKeyboardControl = checked;
@@ -3047,7 +3077,7 @@ void frmMain::onCboCommandReturnPressed()
     if (command.isEmpty()) return;
 
     ui->cboCommand->setCurrentText("");
-    sendCommand(command, -1);
+    sendCommand(command.toUpper(), -1, true);
 }
 
 void frmMain::updateRecentFilesMenu()
@@ -3532,11 +3562,7 @@ void frmMain::on_chkHeightMapUse_clicked(bool checked)
     if (checked) try {
 
         // Prepare progress dialog
-        QProgressDialog progress(tr("Applying heightmap..."), tr("Abort"), 0, 0, this);
-        progress.setWindowModality(Qt::WindowModal);
-        progress.setFixedHeight(progress.sizeHint().height());
-        progress.show();
-        progress.setStyleSheet("QProgressBar {text-align: center; qproperty-format: \"\"}");
+        ProgressDialog progress(tr("Applying heightmap..."), tr("Abort"), 0, 0, this);
 
         // Performance test
         QElapsedTimer time;
@@ -3572,11 +3598,9 @@ void frmMain::on_chkHeightMapUse_clicked(bool checked)
                     }
                 }
 
-                if (progress.isVisible() && (i % PROGRESSSTEP == 0)) {
+                if ((i % PROGRESSSTEP) == 0) {
                     progress.setMaximum(list->count() - 1);
-                    progress.setValue(i);
-                    qApp->processEvents();
-                    if (progress.wasCanceled()) throw cancel;
+                    if (!progress.update(i)) throw cancel;
                 }
             }
 
@@ -3597,10 +3621,8 @@ void frmMain::on_chkHeightMapUse_clicked(bool checked)
                 list->at(i)->setEnd(
                     Interpolation::bicubic(borderRect, &m_heightMapModel, list->at(i)->getEnd()));
 
-                if (progress.isVisible() && (i % PROGRESSSTEP == 0)) {
-                    progress.setValue(i);
-                    qApp->processEvents();
-                    if (progress.wasCanceled()) throw cancel;
+                if ((i % PROGRESSSTEP) == 0) {
+                    if (!progress.update(i)) throw cancel;
                 }
             }
 
@@ -3614,11 +3636,7 @@ void frmMain::on_chkHeightMapUse_clicked(bool checked)
             QString newCommand;
             int lastSegmentIndex = 0;
             int lastCommandIndex = -1;
-
-            // Search strings
-            static const QString coords("XxYyZzIiJjKkRr");
-
-            QString lastCode;
+            bool hasLastCode = false;
 
             m_programLoading = true;
             for (int i = 0; i < m_programModel.rowCount() - 1; i++) {
@@ -3632,20 +3650,22 @@ void frmMain::on_chkHeightMapUse_clicked(bool checked)
                     m_programHeightmapModel.data().append(mi);
                 } else {
                     // Get commands args
-                    const QStringList& args = mi.args;
+                    const GCodeArgList& args = mi.getArgs();
                     newCommand.clear();
 
                     // Parse command args
-                    foreach (const QString& arg, args) {            // arg examples: G1, G2, M3, X100...
-                        char codeChar = arg.at(0).toLatin1();       // codeChar: G, M, X...
-                        if (coords.contains(codeChar)) continue;
+                    foreach (const GCodeArg& arg, args) {            // arg examples: G1, G2, M3, X100...
+                        char codeChar = arg.cmd.toLatin1();       // codeChar: G, M, X...
+                        if ((codeChar >= 'X' && codeChar <= 'Z') ||
+                            (codeChar >= 'I' && codeChar <= 'K') ||
+                            codeChar == 'R') continue;
 
-                        if (codeChar == 'G' || codeChar == 'g') { // 'G'-command
-                            float codeNum = arg.mid(1).toDouble();
+                        if (codeChar == 'G') { // 'G'-command
+                            float codeNum = arg.param.toDouble();
 
                             // Store 'G0' & 'G1'
                             if (codeNum == 0.0f || codeNum == 1.0f) {
-                                lastCode = arg;
+                                hasLastCode = true;
                                 isLinearMove = true;            // Store linear move
                             }
 
@@ -3655,14 +3675,14 @@ void frmMain::on_chkHeightMapUse_clicked(bool checked)
                                 isLinearMove = true;
                             // Drop plane command for arcs
                             } else if (codeNum != 17.0f && codeNum != 18.0f && codeNum != 19.0f) {
-                                newCommand.append(arg);
+                                newCommand.append(arg.cmd).append(arg.param);
                             }
 
                             hasCommand = true;                  // Command has 'G'
                         } else {
-                            if (codeChar == 'M' || codeChar == 'm')
+                            if (codeChar == 'M')
                                 hasCommand = true;              // Command has 'M'
-                            newCommand.append(arg);       // Other commands
+                            newCommand.append(arg.cmd).append(arg.param); // Other commands
                         }
                     }
 
@@ -3671,7 +3691,7 @@ void frmMain::on_chkHeightMapUse_clicked(bool checked)
                         LineSegment *ls = list->at(j);
                         if (ls->getLineNumber() != line) continue;
 
-                        if (!qIsNaN(ls->getEnd().length()) && (isLinearMove || (!hasCommand && !lastCode.isEmpty()))) {
+                        if (!qIsNaN(ls->getEnd().length()) && (isLinearMove || (!hasCommand && hasLastCode))) {
                             // Create new commands for each linesegment with given command index
                             while ((j < list->count()) && (list->at(j)->getLineNumber() == line)) {
 
@@ -3698,10 +3718,8 @@ void frmMain::on_chkHeightMapUse_clicked(bool checked)
                 }
                 lastCommandIndex = line;
 
-                if (progress.isVisible() && (i % PROGRESSSTEP == 0)) {
-                    progress.setValue(i);
-                    qApp->processEvents();
-                    if (progress.wasCanceled()) throw cancel;
+                if ((i % PROGRESSSTEP) == 0) {
+                    if (!progress.update(i)) throw cancel;
                 }
             }
             m_programHeightmapModel.insertRow(m_programHeightmapModel.rowCount());
@@ -3851,10 +3869,10 @@ void frmMain::onCmdUserClicked(bool /*checked*/)
 {
     int i = sender()->objectName().right(1).toInt();
 
-    QStringList list = m_settings->userCommands(i).split(";");
+    QStringList list = m_settings->userCommands(i).toUpper().split(";");
 
     foreach (const QString& cmd, list) {
-        sendCommand(cmd.trimmed(), -1, m_settings->showUICommands());
+        sendCommand(cmd.trimmed());
     }
 }
 
@@ -3900,7 +3918,7 @@ void frmMain::jogStep()
                     .arg(vec.x(), 0, 'g', 4)
                     .arg(vec.y(), 0, 'g', 4)
                     .arg(vec.z(), 0, 'g', 4)
-                    .arg(speed), -2, m_settings->showUICommands());
+                    .arg(speed), -2);
     } else {
         int speed = ui->cboJogFeed->currentText().toInt();          // Speed mm/min
         QVector3D vec = m_jogVector * ui->cboJogStep->currentText().toDouble();
@@ -3909,7 +3927,7 @@ void frmMain::jogStep()
                     .arg(vec.x(), 0, 'g', 4)
                     .arg(vec.y(), 0, 'g', 4)
                     .arg(vec.z(), 0, 'g', 4)
-                    .arg(speed), -3, m_settings->showUICommands());
+                    .arg(speed), -3);
     }
 }
 

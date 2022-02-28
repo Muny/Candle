@@ -150,48 +150,76 @@ QString GcodePreprocessorUtils::generateG1FromPoints(const QVector3D& start, con
 //* This command is about the same speed as the string.split(" ") command,
 //* but might be a little faster using precompiled regex.
 //*/
-QStringList GcodePreprocessorUtils::splitCommand(const QString &command) {
-    QStringList l;
-    bool readNumeric = false;
-    QString sb;
+GCodeArgList GcodePreprocessorUtils::splitCommand(const QString &command) {
+    GCodeArgList l;
+    QChar cmd;
+    int arg_len = 0;
+    bool cmd_valid = false;
+    bool comment = false;
 
-    QByteArray ba(command.toLatin1());
-    const char *cmd = ba.constData(); // Direct access to string data
-    char c;
+    static const QChar dot('.');
+    static const QChar minus('-');
+    static const QChar semicolon(';');
+    static const QChar open_bracket('(');
+    static const QChar close_bracket(')');
 
     for (int i = 0; i < command.length(); i++) {
-        c = cmd[i];
+        QChar c = command.at(i);
 
-        if (readNumeric && !isDigit(c) && c != '.') {
-            readNumeric = false;
-            l.append(sb);
-            sb.clear();
-            if (isLetter(c)) sb.append(c);
-        } else if (isDigit(c) || c == '.' || c == '-') {
-            sb.append(c);
-            readNumeric = true;
-        } else if (isLetter(c)) sb.append(c);
+        if (comment) {
+            if (c != close_bracket) continue;
+
+            comment = false;
+
+            for (++i; i < command.length(); i++) {
+                c = command.at(i);
+                if (c != close_bracket) break;
+            }
+        }
+
+        if (c == semicolon) break;
+
+        if (c == open_bracket) {
+            if (arg_len > 0) {
+                l.append({cmd, QStringRef(&command, i - arg_len, arg_len).toString()});
+
+                arg_len = 0;
+                cmd_valid = false;
+            }
+
+            comment = true;
+            continue;
+        }
+
+        if (arg_len > 0 && !c.isDigit() && c != dot) {
+            l.append({cmd, QStringRef(&command, i - arg_len, arg_len).toString()});
+
+            arg_len = 0;
+            cmd_valid = false;
+
+            if (c.isLetter()) {
+                cmd = c;
+                cmd_valid = true;
+            }
+
+            continue;
+        }
+
+        if (cmd_valid && (c.isDigit() || c == dot || c == minus)) {
+            ++arg_len;
+
+            continue;
+        }
+
+        if (c.isLetter()) {
+            cmd = c;
+            cmd_valid = true;
+        }
     }
 
-    if (sb.length() > 0) l.append(sb);
-
-//    QChar c;
-
-//    for (int i = 0; i < command.length(); i++) {
-//        c = command[i];
-
-//        if (readNumeric && !c.isDigit() && c != '.') {
-//            readNumeric = false;
-//            l.append(sb);
-//            sb = "";
-//            if (c.isLetter()) sb.append(c);
-//        } else if (c.isDigit() || c == '.' || c == '-') {
-//            sb.append(c);
-//            readNumeric = true;
-//        } else if (c.isLetter()) sb.append(c);
-//    }
-
-//    if (sb.length() > 0) l.append(sb);
+    if (arg_len > 0) {
+        l.append({cmd, QStringRef(&command, command.length() - arg_len, arg_len).toString()});
+    }
 
     return l;
 }

@@ -15,6 +15,7 @@ class ArcProperties
 public:
     double radius;
     QVector3D center;
+    bool clockwise;
 };
 
 #endif // ARCPROPERTIES_H

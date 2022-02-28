@@ -12,6 +12,7 @@
 #include <QMatrix4x4>
 #include <cmath>
 #include "pointsegment.h"
+#include "gcodearg.h"
 
 class GcodePreprocessorUtils : public QObject
 {
@@ -25,7 +26,7 @@ public:
     static QList<float> parseCodes(const QStringList &args, char code);
     static QList<int> parseGCodes(QString command);
     static QList<int> parseMCodes(QString command);
-    static QStringList splitCommand(const QString &command);
+    static GCodeArgList splitCommand(const QString &command);
     static QVector3D convertRToCenter(const QVector3D& start, const QVector3D& end, double radius, PointSegment::planes plane, bool clockwise);
     static QString generateG1FromPoints(const QVector3D& start, const QVector3D& end, bool absoluteMode, int precision);
     static double getAngle(QVector3D start, QVector3D end);

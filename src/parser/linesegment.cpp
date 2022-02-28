@@ -6,27 +6,6 @@
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include "linesegment.h"
-#include <QDebug>
-
-QList<QVector3D> LineSegment::getPointArray() const
-{
-    QList<QVector3D> pointarr;
-    pointarr.append(getPoint());
-    pointarr.append(m_second);
-    return pointarr;
-}
-
-QList<double> LineSegment::getPoints() const
-{
-    QList<double> points;
-    points.append(getPoint().x());
-    points.append(getPoint().y());
-    points.append(getPoint().z());
-    points.append(m_second.x());
-    points.append(m_second.y());
-    points.append(m_second.z());
-    return points;
-}
 
 bool LineSegment::contains(const QVector3D &point) const
 {
@@ -38,5 +17,3 @@ bool LineSegment::contains(const QVector3D &point) const
 
     return delta < 0.01;
 }
-
-

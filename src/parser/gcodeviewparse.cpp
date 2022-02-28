@@ -105,15 +105,15 @@ const QList<LineSegment*>& GcodeViewParse::getLinesFromParser(const GcodeParser&
                     *start, end, ps->center(), ps->isClockwise(), ps->getRadius(), minArcLength, arcPrecision, arcDegreeMode);
                 // Create line segments from points.
                 if (!points.isEmpty()) {
-                    QVector3D startPoint = *start;
+                    const QVector3D *startPoint = start;
                     foreach (const QVector3D& nextPoint, points) {
-                        if (nextPoint == startPoint) continue;
+                        if (nextPoint == *startPoint) continue;
 
-                        LineSegment *ls = new LineSegment(startPoint, nextPoint, lineIndex, *ps);
+                        LineSegment *ls = new LineSegment(*startPoint, nextPoint, lineIndex, *ps);
                         testExtremes(nextPoint);
                         m_lines.append(ls);
                         m_lineIndexes[ps->getLineNumber()].append(m_lines.count() - 1);
-                        startPoint = nextPoint;
+                        startPoint = &ls->getEnd();
                     }
                     lineIndex++;
                 }

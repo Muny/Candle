@@ -18,30 +18,30 @@
 class PointSegment : public BaseSegment
 {
 public:
-    PointSegment() { }
+    PointSegment() = default;
 
     PointSegment(const PointSegment &ps) : BaseSegment(ps)
     {
         if (isArc()) {
-            m_arcProperties.reset(new ArcProperties{ps.getRadius(), ps.center()});
+            m_arcProperties.reset(new ArcProperties{ps.getRadius(), ps.center(), ps.isClockwise()});
         }
     }
 
     PointSegment(const QVector3D& p, int num) : BaseSegment(p, num) { }
     PointSegment(const QVector3D& p, int num, const QVector3D& center, double radius, bool clockwise) :
         BaseSegment(p, num),
-        m_arcProperties(new ArcProperties{radius, center})
+        m_arcProperties(new ArcProperties{radius, center, clockwise})
     {
         setIsArc(true);
-        setIsClockwise(clockwise);
     }
 
     const QVector3D& point() const { return getPoint(); }
-    QVector<double> points() const { return QVector<double>({ point().x(), point().y() }); }
 
     const QVector3D& center() const { return m_arcProperties ? m_arcProperties->center : point(); }
 
     double getRadius() const { return m_arcProperties ? m_arcProperties->radius : 0; }
+
+    bool isClockwise() const { return m_arcProperties ? m_arcProperties->clockwise : false; }
 
 private:
     QScopedPointer<ArcProperties> m_arcProperties;

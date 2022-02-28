@@ -9,35 +9,22 @@
 #define LINESEGMENT_H
 
 #include <QVector3D>
-#include "pointsegment.h"
+#include "basesegment.h"
 
 class LineSegment : public BaseSegment
 {
 public:
-    LineSegment() : BaseSegment(),
-        m_drawn(false),
-        m_isHightlight(false),
-        m_vertexIndex(-1)
-    { }
+    LineSegment() = default;
 
     LineSegment(const QVector3D& a, const QVector3D& b, int num) :
         BaseSegment(a, num),
-        m_second(b),
-        m_drawn(false),
-        m_isHightlight(false),
-        m_vertexIndex(-1)
+        m_second(b)
     { }
 
     LineSegment(const QVector3D& a, const QVector3D& b, int num, const BaseSegment& bs) :
         BaseSegment(a, num, bs),
-        m_second(b),
-        m_drawn(false),
-        m_isHightlight(false),
-        m_vertexIndex(-1)
+        m_second(b)
     { }
-
-    QList<QVector3D> getPointArray() const;
-    QList<double> getPoints() const;
 
     const QVector3D &getStart() const { return getPoint(); }
     void setStart(const QVector3D& vector) { setPoint(vector); }
@@ -59,9 +46,9 @@ public:
 private:
     QVector3D m_second;
 
-    bool m_drawn;
-    bool m_isHightlight;
-    int m_vertexIndex;
+    bool m_drawn = false;
+    bool m_isHightlight = false;
+    int m_vertexIndex = -1;
 };
 
 #endif // LINESEGMENT_H

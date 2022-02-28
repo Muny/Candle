@@ -236,7 +236,7 @@ private:
 
     HeightMapTableModel m_heightMapModel;
 
-    bool m_programLoading;
+    bool m_programLoading = false;
     bool m_settingsLoading;
 
     QSerialPort m_serialPort;
@@ -256,10 +256,10 @@ private:
     QTimer m_timerStateQuery;
     QBasicTimer m_timerToolAnimation;
 
-    QStringList m_status;
-    QStringList m_statusCaptions;
-    QStringList m_statusBackColors;
-    QStringList m_statusForeColors;
+    static const QStringList m_status;
+    static const QStringList m_statusCaptions;
+    static const QStringList m_statusBackColors;
+    static const QStringList m_statusForeColors;
 
 #ifdef WINDOWS
     QWinTaskbarButton *m_taskBarButton;
@@ -298,26 +298,26 @@ private:
     bool m_statusReceived = false;
 
     bool m_processingFile = false;
-    bool m_transferCompleted = false;
+    bool m_transferCompleted = true;
     bool m_fileEndSent = false;
 
-    bool m_heightMapMode;
-    bool m_cellChanged;
+    bool m_heightMapMode = false;
+    bool m_cellChanged = false;
 
     // Indices
     int m_fileCommandIndex;
-    int m_fileProcessedCommandIndex;
+    int m_fileProcessedCommandIndex = 0;
     int m_probeIndex;
 
     // Current values
-    int m_lastDrawnLineIndex;
+    int m_lastDrawnLineIndex = 0;
     int m_lastGrblStatus;
     double m_originalFeed;
 
     // Keyboard
     bool m_keyPressed = false;
     bool m_jogBlock = false;
-    bool m_absoluteCoordinates;
+    bool m_absoluteCoordinates;  // writes only
     bool m_storedKeyboardControl;
 
     // Spindle
@@ -330,6 +330,22 @@ private:
     QStringList m_recentFiles;
     QStringList m_recentHeightmaps;
 
+    struct LoadGuard {
+        LoadGuard(frmMain* m) : main(m) { main->preLoad(time, gp, headerState); }
+
+        ~LoadGuard() { main->postLoad(time, gp, headerState); }
+
+        frmMain* main;
+        GcodeParser gp;
+        QElapsedTimer time;
+        QByteArray headerState;
+    };
+
+    friend LoadGuard;
+
+    void preLoad(QElapsedTimer& time, GcodeParser& gp, QByteArray& headerState);
+    void postLoad(QElapsedTimer& time, GcodeParser& gp, QByteArray& headerState);
+
     void loadFile(const QString& fileName);
     void loadFile(const QList<QString>& data);
     void clearTable();
@@ -339,7 +355,8 @@ private:
     bool saveChanges(bool heightMapMode);
     void updateControlsState();
     void openPort();
-    void sendCommand(const QString& command, int tableIndex = -1, bool showInConsole = true);
+    void sendCommand(const QString& command, int tableIndex = -1);
+    void sendCommand(const QString& command, int tableIndex, bool showInConsole);
     void grblReset();
     int bufferLength() const;
     void sendNextFileCommands();
@@ -351,7 +368,6 @@ private:
 
     QTime updateProgramEstimatedTime(const QList<LineSegment *>& lines);
     bool saveProgramToFile(const QString& fileName, GCodeTableModel *model);
-    QString feedOverride(QString command);
 
     bool eventFilter(QObject *obj, QEvent *event);
     bool keyIsMovement(int key);

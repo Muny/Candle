@@ -2,11 +2,30 @@
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include "gcodetablemodel.h"
+#include "../parser/gcodepreprocessorutils.h"
+
+void GCodeItem::setCommand(const QString& c) {
+    command = c;
+    up_command = command.toUpper();
+    updateArgs();
+}
+
+void GCodeItem::updateArgs() {
+    args = GcodePreprocessorUtils::splitCommand(getUCommand());
+}
+
+const QStringList GCodeTableModel::m_headers({
+    tr("#"),
+    tr("Command"),
+    tr("State"),
+    tr("Response"),
+    tr("Line"),
+    tr("Args")
+});
 
 GCodeTableModel::GCodeTableModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
-    m_headers << tr("#") << tr("Command") << tr("State") << tr("Response") << tr("Line") << tr("Args");
 }
 
 QVariant GCodeTableModel::data(const QModelIndex &index, int role) const
@@ -19,7 +38,7 @@ QVariant GCodeTableModel::data(const QModelIndex &index, int role) const
         switch (index.column())
         {
         case 0: return index.row() == this->rowCount() - 1 ? QString() : QString::number(index.row() + 1);
-        case 1: return m_data.at(index.row()).command;
+        case 1: return m_data.at(index.row()).getCommand();
         case 2:
             if (index.row() == this->rowCount() - 1) return QString();
             switch (m_data.at(index.row()).state) {
@@ -31,7 +50,8 @@ QVariant GCodeTableModel::data(const QModelIndex &index, int role) const
             return tr("Unknown");
         case 3: return m_data.at(index.row()).response;
         case 4: return m_data.at(index.row()).line;
-        case 5: return QVariant(m_data.at(index.row()).args);
+        //case 5: return QVariant(m_data.at(index.row()).getArgs());
+        case 5: return tr("Unknown");
         }
     }
 
@@ -51,11 +71,12 @@ bool GCodeTableModel::setData(const QModelIndex &index, const QVariant &value, i
         switch (index.column())
         {
         case 0: return false;
-        case 1: m_data[index.row()].command = value.toString(); break;
+        case 1: m_data[index.row()].setCommand(value.toString()); break;
         case 2: m_data[index.row()].state = value.toInt(); break;
         case 3: m_data[index.row()].response = value.toString(); break;
         case 4: m_data[index.row()].line = value.toInt(); break;
-        case 5: m_data[index.row()].args = value.toStringList(); break;
+        case 5: return false;
+        //case 5: m_data[index.row()].args = value.toStringList(); break;
         }
         emit dataChanged(index, index);
         return true;

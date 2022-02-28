@@ -55,15 +55,14 @@ void GcodeParser::reset(const QVector3D &initialPoint)
 */
 PointSegment* GcodeParser::addCommand(const QString& command)
 {
-    QString stripped = GcodePreprocessorUtils::removeComment(command);
-    QStringList args = GcodePreprocessorUtils::splitCommand(stripped);
+    GCodeArgList args = GcodePreprocessorUtils::splitCommand(command);
     return addCommand(args);
 }
 
 /**
 * Add a command which has already been broken up into its arguments.
 */
-PointSegment* GcodeParser::addCommand(const QStringList &args)
+PointSegment* GcodeParser::addCommand(const GCodeArgList &args)
 {
     if (args.isEmpty()) {
         return NULL;
@@ -157,14 +156,13 @@ int GcodeParser::getCommandNumber() const
 }
 
 
-PointSegment *GcodeParser::processCommand(const QStringList &args)
+PointSegment *GcodeParser::processCommand(const GCodeArgList &args)
 {
     double v = qQNaN();
     QVector3D nextPoint(m_currentPoint);
     QVector3D ijkPoint(m_currentPoint);
     bool haveIJK = false;
     double r = 0;
-    //double dwell = qQNaN();
     enum {
         MOVE_NONE,
         MOVE_G0,
@@ -174,14 +172,12 @@ PointSegment *GcodeParser::processCommand(const QStringList &args)
         MOVE_G38_2,
     } mmode = MOVE_NONE;
 
-    foreach (const QString& s, args) {
-        if (s.isEmpty()) continue;
-
-        v = s.mid(1).toDouble();
+    foreach (const GCodeArg& s, args) {
+        v = s.param.toDouble();
         if (qIsNaN(v)) continue;
 
         if (!m_isMetric) {
-            switch (s[0].toUpper().toLatin1()) {
+            switch (s.cmd.toLatin1()) {
             case 'F':
             case 'X':
             case 'Y':
@@ -194,7 +190,7 @@ PointSegment *GcodeParser::processCommand(const QStringList &args)
             }
         }
 
-        switch (s[0].toUpper().toLatin1()) {
+        switch (s.cmd.toLatin1()) {
         case 'F':
             m_lastSpeed = v;
             break;
@@ -204,7 +200,6 @@ PointSegment *GcodeParser::processCommand(const QStringList &args)
             break;
 
         case 'P':
-            //dwell = v;
             break;
 
         case 'X':
