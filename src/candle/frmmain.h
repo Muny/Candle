@@ -12,6 +12,7 @@
 #include <QStringList>
 #include <QList>
 #include <QTime>
+#include <QElapsedTimer>
 #include <QMenu>
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -217,13 +218,13 @@ private slots:
     void placeVisualizerButtons();
 
 protected:
-    void showEvent(QShowEvent *se);
-    void hideEvent(QHideEvent *he);
-    void resizeEvent(QResizeEvent *re);
-    void timerEvent(QTimerEvent *);
-    void closeEvent(QCloseEvent *ce);
-    void dragEnterEvent(QDragEnterEvent *dee);
-    void dropEvent(QDropEvent *de);
+    void showEvent(QShowEvent *se) override;
+    void hideEvent(QHideEvent *he) override;
+    void resizeEvent(QResizeEvent *re) override;
+    void timerEvent(QTimerEvent *) override;
+    void closeEvent(QCloseEvent *ce) override;
+    void dragEnterEvent(QDragEnterEvent *dee) override;
+    void dropEvent(QDropEvent *de) override;
     QMenu *createPopupMenu() override;
 
 private:
@@ -325,7 +326,7 @@ private:
     QTimer m_timerConnection;
     QTimer m_timerStateQuery;
     QBasicTimer m_timerToolAnimation;
-    QTime m_startTime;
+    QElapsedTimer m_startTime;
 
     // Stored parser params
     QString m_storedParserStatus;
@@ -424,7 +425,7 @@ private:
     bool updateHeightMapGrid();
     void updateHeightMapGrid(double arg1);
     void resizeTableHeightMapSections();
-    bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
     // Utility
     int bufferLength();

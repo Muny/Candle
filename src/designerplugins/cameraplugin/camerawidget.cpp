@@ -262,12 +262,12 @@ void CameraWidget::mouseMoveEvent(QMouseEvent *e)
 
 void CameraWidget::wheelEvent(QWheelEvent *e)
 {
-    double f =  e->delta() > 0 ? 1.25 : 0.8;
+    double f =  e->angleDelta().y() > 0 ? 1.25 : 0.8;
 
     double prevZoom = m_zoom;
     m_zoom = qBound<double>(1, m_zoom * f, 8);
 
-    QPointF deltaPos = e->posF() / prevZoom - m_scrollArea->widget()->pos() / prevZoom;
+    QPointF deltaPos = e->position() / prevZoom - m_scrollArea->widget()->pos() / prevZoom;
     QPointF delta = deltaPos * m_zoom - deltaPos * prevZoom;
     QPoint d = delta.toPoint();
 

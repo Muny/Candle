@@ -15,12 +15,20 @@
 #include <QLayout>
 #include <QDrag>
 #include <QMimeData>
+#include <QRegularExpression>
+#include <QCompleter>
 #include <QTranslator>
 #include <QScriptValueIterator>
 #include "frmmain.h"
 #include "ui_frmmain.h"
 #include "ui_frmsettings.h"
 #include "widgets/widgetmimedata.h"
+
+namespace {
+    const QRegularExpression cmdUser("cmdUser\\d");
+    const QRegularExpression cmdJogFeed("cmdJogFeed\\d");
+    const QRegularExpression g_re_act("act.*");
+}
 
 frmMain::frmMain(QWidget *parent) :
     QMainWindow(parent),
@@ -175,7 +183,7 @@ frmMain::frmMain(QWidget *parent) :
 
     connect(ui->cboCommand, SIGNAL(returnPressed()), this, SLOT(onCboCommandReturnPressed()));
 
-    foreach (StyledToolButton* button, this->findChildren<StyledToolButton*>(QRegExp("cmdUser\\d"))) {
+    foreach (StyledToolButton* button, findChildren<StyledToolButton*>(cmdUser)) {
         connect(button, SIGNAL(clicked(bool)), this, SLOT(onCmdUserClicked(bool)));
     }
 
@@ -274,7 +282,7 @@ frmMain::frmMain(QWidget *parent) :
     updateControlsState();
 
     // Prepare jog buttons
-    foreach (StyledToolButton* button, ui->grpJog->findChildren<StyledToolButton*>(QRegExp("cmdJogFeed\\d")))
+    foreach (StyledToolButton* button, ui->grpJog->findChildren<StyledToolButton*>(cmdJogFeed))
     {
         connect(button, SIGNAL(clicked(bool)), this, SLOT(onCmdJogFeedClicked()));
     }
@@ -549,7 +557,7 @@ void frmMain::on_actFileExit_triggered()
 
 void frmMain::on_actServiceSettings_triggered()
 {
-    QList<QAction*> acts = findChildren<QAction*>(QRegExp("act.*"));
+    QList<QAction*> acts = findChildren<QAction*>(g_re_act);
     QTableWidget *table = m_settings->ui->tblShortcuts;
 
     table->clear();
@@ -560,7 +568,7 @@ void frmMain::on_actServiceSettings_triggered()
     table->verticalHeader()->setDefaultAlignment(Qt::AlignCenter);
     table->verticalHeader()->setFixedWidth(table->verticalHeader()->sizeHint().width() + 11);
 
-    qSort(acts.begin(), acts.end(), frmMain::actionLessThan);
+    std::sort(acts.begin(), acts.end(), frmMain::actionLessThan);
     for (int i = 0; i < acts.count(); i++) {
         table->setItem(i, 0, new QTableWidgetItem(acts.at(i)->objectName()));
         table->setItem(i, 1, new QTableWidgetItem(acts.at(i)->text().remove("&")));
@@ -1513,7 +1521,7 @@ void frmMain::on_mnuViewWindows_aboutToShow()
         al.append(a);
     }
 
-    qSort(al.begin(), al.end(), frmMain::actionTextLessThan);
+    std::sort(al.begin(), al.end(), frmMain::actionTextLessThan);
 
     ui->mnuViewWindows->clear();
     ui->mnuViewWindows->addActions(al);
@@ -1646,6 +1654,8 @@ void frmMain::onSerialPortReadyRead()
                             z = ui->txtMPosZ->value();
                         }
                         break;
+                    default:
+                        qDebug() << "unhandled state:" << state;
                     }
                 }
             }
@@ -2873,7 +2883,7 @@ void frmMain::saveSettings()
     ShortcutsMap m;
     QByteArray ba;
     QDataStream s(&ba, QIODevice::WriteOnly);
-    QList<QAction*> acts = findChildren<QAction*>(QRegExp("act.*"));
+    QList<QAction*> acts = findChildren<QAction*>(g_re_act);
 
     foreach (QAction *a, acts) m[a->objectName()] = a->shortcuts();
     s << m;
@@ -2954,7 +2964,14 @@ void frmMain::applySettings() {
     ui->slbSpindle->setMinimum(m_settings->spindleSpeedMin());
     ui->slbSpindle->setMaximum(m_settings->spindleSpeedMax());
 
-    ui->cboCommand->setAutoCompletion(m_settings->autoCompletion());
+    if (m_settings->autoCompletion()) {
+        if (ui->cboCommand->completer() == NULL) {
+            QCompleter *c = new QCompleter(ui->cboCommand->model(), ui->cboCommand->lineEdit());
+            ui->cboCommand->setCompleter(c);
+        }
+    } else {
+        ui->cboCommand->setCompleter(NULL);
+    }
 
     m_codeDrawer->setSimplify(m_settings->simplify());
     m_codeDrawer->setSimplifyPrecision(m_settings->simplifyPrecision());

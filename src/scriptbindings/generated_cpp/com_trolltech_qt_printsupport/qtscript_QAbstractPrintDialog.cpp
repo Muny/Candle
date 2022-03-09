@@ -256,7 +256,7 @@ static void qtscript_QAbstractPrintDialog_PrintDialogOptions_fromScriptValue(con
     else if (var.userType() == qMetaTypeId<QAbstractPrintDialog::PrintDialogOption>())
         out = qvariant_cast<QAbstractPrintDialog::PrintDialogOption>(var);
     else
-        out = 0;
+        out = QAbstractPrintDialog::PrintDialogOptions();
 }
 
 static QScriptValue qtscript_construct_QAbstractPrintDialog_PrintDialogOptions(QScriptContext *context, QScriptEngine *engine)

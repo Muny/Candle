@@ -82,7 +82,7 @@ private:
     QPoint m_pos;
 
     void setCamera(const QCameraInfo &cameraInfo);
-    void resizeEvent(QResizeEvent *e);
+    void resizeEvent(QResizeEvent *e) override;
     void updateSize();
 
     void mousePressEvent(QMouseEvent *e) override;

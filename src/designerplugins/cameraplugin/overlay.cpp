@@ -56,6 +56,8 @@ int Overlay::aimColor() const
 
 void Overlay::paintEvent(QPaintEvent *e)
 {
+    Q_UNUSED(e);
+
     QPainter p(this);
 
     QPen pen;
