@@ -96,15 +96,11 @@ PointSegment::PointSegment(QVector3D *point, int num, QVector3D *center, double 
     this->m_lineNumber = num;
 
     this->m_isArc = true;
-    this->m_arcProperties = new ArcProperties();
-    this->m_arcProperties->center = new QVector3D(center->x(), center->y(), center->z());
-    this->m_arcProperties->radius = radius;
-    this->m_arcProperties->isClockwise = clockwise;
+    this->m_arcProperties = new ArcProperties{clockwise, radius, *center};
 }
 
 PointSegment::~PointSegment()
 {
-    if (this->m_arcProperties != NULL && this->m_arcProperties->center != NULL) delete this->m_arcProperties->center;
     if (this->m_arcProperties != NULL) delete this->m_arcProperties;
     if (this->m_point != NULL) delete this->m_point;
 }
@@ -189,23 +185,23 @@ bool PointSegment::isFastTraverse() {
 void PointSegment::setArcCenter(QVector3D *center) {
     if (this->m_arcProperties == NULL) this->m_arcProperties = new ArcProperties();
 
-    this->m_arcProperties->center = new QVector3D(center->x(), center->y(), center->z());
+    this->m_arcProperties->center = *center;
     this->setIsArc(true);
 }
 
 QVector<double> PointSegment::centerPoints()
 {
     QVector<double> points;
-    if (this->m_arcProperties != NULL && this->m_arcProperties->center != NULL) {
-        points.append(m_arcProperties->center->x());
-        points.append(m_arcProperties->center->y());
-        points.append(m_arcProperties->center->z());
+    if (this->m_arcProperties != NULL) {
+        points.append(m_arcProperties->center.x());
+        points.append(m_arcProperties->center.y());
+        points.append(m_arcProperties->center.z());
     }
     return points;
 }
 
 QVector3D *PointSegment::center() {
-    if (this->m_arcProperties != NULL && this->m_arcProperties->center != NULL) return this->m_arcProperties->center;
+    if (this->m_arcProperties != NULL) return &this->m_arcProperties->center;
     return NULL;
 }
 
@@ -215,7 +211,7 @@ void PointSegment::setIsClockwise(bool clockwise) {
 }
 
 bool PointSegment::isClockwise() {
-    if (this->m_arcProperties != NULL && this->m_arcProperties->center != NULL) return this->m_arcProperties->isClockwise;
+    if (this->m_arcProperties != NULL) return this->m_arcProperties->isClockwise;
     return false;
 }
 
@@ -225,7 +221,7 @@ void PointSegment::setRadius(double rad) {
 }
 
 double PointSegment::getRadius() {
-    if (this->m_arcProperties != NULL && this->m_arcProperties->center != NULL) return this->m_arcProperties->radius;
+    if (this->m_arcProperties != NULL) return this->m_arcProperties->radius;
     return 0;
 }
 
@@ -240,9 +236,7 @@ void PointSegment::convertToMetric() {
     this->m_point->setZ(this->m_point->z() * 25.4);
 
     if (this->m_isArc && this->m_arcProperties != NULL) {
-        this->m_arcProperties->center->setX(this->m_arcProperties->center->x() * 25.4);
-        this->m_arcProperties->center->setY(this->m_arcProperties->center->y() * 25.4);
-        this->m_arcProperties->center->setZ(this->m_arcProperties->center->z() * 25.4);
+        this->m_arcProperties->center *= 25.4;
         this->m_arcProperties->radius *= 25.4;
     }
 }
