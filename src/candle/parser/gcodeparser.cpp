@@ -53,7 +53,7 @@ void GcodeParser::reset(const QVector3D &initialPoint)
 /**
 * Add a command to be processed.
 */
-PointSegment* GcodeParser::addCommand(QString command)
+PointSegment* GcodeParser::addCommand(const QString &command)
 {
     QString stripped = GcodePreprocessorUtils::removeComment(command);
     QStringList args = GcodePreprocessorUtils::splitCommand(stripped);
@@ -295,11 +295,11 @@ PointSegment * GcodeParser::handleGCode(float code, const QStringList &args)
     return ps;
 }
 
-QStringList GcodeParser::preprocessCommands(QStringList commands) {
+QStringList GcodeParser::preprocessCommands(const QStringList &commands) {
 
     QStringList result;
 
-    foreach (QString command, commands) {
+    foreach (const QString &command, commands) {
         result.append(preprocessCommand(command));
     }
 
@@ -353,7 +353,7 @@ QStringList GcodeParser::preprocessCommand(QString command) {
     return result;
 }
 
-QStringList GcodeParser::convertArcsToLines(QString command) {
+QStringList GcodeParser::convertArcsToLines(const QString &command) {
 
     QStringList result;
 

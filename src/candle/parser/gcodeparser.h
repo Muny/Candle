@@ -40,14 +40,14 @@ public:
     void setTruncateDecimalLength(int truncateDecimalLength) { m_truncateDecimalLength = truncateDecimalLength; }
 
     void reset(const QVector3D &initialPoint = QVector3D(qQNaN(), qQNaN(), qQNaN()));
-    PointSegment *addCommand(QString command);
+    PointSegment *addCommand(const QString& command);
     PointSegment *addCommand(const QStringList &args);
     const QVector3D& getCurrentPoint() const { return m_currentPoint; }
     QList<PointSegment *> expandArc();
-    QStringList preprocessCommands(QStringList commands);
+    QStringList preprocessCommands(const QStringList& commands);
     QStringList preprocessCommand(QString command);
-    QStringList convertArcsToLines(QString command);
-    QList<PointSegment *> getPointSegmentList() const { return m_points; }
+    QStringList convertArcsToLines(const QString& command);
+    const QList<PointSegment *> &getPointSegmentList() const { return m_points; }
     double getTraverseSpeed() const;
     void setTraverseSpeed(double traverseSpeed);
     int getCommandNumber() const;
