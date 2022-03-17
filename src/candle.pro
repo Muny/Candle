@@ -29,7 +29,7 @@ contains(QT_CONFIG, opengles.) {
 
 TARGET = Candle
 TEMPLATE = app
-VERSION = 1.1.8
+VERSION = 1.1.9
 RC_ICONS += images/candle.ico
 ICON = images/candle.icns
 
@@ -49,12 +49,10 @@ SOURCES += main.cpp\
     drawers/origindrawer.cpp \
     drawers/shaderdrawable.cpp \
     drawers/tooldrawer.cpp \
-    parser/arcproperties.cpp \
     parser/gcodeparser.cpp \
     parser/gcodepreprocessorutils.cpp \
     parser/gcodeviewparse.cpp \
     parser/linesegment.cpp \
-    parser/pointsegment.cpp \
     tables/gcodetablemodel.cpp \
     tables/heightmaptablemodel.cpp \
     widgets/colorpicker.cpp \
