@@ -91,7 +91,7 @@ void GLWidget::fitDrawable(ShaderDrawable *drawable)
         double a = m_ySize / 2 / 0.25 * 1.3
                 + (m_zMax - m_zMin) / 2;
         double b = m_xSize / 2 / 0.25 * 1.3
-                / ((double)this->width() / this->height())
+                / ((double)width() / height())
                 + (m_zMax - m_zMin) / 2;
         m_distance = qMax(a, b);
 
@@ -486,7 +486,7 @@ void GLWidget::paintEvent(QPaintEvent *pe) {
     painter.setPen(pen);
 
     double x = 10;
-    double y = this->height() - 60;
+    double y = height() - 60;
 
     painter.drawText(QPoint(x, y), QString("X: %1 ... %2").arg(m_xMin, 0, 'f', 3).arg(m_xMax, 0, 'f', 3));
     painter.drawText(QPoint(x, y + 15), QString("Y: %1 ... %2").arg(m_yMin, 0, 'f', 3).arg(m_yMax, 0, 'f', 3));
@@ -500,15 +500,15 @@ void GLWidget::paintEvent(QPaintEvent *pe) {
     painter.drawText(QPoint(x, fm.height() * 3 + 10), m_pinState);
 
     QString str = QString(tr("Vertices: %1")).arg(vertices);
-    painter.drawText(QPoint(this->width() - fm.horizontalAdvance(str) - 10, y + 30), str);
+    painter.drawText(QPoint(width() - fm.horizontalAdvance(str) - 10, y + 30), str);
     str = QString("FPS: %1").arg(m_fps);
-    painter.drawText(QPoint(this->width() - fm.horizontalAdvance(str) - 10, y + 45), str);
+    painter.drawText(QPoint(width() - fm.horizontalAdvance(str) - 10, y + 45), str);
 
     str = m_spendTime.toString("hh:mm:ss") + " / " + m_estimatedTime.toString("hh:mm:ss");
-    painter.drawText(QPoint(this->width() - fm.horizontalAdvance(str) - 10, y), str);
+    painter.drawText(QPoint(width() - fm.horizontalAdvance(str) - 10, y), str);
 
     str = m_bufferState;
-    painter.drawText(QPoint(this->width() - fm.horizontalAdvance(str) - 10, y + 15), str);
+    painter.drawText(QPoint(width() - fm.horizontalAdvance(str) - 10, y + 15), str);
 
     m_frames++;
 

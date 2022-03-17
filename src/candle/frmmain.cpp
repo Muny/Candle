@@ -357,7 +357,7 @@ void frmMain::showEvent(QShowEvent *se)
     if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) {
         if (m_taskBarButton == NULL) {
             m_taskBarButton = new QWinTaskbarButton(this);
-            m_taskBarButton->setWindow(this->windowHandle());
+            m_taskBarButton->setWindow(windowHandle());
             m_taskBarProgress = m_taskBarButton->progress();
         }
     }
@@ -399,7 +399,7 @@ void frmMain::closeEvent(QCloseEvent *ce)
     }
 
     if ((m_senderState != SenderStopped) &&
-        QMessageBox::warning(this, this->windowTitle(), tr("File sending in progress. Terminate and exit?"),
+        QMessageBox::warning(this, windowTitle(), tr("File sending in progress. Terminate and exit?"),
         QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)
     {
         ce->ignore();
@@ -2239,7 +2239,7 @@ void frmMain::onTableDeleteLines()
 {
     if (ui->tblProgram->selectionModel()->selectedRows().count() == 0 ||
         (m_senderState == SenderTransferring) || (m_senderState == SenderStopping) ||
-        QMessageBox::warning(this, this->windowTitle(), tr("Delete lines?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
+        QMessageBox::warning(this, windowTitle(), tr("Delete lines?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
 
     QModelIndex firstRow = ui->tblProgram->selectionModel()->selectedRows()[0];
     int rowsCount = ui->tblProgram->selectionModel()->selectedRows().count();
@@ -2622,7 +2622,7 @@ void frmMain::loadSettings()
     m_recentHeightmaps = set.value("recentHeightmaps", QStringList()).toStringList();
     m_lastFolder = set.value("lastFolder", QDir::homePath()).toString();
 
-    this->restoreGeometry(set.value("formGeometry", QByteArray()).toByteArray());
+    restoreGeometry(set.value("formGeometry", QByteArray()).toByteArray());
 
     ui->cboCommand->setMinimumHeight(ui->cboCommand->height());
     ui->cmdClearConsole->setFixedHeight(ui->cboCommand->height());
@@ -2815,7 +2815,7 @@ void frmMain::saveSettings()
     set.setValue("autoScroll", ui->chkAutoScroll->isChecked());
     set.setValue("header", ui->tblProgram->horizontalHeader()->saveState());
     set.setValue("settingsSplitMain", m_settings->ui->splitMain->saveState());
-    set.setValue("formGeometry", this->saveGeometry());
+    set.setValue("formGeometry", saveGeometry());
     set.setValue("formSettingsGeometry", m_settings->saveGeometry());
 
     set.setValue("autoCompletion", m_settings->autoCompletion());
@@ -3158,7 +3158,7 @@ void frmMain::loadPlugins()
                     layout2->setMargin(0);
 
                     // Add to main form
-                    this->addDockWidget(Qt::RightDockWidgetArea, dock);
+                    addDockWidget(Qt::RightDockWidgetArea, dock);
                 }
             }
 
@@ -3458,7 +3458,7 @@ void frmMain::loadFile(QString fileName)
     QFile file(fileName);
 
     if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::critical(this, this->windowTitle(), tr("Can't open file:\n") + fileName);
+        QMessageBox::critical(this, windowTitle(), tr("Can't open file:\n") + fileName);
         return;
     }
 
@@ -3585,7 +3585,7 @@ void frmMain::loadFile(QList<QString> data)
 bool frmMain::saveChanges(bool heightMapMode)
 {
     if ((!heightMapMode && m_fileChanged)) {
-        int res = QMessageBox::warning(this, this->windowTitle(), tr("G-code program file was changed. Save?"),
+        int res = QMessageBox::warning(this, windowTitle(), tr("G-code program file was changed. Save?"),
                                        QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         if (res == QMessageBox::Cancel) return false;
         else if (res == QMessageBox::Yes) on_actFileSave_triggered();
@@ -3593,7 +3593,7 @@ bool frmMain::saveChanges(bool heightMapMode)
     }
 
     if (m_heightMapChanged) {
-        int res = QMessageBox::warning(this, this->windowTitle(), tr("Heightmap file was changed. Save?"),
+        int res = QMessageBox::warning(this, windowTitle(), tr("Heightmap file was changed. Save?"),
                                        QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         if (res == QMessageBox::Cancel) return false;
         else if (res == QMessageBox::Yes) {
@@ -3633,7 +3633,7 @@ void frmMain::loadHeightMap(QString fileName)
     QFile file(fileName);
 
     if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::critical(this, this->windowTitle(), tr("Can't open file:\n") + fileName);
+        QMessageBox::critical(this, windowTitle(), tr("Can't open file:\n") + fileName);
         return;
     }
     QTextStream textStream(&file);
@@ -3875,7 +3875,7 @@ void frmMain::updateControlsState() {
         emit deviceStateChanged(-1);
     }
 
-    this->setWindowTitle(m_programFileName.isEmpty() ? qApp->applicationDisplayName()
+    setWindowTitle(m_programFileName.isEmpty() ? qApp->applicationDisplayName()
                                                      : m_programFileName.mid(m_programFileName.lastIndexOf("/") + 1) + " - " + qApp->applicationDisplayName());
 
     if (!process) ui->chkKeyboardControl->setChecked(m_storedKeyboardControl);
@@ -3937,7 +3937,7 @@ void frmMain::updateControlsState() {
 
 void frmMain::updateLayouts()
 {
-    this->update();
+    update();
     qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
@@ -4041,7 +4041,7 @@ bool frmMain::updateHeightMapGrid()
                 nan = false;
                 break;
             }
-    if (!nan && QMessageBox::warning(this, this->windowTitle(), tr("Changing grid settings will reset probe data. Continue?"),
+    if (!nan && QMessageBox::warning(this, windowTitle(), tr("Changing grid settings will reset probe data. Continue?"),
                                                            QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return false;
 
     // Update grid drawer

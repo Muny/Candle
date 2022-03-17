@@ -27,7 +27,7 @@ frmAbout::~frmAbout()
 
 void frmAbout::on_cmdOk_clicked()
 {
-    this->hide();
+    hide();
 }
 
 void frmAbout::on_lblAbout_linkActivated(const QString &link)

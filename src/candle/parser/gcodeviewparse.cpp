@@ -39,7 +39,7 @@ QVector3D &GcodeViewParse::getMaximumExtremes()
 
 void GcodeViewParse::testExtremes(QVector3D p3d)
 {
-    this->testExtremes(p3d.x(), p3d.y(), p3d.z());
+    testExtremes(p3d.x(), p3d.y(), p3d.z());
 }
 
 void GcodeViewParse::testExtremes(double x, double y, double z)
@@ -126,7 +126,7 @@ QList<LineSegment*> GcodeViewParse::getLinesFromParser(GcodeParser *gp, double a
                     foreach (QVector3D nextPoint, points) {
                         if (nextPoint == startPoint) continue;
                         ls = new LineSegment(startPoint, nextPoint, lineIndex, *ps);
-                        this->testExtremes(nextPoint);
+                        testExtremes(nextPoint);
                         m_lines.append(ls);
                         m_lineIndexes[ps->getLineNumber()].append(m_lines.count() - 1);
                         startPoint = nextPoint;
@@ -136,8 +136,8 @@ QList<LineSegment*> GcodeViewParse::getLinesFromParser(GcodeParser *gp, double a
             // Line
             } else {
                 ls = new LineSegment(*start, *end, lineIndex++, *ps);
-                this->testExtremes(*end);
-                this->testLength(*start, *end);
+                testExtremes(*end);
+                testLength(*start, *end);
                 m_lines.append(ls);
                 m_lineIndexes[ps->getLineNumber()].append(m_lines.count() - 1);
             }

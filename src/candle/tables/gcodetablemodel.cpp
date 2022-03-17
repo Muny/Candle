@@ -18,10 +18,10 @@ QVariant GCodeTableModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         switch (index.column())
         {
-        case 0: return index.row() == this->rowCount() - 1 ? QString() : QString::number(index.row() + 1);
+        case 0: return index.row() == rowCount() - 1 ? QString() : QString::number(index.row() + 1);
         case 1: return m_data.at(index.row()).command;
         case 2:
-            if (index.row() == this->rowCount() - 1) return QString();
+            if (index.row() == rowCount() - 1) return QString();
             switch (m_data.at(index.row()).state) {
             case GCodeItem::InQueue: return tr("In queue");
             case GCodeItem::Sent: return tr("Sent");

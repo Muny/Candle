@@ -68,12 +68,12 @@ QStringList ComboBoxKey::items()
 
 void ComboBoxKey::keyPressEvent(QKeyEvent *e)
 {
-    if (this->isEditable() || !isBlockedKey(e->key())) QComboBox::keyPressEvent(e);
+    if (isEditable() || !isBlockedKey(e->key())) QComboBox::keyPressEvent(e);
 }
 
 void ComboBoxKey::keyReleaseEvent(QKeyEvent *e)
 {
-    if (this->isEditable() || !isBlockedKey(e->key())) QComboBox::keyReleaseEvent(e);
+    if (isEditable() || !isBlockedKey(e->key())) QComboBox::keyReleaseEvent(e);
 }
 
 bool ComboBoxKey::isBlockedKey(int key)

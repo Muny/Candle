@@ -34,7 +34,7 @@ GcodeParser::GcodeParser(QObject *parent) : QObject(parent)
 
 GcodeParser::~GcodeParser()
 {
-    foreach (PointSegment *ps, this->m_points) delete ps;
+    foreach (PointSegment *ps, m_points) delete ps;
 }
 
 bool GcodeParser::getConvertArcsToLines() {
@@ -42,7 +42,7 @@ bool GcodeParser::getConvertArcsToLines() {
 }
 
 void GcodeParser::setConvertArcsToLines(bool convertArcsToLines) {
-    this->m_convertArcsToLines = convertArcsToLines;
+    m_convertArcsToLines = convertArcsToLines;
 }
 
 bool GcodeParser::getRemoveAllWhitespace() {
@@ -50,7 +50,7 @@ bool GcodeParser::getRemoveAllWhitespace() {
 }
 
 void GcodeParser::setRemoveAllWhitespace(bool removeAllWhitespace) {
-    this->m_removeAllWhitespace = removeAllWhitespace;
+    m_removeAllWhitespace = removeAllWhitespace;
 }
 
 double GcodeParser::getSmallArcSegmentLength() {
@@ -58,7 +58,7 @@ double GcodeParser::getSmallArcSegmentLength() {
 }
 
 void GcodeParser::setSmallArcSegmentLength(double smallArcSegmentLength) {
-    this->m_smallArcSegmentLength = smallArcSegmentLength;
+    m_smallArcSegmentLength = smallArcSegmentLength;
 }
 
 double GcodeParser::getSmallArcThreshold() {
@@ -66,7 +66,7 @@ double GcodeParser::getSmallArcThreshold() {
 }
 
 void GcodeParser::setSmallArcThreshold(double smallArcThreshold) {
-    this->m_smallArcThreshold = smallArcThreshold;
+    m_smallArcThreshold = smallArcThreshold;
 }
 
 double GcodeParser::getSpeedOverride() {
@@ -74,7 +74,7 @@ double GcodeParser::getSpeedOverride() {
 }
 
 void GcodeParser::setSpeedOverride(double speedOverride) {
-    this->m_speedOverride = speedOverride;
+    m_speedOverride = speedOverride;
 }
 
 int GcodeParser::getTruncateDecimalLength() {
@@ -82,7 +82,7 @@ int GcodeParser::getTruncateDecimalLength() {
 }
 
 void GcodeParser::setTruncateDecimalLength(int truncateDecimalLength) {
-    this->m_truncateDecimalLength = truncateDecimalLength;
+    m_truncateDecimalLength = truncateDecimalLength;
 }
 
 // Resets the current state.
@@ -90,12 +90,12 @@ void GcodeParser::reset(const QVector3D &initialPoint)
 {
     qDebug() << "reseting gp" << initialPoint;
 
-    foreach (PointSegment *ps, this->m_points) delete ps;
-    this->m_points.clear();
+    foreach (PointSegment *ps, m_points) delete ps;
+    m_points.clear();
     // The unspoken home location.
     m_currentPoint = initialPoint;
     m_currentPlane = PointSegment::XY;
-    this->m_points.append(new PointSegment(this->m_currentPoint, -1));
+    m_points.append(new PointSegment(m_currentPoint, -1));
 }
 
 /**
@@ -105,7 +105,7 @@ PointSegment* GcodeParser::addCommand(QString command)
 {
     QString stripped = GcodePreprocessorUtils::removeComment(command);
     QStringList args = GcodePreprocessorUtils::splitCommand(stripped);
-    return this->addCommand(args);
+    return addCommand(args);
 }
 
 /**
@@ -124,7 +124,7 @@ PointSegment* GcodeParser::addCommand(const QStringList &args)
 * expanding an arc or canned cycle into line segments.
 */
 void GcodeParser::setLastGcodeCommand(float num) {
-    this->m_lastGcodeCommand = num;
+    m_lastGcodeCommand = num;
 }
 
 /**
@@ -140,8 +140,8 @@ QVector3D *GcodeParser::getCurrentPoint() {
 */
 QList<PointSegment*> GcodeParser::expandArc()
 {
-    PointSegment *startSegment = this->m_points[this->m_points.size() - 2];
-    PointSegment *lastSegment = this->m_points[this->m_points.size() - 1];
+    PointSegment *startSegment = m_points[m_points.size() - 2];
+    PointSegment *lastSegment = m_points[m_points.size() - 1];
 
     QList<PointSegment*> empty;
 
@@ -170,7 +170,7 @@ QList<PointSegment*> GcodeParser::expandArc()
     }
 
     // Remove the last point now that we're about to expand it.
-    this->m_points.removeLast();
+    m_points.removeLast();
     m_commandNumber--;
 
     // Initialize return value
@@ -186,7 +186,7 @@ QList<PointSegment*> GcodeParser::expandArc()
     while (psi.hasNext()) {
         temp = new PointSegment(psi.next(), m_commandNumber++);
         temp->setIsMetric(lastSegment->isMetric());
-        this->m_points.append(temp);
+        m_points.append(temp);
         psl.append(temp);
     }
 
@@ -197,7 +197,7 @@ QList<PointSegment*> GcodeParser::expandArc()
 }
 
 QList<PointSegment*> GcodeParser::getPointSegmentList() {
-    return this->m_points;
+    return m_points;
 }
 double GcodeParser::getTraverseSpeed() const
 {
@@ -222,11 +222,11 @@ PointSegment *GcodeParser::processCommand(const QStringList &args)
 
     // Handle F code
     double speed = GcodePreprocessorUtils::parseCoord(args, 'F');
-    if (!qIsNaN(speed)) this->m_lastSpeed = this->m_isMetric ? speed : speed * 25.4;
+    if (!qIsNaN(speed)) m_lastSpeed = m_isMetric ? speed : speed * 25.4;
 
     // Handle S code
     double spindleSpeed = GcodePreprocessorUtils::parseCoord(args, 'S');
-    if (!qIsNaN(spindleSpeed)) this->m_lastSpindleSpeed = spindleSpeed;
+    if (!qIsNaN(spindleSpeed)) m_lastSpindleSpeed = spindleSpeed;
 
     // handle G codes.
     gCodes = GcodePreprocessorUtils::parseCodes(args, 'G');
@@ -250,29 +250,29 @@ PointSegment *GcodeParser::addLinearPointSegment(const QVector3D &nextPoint, boo
     bool zOnly = false;
 
     // Check for z-only
-    if ((this->m_currentPoint.x() == nextPoint.x()) &&
-            (this->m_currentPoint.y() == nextPoint.y()) &&
-            (this->m_currentPoint.z() != nextPoint.z())) {
+    if ((m_currentPoint.x() == nextPoint.x()) &&
+            (m_currentPoint.y() == nextPoint.y()) &&
+            (m_currentPoint.z() != nextPoint.z())) {
         zOnly = true;
     }
 
-    ps->setIsMetric(this->m_isMetric);
+    ps->setIsMetric(m_isMetric);
     ps->setIsZMovement(zOnly);
     ps->setIsFastTraverse(fastTraverse);
-    ps->setIsAbsolute(this->m_inAbsoluteMode);
-    ps->setSpeed(fastTraverse ? this->m_traverseSpeed : this->m_lastSpeed);
-    ps->setSpindleSpeed(this->m_lastSpindleSpeed);
-    this->m_points.append(ps);
+    ps->setIsAbsolute(m_inAbsoluteMode);
+    ps->setSpeed(fastTraverse ? m_traverseSpeed : m_lastSpeed);
+    ps->setSpindleSpeed(m_lastSpindleSpeed);
+    m_points.append(ps);
 
     // Save off the endpoint.
-    this->m_currentPoint = nextPoint;
+    m_currentPoint = nextPoint;
 
     return ps;
 }
 
 PointSegment *GcodeParser::addArcPointSegment(const QVector3D &nextPoint, bool clockwise, const QStringList &args)
 {
-    QVector3D center = GcodePreprocessorUtils::updateCenterWithCommand(args, this->m_currentPoint, nextPoint, this->m_inAbsoluteIJKMode, clockwise);
+    QVector3D center = GcodePreprocessorUtils::updateCenterWithCommand(args, m_currentPoint, nextPoint, m_inAbsoluteIJKMode, clockwise);
     double radius = GcodePreprocessorUtils::parseCoord(args, 'R');
 
     // Calculate radius if necessary.
@@ -291,21 +291,21 @@ PointSegment *GcodeParser::addArcPointSegment(const QVector3D &nextPoint, bool c
             break;
         }
 
-        radius = sqrt(pow((double)((m * this->m_currentPoint).x() - (m * center).x()), 2.0)
-                        + pow((double)((m * this->m_currentPoint).y() - (m * center).y()), 2.0));
+        radius = sqrt(pow((double)((m * m_currentPoint).x() - (m * center).x()), 2.0)
+                        + pow((double)((m * m_currentPoint).y() - (m * center).y()), 2.0));
     }
 
     PointSegment *ps = new PointSegment(nextPoint, m_commandNumber++, center, radius, clockwise);
 
-    ps->setIsMetric(this->m_isMetric);
-    ps->setIsAbsolute(this->m_inAbsoluteMode);
-    ps->setSpeed(this->m_lastSpeed);
-    ps->setSpindleSpeed(this->m_lastSpindleSpeed);
+    ps->setIsMetric(m_isMetric);
+    ps->setIsAbsolute(m_inAbsoluteMode);
+    ps->setSpeed(m_lastSpeed);
+    ps->setSpindleSpeed(m_lastSpindleSpeed);
     ps->setPlane(m_currentPlane);
-    this->m_points.append(ps);
+    m_points.append(ps);
 
     // Save off the endpoint.
-    this->m_currentPoint = nextPoint;
+    m_currentPoint = nextPoint;
     return ps;
 }
 
@@ -314,7 +314,7 @@ void GcodeParser::handleMCode(float code, const QStringList &args)
     Q_UNUSED(code);
 
     double spindleSpeed = GcodePreprocessorUtils::parseCoord(args, 'S');
-    if (!qIsNaN(spindleSpeed)) this->m_lastSpindleSpeed = spindleSpeed;
+    if (!qIsNaN(spindleSpeed)) m_lastSpindleSpeed = spindleSpeed;
 }
 
 PointSegment * GcodeParser::handleGCode(float code, const QStringList &args)
@@ -338,17 +338,17 @@ PointSegment * GcodeParser::handleGCode(float code, const QStringList &args)
     else if (code == 38.2f) ps = addLinearPointSegment(nextPoint, false);
     else if (code == 2.0f) ps = addArcPointSegment(nextPoint, true, args);
     else if (code == 3.0f) ps = addArcPointSegment(nextPoint, false, args);
-    else if (code == 17.0f) this->m_currentPlane = PointSegment::XY;
-    else if (code == 18.0f) this->m_currentPlane = PointSegment::ZX;
-    else if (code == 19.0f) this->m_currentPlane = PointSegment::YZ;
-    else if (code == 20.0f) this->m_isMetric = false;
-    else if (code == 21.0f) this->m_isMetric = true;
-    else if (code == 90.0f) this->m_inAbsoluteMode = true;
-    else if (code == 90.1f) this->m_inAbsoluteIJKMode = true;
-    else if (code == 91.0f) this->m_inAbsoluteMode = false;
-    else if (code == 91.1f) this->m_inAbsoluteIJKMode = false;
+    else if (code == 17.0f) m_currentPlane = PointSegment::XY;
+    else if (code == 18.0f) m_currentPlane = PointSegment::ZX;
+    else if (code == 19.0f) m_currentPlane = PointSegment::YZ;
+    else if (code == 20.0f) m_isMetric = false;
+    else if (code == 21.0f) m_isMetric = true;
+    else if (code == 90.0f) m_inAbsoluteMode = true;
+    else if (code == 90.1f) m_inAbsoluteIJKMode = true;
+    else if (code == 91.0f) m_inAbsoluteMode = false;
+    else if (code == 91.1f) m_inAbsoluteIJKMode = false;
 
-    if (code == 0.0f || code == 1.0f || code == 2.0f || code == 3.0f || code == 38.2f) this->m_lastGcodeCommand = code;
+    if (code == 0.0f || code == 1.0f || code == 2.0f || code == 3.0f || code == 38.2f) m_lastGcodeCommand = code;
 
     return ps;
 }
@@ -415,7 +415,7 @@ QStringList GcodeParser::convertArcsToLines(QString command) {
 
     QStringList result;
 
-    QVector3D start = this->m_currentPoint;
+    QVector3D start = m_currentPoint;
 
     PointSegment *ps = addCommand(command);
 
@@ -434,7 +434,7 @@ QStringList GcodeParser::convertArcsToLines(QString command) {
     foreach (PointSegment* segment, psl) {
         //Point3d end = segment.point();
         const QVector3D &end = segment->point();
-        result.append(GcodePreprocessorUtils::generateG1FromPoints(start, end, this->m_inAbsoluteMode, m_truncateDecimalLength));
+        result.append(GcodePreprocessorUtils::generateG1FromPoints(start, end, m_inAbsoluteMode, m_truncateDecimalLength));
         start = segment->point();
     }
 

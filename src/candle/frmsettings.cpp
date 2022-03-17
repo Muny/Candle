@@ -71,13 +71,13 @@ frmSettings::frmSettings(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setLocale(QLocale::C);
+    setLocale(QLocale::C);
     m_intValidator.setBottom(1);
     m_intValidator.setTop(999);
     ui->cboFps->setValidator(&m_intValidator);
     ui->cboFontSize->setValidator(&m_intValidator);
 
-    foreach (QGroupBox *box, this->findChildren<QGroupBox*>()) {
+    foreach (QGroupBox *box, findChildren<QGroupBox*>()) {
         ui->listCategories->addItem(box->title());
         ui->listCategories->item(ui->listCategories->count() - 1)->setData(Qt::UserRole, box->objectName());
     }
@@ -121,22 +121,22 @@ int frmSettings::exec()
     m_storedTextBoxes.clear();
     m_storedPlainTexts.clear();
 
-    foreach (QAbstractSpinBox* o, this->findChildren<QAbstractSpinBox*>())
+    foreach (QAbstractSpinBox* o, findChildren<QAbstractSpinBox*>())
         m_storedValues.append(o->property("value").toDouble());
 
-    foreach (QAbstractButton* o, this->findChildren<QAbstractButton*>())
+    foreach (QAbstractButton* o, findChildren<QAbstractButton*>())
         m_storedChecks.append(o->isChecked());
 
-    foreach (QComboBox* o, this->findChildren<QComboBox*>())
+    foreach (QComboBox* o, findChildren<QComboBox*>())
         m_storedCombos.append(o->currentText());
 
-    foreach (ColorPicker* o, this->findChildren<ColorPicker*>())
+    foreach (ColorPicker* o, findChildren<ColorPicker*>())
         m_storedColors.append(o->color());
 
-    foreach (QLineEdit* o, this->findChildren<QLineEdit*>())
+    foreach (QLineEdit* o, findChildren<QLineEdit*>())
         m_storedTextBoxes.append(o->text());
 
-    foreach (QPlainTextEdit* o, this->findChildren<QPlainTextEdit*>())
+    foreach (QPlainTextEdit* o, findChildren<QPlainTextEdit*>())
         m_storedPlainTexts.append(o->toPlainText());
 
     return QDialog::exec();
@@ -144,22 +144,22 @@ int frmSettings::exec()
 
 void frmSettings::undo()
 {
-    foreach (QAbstractSpinBox* o, this->findChildren<QAbstractSpinBox*>())
+    foreach (QAbstractSpinBox* o, findChildren<QAbstractSpinBox*>())
         o->setProperty("value", m_storedValues.takeFirst());
 
-    foreach (QAbstractButton* o, this->findChildren<QAbstractButton*>())
+    foreach (QAbstractButton* o, findChildren<QAbstractButton*>())
         o->setChecked(m_storedChecks.takeFirst());
 
-    foreach (QComboBox* o, this->findChildren<QComboBox*>())
+    foreach (QComboBox* o, findChildren<QComboBox*>())
         o->setCurrentText(m_storedCombos.takeFirst());
 
-    foreach (ColorPicker* o, this->findChildren<ColorPicker*>())
+    foreach (ColorPicker* o, findChildren<ColorPicker*>())
         o->setColor(m_storedColors.takeFirst());
 
-    foreach (QLineEdit* o, this->findChildren<QLineEdit*>())
+    foreach (QLineEdit* o, findChildren<QLineEdit*>())
         o->setText(m_storedTextBoxes.takeFirst());
 
-    foreach (QPlainTextEdit* o, this->findChildren<QPlainTextEdit*>())
+    foreach (QPlainTextEdit* o, findChildren<QPlainTextEdit*>())
         o->setPlainText(m_storedPlainTexts.takeFirst());
 }
 
@@ -176,7 +176,7 @@ void frmSettings::addCustomSettings(QGroupBox *box)
 void frmSettings::on_listCategories_currentRowChanged(int currentRow)
 {
     // Scroll to selected groupbox
-    QGroupBox *box = this->findChild<QGroupBox*>(ui->listCategories->item(currentRow)->data(Qt::UserRole).toString());
+    QGroupBox *box = findChild<QGroupBox*>(ui->listCategories->item(currentRow)->data(Qt::UserRole).toString());
     if (box) {
         ui->scrollSettings->ensureWidgetVisible(box);
     }
@@ -188,7 +188,7 @@ void frmSettings::onScrollBarValueChanged(int value)
 
     // Search for first full visible groupbox
     for (int i = 0; i < ui->listCategories->count(); i++) {
-        QGroupBox *box = this->findChild<QGroupBox*>(ui->listCategories->item(i)->data(Qt::UserRole).toString());
+        QGroupBox *box = findChild<QGroupBox*>(ui->listCategories->item(i)->data(Qt::UserRole).toString());
         if (box) {
             if (!box->visibleRegion().isEmpty() && box->visibleRegion().boundingRect().y() == 0) {
                 // Select corresponding item in categories list
@@ -491,7 +491,7 @@ QList<ColorPicker *> frmSettings::colors()
 
 QColor frmSettings::colors(QString name)
 {
-    ColorPicker *pick = this->findChildren<ColorPicker*>("clp" + name).at(0);
+    ColorPicker *pick = findChildren<ColorPicker*>("clp" + name).at(0);
     if (pick) return pick->color(); else return QColor();
 }
 
@@ -729,12 +729,12 @@ void frmSettings::on_cmdRefresh_clicked()
 
 void frmSettings::on_cmdOK_clicked()
 {
-    this->accept();
+    accept();
 }
 
 void frmSettings::on_cmdCancel_clicked()
 {
-    this->reject();
+    reject();
 }
 
 void frmSettings::on_cboToolType_currentIndexChanged(int index)
