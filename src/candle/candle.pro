@@ -51,7 +51,6 @@ SOURCES += main.cpp\
     parser/gcodepreprocessorutils.cpp \
     parser/gcodeviewparse.cpp \
     parser/linesegment.cpp \
-    parser/pointsegment.cpp \
     tables/gcodetablemodel.cpp \
     tables/heightmaptablemodel.cpp \
     widgets/combobox.cpp \
