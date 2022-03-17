@@ -21,27 +21,33 @@ public:
     explicit GcodeParser(QObject *parent = 0);
     ~GcodeParser();
 
-    bool getConvertArcsToLines();
-    void setConvertArcsToLines(bool convertArcsToLines);
-    bool getRemoveAllWhitespace();
-    void setRemoveAllWhitespace(bool removeAllWhitespace);
-    double getSmallArcSegmentLength();
-    void setSmallArcSegmentLength(double smallArcSegmentLength);
-    double getSmallArcThreshold();
-    void setSmallArcThreshold(double smallArcThreshold);
-    double getSpeedOverride();
-    void setSpeedOverride(double speedOverride);
-    int getTruncateDecimalLength();
-    void setTruncateDecimalLength(int truncateDecimalLength);
+    bool getConvertArcsToLines() const { return m_convertArcsToLines; }
+    void setConvertArcsToLines(bool convertArcsToLines) { m_convertArcsToLines = convertArcsToLines; }
+
+    bool getRemoveAllWhitespace() const { return m_removeAllWhitespace; }
+    void setRemoveAllWhitespace(bool removeAllWhitespace) { m_removeAllWhitespace = removeAllWhitespace; }
+
+    double getSmallArcSegmentLength() const { return m_smallArcSegmentLength; }
+    void setSmallArcSegmentLength(double smallArcSegmentLength) { m_smallArcSegmentLength = smallArcSegmentLength; }
+
+    double getSmallArcThreshold() const { return m_smallArcThreshold; }
+    void setSmallArcThreshold(double smallArcThreshold) { m_smallArcThreshold = smallArcThreshold; }
+
+    double getSpeedOverride() const { return m_speedOverride; }
+    void setSpeedOverride(double speedOverride) { m_speedOverride = speedOverride; }
+
+    int getTruncateDecimalLength() const { return m_truncateDecimalLength; }
+    void setTruncateDecimalLength(int truncateDecimalLength) { m_truncateDecimalLength = truncateDecimalLength; }
+
     void reset(const QVector3D &initialPoint = QVector3D(qQNaN(), qQNaN(), qQNaN()));
     PointSegment *addCommand(QString command);
     PointSegment *addCommand(const QStringList &args);
-    QVector3D* getCurrentPoint();
+    const QVector3D& getCurrentPoint() const { return m_currentPoint; }
     QList<PointSegment *> expandArc();
     QStringList preprocessCommands(QStringList commands);
     QStringList preprocessCommand(QString command);
     QStringList convertArcsToLines(QString command);
-    QList<PointSegment *> getPointSegmentList();
+    QList<PointSegment *> getPointSegmentList() const { return m_points; }
     double getTraverseSpeed() const;
     void setTraverseSpeed(double traverseSpeed);
     int getCommandNumber() const;

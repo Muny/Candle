@@ -37,54 +37,6 @@ GcodeParser::~GcodeParser()
     foreach (PointSegment *ps, m_points) delete ps;
 }
 
-bool GcodeParser::getConvertArcsToLines() {
-    return m_convertArcsToLines;
-}
-
-void GcodeParser::setConvertArcsToLines(bool convertArcsToLines) {
-    m_convertArcsToLines = convertArcsToLines;
-}
-
-bool GcodeParser::getRemoveAllWhitespace() {
-    return m_removeAllWhitespace;
-}
-
-void GcodeParser::setRemoveAllWhitespace(bool removeAllWhitespace) {
-    m_removeAllWhitespace = removeAllWhitespace;
-}
-
-double GcodeParser::getSmallArcSegmentLength() {
-    return m_smallArcSegmentLength;
-}
-
-void GcodeParser::setSmallArcSegmentLength(double smallArcSegmentLength) {
-    m_smallArcSegmentLength = smallArcSegmentLength;
-}
-
-double GcodeParser::getSmallArcThreshold() {
-    return m_smallArcThreshold;
-}
-
-void GcodeParser::setSmallArcThreshold(double smallArcThreshold) {
-    m_smallArcThreshold = smallArcThreshold;
-}
-
-double GcodeParser::getSpeedOverride() {
-    return m_speedOverride;
-}
-
-void GcodeParser::setSpeedOverride(double speedOverride) {
-    m_speedOverride = speedOverride;
-}
-
-int GcodeParser::getTruncateDecimalLength() {
-    return m_truncateDecimalLength;
-}
-
-void GcodeParser::setTruncateDecimalLength(int truncateDecimalLength) {
-    m_truncateDecimalLength = truncateDecimalLength;
-}
-
 // Resets the current state.
 void GcodeParser::reset(const QVector3D &initialPoint)
 {
@@ -125,13 +77,6 @@ PointSegment* GcodeParser::addCommand(const QStringList &args)
 */
 void GcodeParser::setLastGcodeCommand(float num) {
     m_lastGcodeCommand = num;
-}
-
-/**
-* Gets the point at the end of the list.
-*/
-QVector3D *GcodeParser::getCurrentPoint() {
-    return &m_currentPoint;
 }
 
 /**
@@ -196,9 +141,6 @@ QList<PointSegment*> GcodeParser::expandArc()
     return psl;
 }
 
-QList<PointSegment*> GcodeParser::getPointSegmentList() {
-    return m_points;
-}
 double GcodeParser::getTraverseSpeed() const
 {
     return m_traverseSpeed;
