@@ -172,7 +172,7 @@ public:
     bool homingEnabled();
     void setHomingEnabled(bool homing);
     bool softLimitsEnabled();
-    void setSoftLimitsEnabled(bool softLimits);    
+    void setSoftLimitsEnabled(bool softLimits);
     bool referenceXPlus();
     void setReferenceXPlus(bool value);
     bool referenceYPlus();

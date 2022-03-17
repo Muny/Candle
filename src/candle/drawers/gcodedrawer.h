@@ -28,7 +28,7 @@ public:
     QVector3D getMaximumExtremes();
 
     void setViewParser(GcodeViewParse* viewParser);
-    GcodeViewParse* viewParser();        
+    GcodeViewParse* viewParser();
 
     bool simplify() const;
     void setSimplify(bool simplify);
@@ -92,7 +92,7 @@ private:
     bool m_grayscaleSegments;
     GrayscaleCode m_grayscaleCode;
     int m_grayscaleMin;
-    int m_grayscaleMax;   
+    int m_grayscaleMax;
 
     QColor m_colorNormal;
     QColor m_colorDrawn;

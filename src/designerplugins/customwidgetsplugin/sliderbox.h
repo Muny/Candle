@@ -22,7 +22,7 @@ class CUSTOMWIDGETS_DLLSPEC SliderBox : public QWidget
     Q_PROPERTY(int maximum READ maximum WRITE setMaximum)
     Q_PROPERTY(QString suffix READ suffix WRITE setSuffix)
     Q_PROPERTY(QString title READ title WRITE setTitle)
-    
+
 public:
     explicit SliderBox(QWidget *parent = 0);
     ~SliderBox();
@@ -63,7 +63,7 @@ signals:
     void toggled(bool checked);
 
 public slots:
-    void click();    
+    void click();
 
 private slots:
     void onTimerValueChanged();

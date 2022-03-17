@@ -30,7 +30,7 @@ function init()
     loader.setWorkingDirectory(new QDir(pluginPath));
     loader.addPluginPath(appPath);
     loader.addPluginPath(pluginPath + "/plugins")
-    
+
     app.settingsLoaded.connect(onAppSettingsLoaded);
     app.settingsSaved.connect(onAppSettingsSaved);
     app.settingsAboutToShow.connect(onAppSettingsAboutToShow);
@@ -43,7 +43,7 @@ function createWindowWidget()
 {
     var f = new QFile(pluginPath + "/widget.ui");
 
-    if (f.open(QIODevice.ReadOnly)) {        
+    if (f.open(QIODevice.ReadOnly)) {
         uiWindow = loader.load(f);
     }
     return uiWindow;
@@ -53,9 +53,9 @@ function createSettingsWidget()
 {
     var f = new QFile(pluginPath + "/settings.ui");
 
-    if (f.open(QIODevice.ReadOnly)) {        
+    if (f.open(QIODevice.ReadOnly)) {
         uiSettings = loader.load(f);
-        
+
     }
     return uiSettings;
 }
@@ -144,7 +144,7 @@ function applySettings()
         var l = uiSettings.cboCameraResolution.currentText.split("x");
         uiWindow.camMain.resolution = [parseInt(l[0]), parseInt(l[1])];
     }
-    
+
     // Zoom
     if (uiSettings.txtCameraZoom.text == "") uiSettings.txtCameraZoom.text = "1.0";
     uiWindow.camMain.zoom = parseFloat(uiSettings.txtCameraZoom.text);
@@ -164,7 +164,7 @@ function applySettings()
 
     // Aim line width
     uiWindow.camMain.aimLineWidth = parseInt(uiSettings.txtCameraAimLineWidth.value);
-    
+
     // Aim color
     uiWindow.camMain.aimColor = parseInt(uiSettings.colCameraAimColor.colorInt);
 
@@ -176,7 +176,7 @@ function onCameraNameChanged(name)
 {
     // Update camera
     uiWindow.camMain.cameraName = name;
-    
+
     // Update resolutions list
     var r = uiSettings.cboCameraResolution.currentText;
     uiSettings.cboCameraResolution.clear();

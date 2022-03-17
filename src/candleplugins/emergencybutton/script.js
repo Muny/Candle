@@ -48,7 +48,7 @@ function onButtonClicked()
 }
 
 function onAppDeviceStateChanged(status)
-{    
+{
     deviceState = status;
     if (holdSent && (status == 5)) {
         holdSent = false;
@@ -63,5 +63,5 @@ function onAppSenderStateChanged(status)
 }
 
 function onAppResponseReceived(command, index, response)
-{ 
+{
 }

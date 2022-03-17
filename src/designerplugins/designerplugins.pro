@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
- 
+
 SUBDIRS = cameraplugin customwidgetsplugin
 
 install_cameraplugin.path = ../../bin/plugins/camera/plugins

@@ -51,57 +51,57 @@ frmMain::frmMain(QWidget *parent) :
     m_deviceStatuses[DeviceJog] = "Jog";
     m_deviceStatuses[DeviceSleep] = "Sleep";
 
-	m_statusCaptions[DeviceUnknown] = tr("Unknown");
-	m_statusCaptions[DeviceIdle] = tr("Idle");
-	m_statusCaptions[DeviceAlarm] = tr("Alarm");
-	m_statusCaptions[DeviceRun] = tr("Run");
-	m_statusCaptions[DeviceHome] = tr("Home");
-	m_statusCaptions[DeviceHold0] = tr("Hold") + " (0)";
-	m_statusCaptions[DeviceHold1] = tr("Hold") + " (1)";
-	m_statusCaptions[DeviceQueue] = tr("Queue");
-	m_statusCaptions[DeviceCheck] = tr("Check");
-	m_statusCaptions[DeviceDoor0] = tr("Door") + " (0)";
-	m_statusCaptions[DeviceDoor1] = tr("Door") + " (1)";
-	m_statusCaptions[DeviceDoor2] = tr("Door") + " (2)";
-	m_statusCaptions[DeviceDoor3] = tr("Door") + " (3)";
-	m_statusCaptions[DeviceJog] = tr("Jog");
-	m_statusCaptions[DeviceSleep] = tr("Sleep");
+    m_statusCaptions[DeviceUnknown] = tr("Unknown");
+    m_statusCaptions[DeviceIdle] = tr("Idle");
+    m_statusCaptions[DeviceAlarm] = tr("Alarm");
+    m_statusCaptions[DeviceRun] = tr("Run");
+    m_statusCaptions[DeviceHome] = tr("Home");
+    m_statusCaptions[DeviceHold0] = tr("Hold") + " (0)";
+    m_statusCaptions[DeviceHold1] = tr("Hold") + " (1)";
+    m_statusCaptions[DeviceQueue] = tr("Queue");
+    m_statusCaptions[DeviceCheck] = tr("Check");
+    m_statusCaptions[DeviceDoor0] = tr("Door") + " (0)";
+    m_statusCaptions[DeviceDoor1] = tr("Door") + " (1)";
+    m_statusCaptions[DeviceDoor2] = tr("Door") + " (2)";
+    m_statusCaptions[DeviceDoor3] = tr("Door") + " (3)";
+    m_statusCaptions[DeviceJog] = tr("Jog");
+    m_statusCaptions[DeviceSleep] = tr("Sleep");
 
-	m_statusBackColors[DeviceUnknown] = "red";
-	m_statusBackColors[DeviceIdle] = "palette(button)";
-	m_statusBackColors[DeviceAlarm] = "red";
-	m_statusBackColors[DeviceRun] = "lime";
-	m_statusBackColors[DeviceHome] = "lime";
-	m_statusBackColors[DeviceHold0] = "yellow";
-	m_statusBackColors[DeviceHold1] = "yellow";
-	m_statusBackColors[DeviceQueue] = "yellow";
-	m_statusBackColors[DeviceCheck] = "palette(button)";
-	m_statusBackColors[DeviceDoor0] = "red";
-	m_statusBackColors[DeviceDoor1] = "red";
-	m_statusBackColors[DeviceDoor2] = "red";
-	m_statusBackColors[DeviceDoor3] = "red";
-	m_statusBackColors[DeviceJog] = "lime";
-	m_statusBackColors[DeviceSleep] = "blue";
+    m_statusBackColors[DeviceUnknown] = "red";
+    m_statusBackColors[DeviceIdle] = "palette(button)";
+    m_statusBackColors[DeviceAlarm] = "red";
+    m_statusBackColors[DeviceRun] = "lime";
+    m_statusBackColors[DeviceHome] = "lime";
+    m_statusBackColors[DeviceHold0] = "yellow";
+    m_statusBackColors[DeviceHold1] = "yellow";
+    m_statusBackColors[DeviceQueue] = "yellow";
+    m_statusBackColors[DeviceCheck] = "palette(button)";
+    m_statusBackColors[DeviceDoor0] = "red";
+    m_statusBackColors[DeviceDoor1] = "red";
+    m_statusBackColors[DeviceDoor2] = "red";
+    m_statusBackColors[DeviceDoor3] = "red";
+    m_statusBackColors[DeviceJog] = "lime";
+    m_statusBackColors[DeviceSleep] = "blue";
 
-	m_statusForeColors[DeviceUnknown] = "white";
-	m_statusForeColors[DeviceIdle] = "palette(text)";
-	m_statusForeColors[DeviceAlarm] = "white";
-	m_statusForeColors[DeviceRun] = "black";
-	m_statusForeColors[DeviceHome] = "black";
-	m_statusForeColors[DeviceHold0] = "black";
-	m_statusForeColors[DeviceHold1] = "black";
-	m_statusForeColors[DeviceQueue] = "black";
-	m_statusForeColors[DeviceCheck] = "palette(text)";
-	m_statusForeColors[DeviceDoor0] = "white";
-	m_statusForeColors[DeviceDoor1] = "white";
-	m_statusForeColors[DeviceDoor2] = "white";
-	m_statusForeColors[DeviceDoor3] = "white";
-	m_statusForeColors[DeviceJog] = "black";
-	m_statusForeColors[DeviceSleep] = "white";
+    m_statusForeColors[DeviceUnknown] = "white";
+    m_statusForeColors[DeviceIdle] = "palette(text)";
+    m_statusForeColors[DeviceAlarm] = "white";
+    m_statusForeColors[DeviceRun] = "black";
+    m_statusForeColors[DeviceHome] = "black";
+    m_statusForeColors[DeviceHold0] = "black";
+    m_statusForeColors[DeviceHold1] = "black";
+    m_statusForeColors[DeviceQueue] = "black";
+    m_statusForeColors[DeviceCheck] = "palette(text)";
+    m_statusForeColors[DeviceDoor0] = "white";
+    m_statusForeColors[DeviceDoor1] = "white";
+    m_statusForeColors[DeviceDoor2] = "white";
+    m_statusForeColors[DeviceDoor3] = "white";
+    m_statusForeColors[DeviceJog] = "black";
+    m_statusForeColors[DeviceSleep] = "white";
 
     m_fileChanged = false;
     m_heightMapChanged = false;
-   
+
     m_homing = false;
     m_updateSpindleSpeed = false;
     m_updateParserStatus = false;
@@ -136,7 +136,7 @@ frmMain::frmMain(QWidget *parent) :
 #endif
 
 #ifndef UNIX
-    ui->cboCommand->setStyleSheet("QComboBox {padding: 2;} QComboBox::drop-down {width: 0; border-style: none;} QComboBox::down-arrow {image: url(noimg);	border-width: 0;}");
+    ui->cboCommand->setStyleSheet("QComboBox {padding: 2;} QComboBox::drop-down {width: 0; border-style: none;} QComboBox::down-arrow {image: url(noimg); border-width: 0;}");
 #endif
 //    ui->scrollArea->updateMinimumWidth();
 
@@ -206,7 +206,7 @@ frmMain::frmMain(QWidget *parent) :
     ui->slbRapidOverride->setSuffix("%");
     connect(ui->slbRapidOverride, SIGNAL(toggled(bool)), this, SLOT(onOverridingToggled(bool)));
     connect(ui->slbRapidOverride, &SliderBox::toggled, this, &frmMain::onOverrideChanged);
-    connect(ui->slbRapidOverride, &SliderBox::valueChanged, this, &frmMain::onOverrideChanged);   
+    connect(ui->slbRapidOverride, &SliderBox::valueChanged, this, &frmMain::onOverrideChanged);
 
     ui->slbSpindleOverride->setRatio(1);
     ui->slbSpindleOverride->setMinimum(50);
@@ -250,7 +250,7 @@ frmMain::frmMain(QWidget *parent) :
     ui->tblProgram->setModel(&m_programModel);
     ui->tblProgram->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
     connect(ui->tblProgram->verticalScrollBar(), SIGNAL(actionTriggered(int)), this, SLOT(onScroolBarAction(int)));
-    connect(ui->tblProgram->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(onTableCurrentChanged(QModelIndex,QModelIndex)));    
+    connect(ui->tblProgram->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(onTableCurrentChanged(QModelIndex,QModelIndex)));
     clearTable();
 
     m_senderErrorBox = new QMessageBox(QMessageBox::Warning, qApp->applicationDisplayName(), QString(),
@@ -309,14 +309,14 @@ frmMain::frmMain(QWidget *parent) :
     QList<QAction*> noActions;
     noActions << ui->actJogXMinus << ui->actJogXPlus
               << ui->actJogYMinus << ui->actJogYPlus
-              << ui->actJogZMinus << ui->actJogZPlus;  
+              << ui->actJogZMinus << ui->actJogZPlus;
     foreach (QAction* a, findChildren<QAction*>()) if (!noActions.contains(a)) addAction(a);
 
     // Handle file drop
     if (qApp->arguments().count() > 1 && isGCodeFile(qApp->arguments().last())) {
         loadFile(qApp->arguments().last());
     }
-    
+
     // Delegate vars to script engine
     QScriptValue vars = m_scriptEngine.newQObject(&m_storedVars);
     m_scriptEngine.globalObject().setProperty("vars", vars);
@@ -342,7 +342,7 @@ frmMain::frmMain(QWidget *parent) :
 }
 
 frmMain::~frmMain()
-{    
+{
     delete m_senderErrorBox;
     delete ui;
 }
@@ -398,10 +398,10 @@ void frmMain::closeEvent(QCloseEvent *ce)
         return;
     }
 
-    if ((m_senderState != SenderStopped) && 
+    if ((m_senderState != SenderStopped) &&
         QMessageBox::warning(this, this->windowTitle(), tr("File sending in progress. Terminate and exit?"),
-        QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) 
-    {    
+        QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)
+    {
         ce->ignore();
         m_heightMapMode = mode;
         return;
@@ -409,7 +409,7 @@ void frmMain::closeEvent(QCloseEvent *ce)
 
     m_timerConnection.stop();
     if (m_serialPort.isOpen()) m_serialPort.close();
-    
+
     if (m_queue.length() > 0) {
         m_commands.clear();
         m_queue.clear();
@@ -435,7 +435,7 @@ void frmMain::dragEnterEvent(QDragEnterEvent *dee)
 }
 
 void frmMain::dropEvent(QDropEvent *de)
-{    
+{
     QString fileName = de->mimeData()->urls().at(0).toLocalFile();
 
     if (!m_heightMapMode) {
@@ -470,7 +470,7 @@ QMenu *frmMain::createPopupMenu()
         if (a->text().contains("_spacer")) {
             a->setVisible(false);
         }
-    } 
+    }
 
     return menu;
 }
@@ -987,7 +987,7 @@ void frmMain::on_chkKeyboardControl_toggled(bool checked)
         if (m_absoluteCoordinates) sendCommand("G90", -1, m_settings->showUICommands());
     }
 
-    if ((m_senderState != SenderTransferring) && (m_senderState != SenderStopping)) 
+    if ((m_senderState != SenderTransferring) && (m_senderState != SenderStopping))
         m_storedKeyboardControl = checked;
 
     updateJogTitle();
@@ -1620,7 +1620,7 @@ void frmMain::onSerialPortReadyRead()
 
                 // Test for job complete
                 if ((m_senderState == SenderStopping) &&
-                        ((state == DeviceIdle && m_deviceState == DeviceRun) || state == DeviceCheck)) 
+                        ((state == DeviceIdle && m_deviceState == DeviceRun) || state == DeviceCheck))
                 {
                     completeTransfer();
                 }
@@ -1673,7 +1673,7 @@ void frmMain::onSerialPortReadyRead()
             ui->txtWPosX->setValue(ui->txtMPosX->value() - workOffset.x());
             ui->txtWPosY->setValue(ui->txtMPosY->value() - workOffset.y());
             ui->txtWPosZ->setValue(ui->txtMPosZ->value() - workOffset.z());
-            
+
             // Update stored vars
             m_storedVars.setCoords("W", QVector3D(
                     ui->txtWPosX->value(),
@@ -1722,7 +1722,7 @@ void frmMain::onSerialPortReadyRead()
             // Get overridings
             static QRegExp ov("Ov:([^,]*),([^,]*),([^,^>^|]*)");
             if (ov.indexIn(data) != -1)
-            {                
+            {
                 updateOverride(ui->slbFeedOverride, ov.cap(1).toInt(), '\x91');
                 updateOverride(ui->slbSpindleOverride, ov.cap(3).toInt(), '\x9a');
 
@@ -1774,7 +1774,7 @@ void frmMain::onSerialPortReadyRead()
             }
 
             // Get feed/spindle values
-            static QRegExp fs("FS:([^,]*),([^,^|^>]*)");            
+            static QRegExp fs("FS:([^,]*),([^,^|^>]*)");
             if (fs.indexIn(data) != -1) {
                 ui->glwVisualizer->setSpeedState((QString(tr("F/S: %1 / %2")).arg(fs.cap(1)).arg(fs.cap(2))));
             }
@@ -1784,7 +1784,7 @@ void frmMain::onSerialPortReadyRead()
 
             // Update continuous jog
             jogContinuous();
-            
+
             // Emit status signal
             emit statusReceived(data);
 
@@ -1813,7 +1813,7 @@ void frmMain::onSerialPortReadyRead()
                         static QRegExp g("G5[4-9]");
                         if (g.indexIn(response) != -1) {
                             m_storedVars.setCS(g.cap(0));
-                            m_machineBoundsDrawer.setOffset(QPointF(toMetric(m_storedVars.x()), toMetric(m_storedVars.y())) + 
+                            m_machineBoundsDrawer.setOffset(QPointF(toMetric(m_storedVars.x()), toMetric(m_storedVars.y())) +
                                 QPointF(toMetric(m_storedVars.G92x()), toMetric(m_storedVars.G92y())));
                         }
                         static QRegExp t("T(\\d+)(?!\\d)");
@@ -1875,8 +1875,8 @@ void frmMain::onSerialPortReadyRead()
                                 m_settings->referenceXPlus() ? -set[130] : set[130],
                                 m_settings->referenceYPlus() ? -set[131] : set[131],
                                 m_settings->referenceZPlus() ? -set[132] : set[132]));
-                            m_machineBoundsDrawer.setBorderRect(QRectF(0, 0, 
-                                m_settings->referenceXPlus() ? -set[130] : set[130], 
+                            m_machineBoundsDrawer.setBorderRect(QRectF(0, 0,
+                                m_settings->referenceXPlus() ? -set[130] : set[130],
                                 m_settings->referenceYPlus() ? -set[131] : set[131]));
                         }
 
@@ -1956,7 +1956,7 @@ void frmMain::onSerialPortReadyRead()
                     // Add response to console
                     if (tb.isValid() && tb.text() == ca.command) {
 
-                        bool scrolledDown = ui->txtConsole->verticalScrollBar()->value() 
+                        bool scrolledDown = ui->txtConsole->verticalScrollBar()->value()
                             == ui->txtConsole->verticalScrollBar()->maximum();
 
                         // Update text block numbers
@@ -1983,7 +1983,7 @@ void frmMain::onSerialPortReadyRead()
                             if ((bufferLength() + cq.command.length() + 1) <= BUFFERLENGTH) {
                                 int r = 0;
                                 if (!cq.command.isEmpty()) r = sendCommand(cq.command, cq.tableIndex, cq.showInConsole);
-                                if ((!r && !cq.command.isEmpty() && (m_queue.isEmpty() || cq.wait)) || m_queue.isEmpty()) break; 
+                                if ((!r && !cq.command.isEmpty() && (m_queue.isEmpty() || cq.wait)) || m_queue.isEmpty()) break;
                                     else cq = m_queue.takeFirst();
                             } else {
                                 m_queue.insert(0, cq);
@@ -2012,7 +2012,7 @@ void frmMain::onSerialPortReadyRead()
                         if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) {
                             if (m_taskBarProgress) m_taskBarProgress->setValue(m_fileProcessedCommandIndex);
                         }
-#endif                                              
+#endif
                         // Process error messages
                         static bool holding = false;
                         static QString errors;
@@ -2037,7 +2037,7 @@ void frmMain::onSerialPortReadyRead()
                                 if (m_senderErrorBox->checkBox()->isChecked()) m_settings->setIgnoreErrors(true);
                                 if (result == QMessageBox::Ignore) {
                                     m_serialPort.write("~");
-                                } else {    
+                                } else {
                                     m_serialPort.write("~");
                                     ui->cmdFileAbort->click();
                                 }
@@ -2045,17 +2045,17 @@ void frmMain::onSerialPortReadyRead()
                         }
 
                         // Check transfer complete (last row always blank, last command row = rowcount - 2)
-                        if ((m_fileProcessedCommandIndex == m_currentModel->rowCount() - 2) || 
-                            uncomment.contains(QRegExp("(M0*2|M30)(?!\\d)"))) 
+                        if ((m_fileProcessedCommandIndex == m_currentModel->rowCount() - 2) ||
+                            uncomment.contains(QRegExp("(M0*2|M30)(?!\\d)")))
                         {
                             if (m_deviceState == DeviceRun) {
                                 setSenderState(SenderStopping);
                             } else {
                                 completeTransfer();
                             }
-                        } else if ((m_fileCommandIndex < m_currentModel->rowCount()) 
-                            && (m_senderState == SenderTransferring) 
-                            && !holding) 
+                        } else if ((m_fileCommandIndex < m_currentModel->rowCount())
+                            && (m_senderState == SenderTransferring)
+                            && !holding)
                         {
                             // Send next program commands
                             sendNextFileCommands();
@@ -2068,8 +2068,8 @@ void frmMain::onSerialPortReadyRead()
 
                         response.clear();
 
-                        if (m_settings->toolChangePause()) {                        
-                            QMessageBox::information(this, qApp->applicationDisplayName(), 
+                        if (m_settings->toolChangePause()) {
+                            QMessageBox::information(this, qApp->applicationDisplayName(),
                                 tr("Change tool and press 'Pause' button to continue job"));
                         }
 
@@ -2094,8 +2094,8 @@ void frmMain::onSerialPortReadyRead()
                         setSenderState(SenderChangingTool);
                         updateControlsState();
                     }
-                    if ((m_senderState == SenderChangingTool) && !m_settings->toolChangePause() 
-                        && m_commands.isEmpty()) 
+                    if ((m_senderState == SenderChangingTool) && !m_settings->toolChangePause()
+                        && m_commands.isEmpty())
                     {
                         setSenderState(SenderTransferring);
                     }
@@ -2163,7 +2163,7 @@ void frmMain::onSerialPortReadyRead()
 
                     m_reseting = false;
                     m_homing = false;
-                    
+
                     m_updateParserStatus = true;
                     m_statusReceived = true;
 
@@ -2222,7 +2222,7 @@ void frmMain::onTimerStateQuery()
 
 void frmMain::onTableInsertLine()
 {
-    if (ui->tblProgram->selectionModel()->selectedRows().count() == 0 || 
+    if (ui->tblProgram->selectionModel()->selectedRows().count() == 0 ||
         (m_senderState == SenderTransferring) || (m_senderState == SenderStopping)) return;
 
     int row = ui->tblProgram->selectionModel()->selectedRows()[0].row();
@@ -2237,7 +2237,7 @@ void frmMain::onTableInsertLine()
 
 void frmMain::onTableDeleteLines()
 {
-    if (ui->tblProgram->selectionModel()->selectedRows().count() == 0 || 
+    if (ui->tblProgram->selectionModel()->selectedRows().count() == 0 ||
         (m_senderState == SenderTransferring) || (m_senderState == SenderStopping) ||
         QMessageBox::warning(this, this->windowTitle(), tr("Delete lines?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
 
@@ -2473,7 +2473,7 @@ void frmMain::onScroolBarAction(int action)
 {
     Q_UNUSED(action)
 
-    if ((m_senderState == SenderTransferring) || (m_senderState == SenderStopping)) 
+    if ((m_senderState == SenderTransferring) || (m_senderState == SenderStopping))
         ui->chkAutoScroll->setChecked(false);
 }
 
@@ -2570,7 +2570,7 @@ void frmMain::loadSettings()
     m_settings->setSimplifyPrecision(set.value("simplifyPrecision", 0).toDouble());
     m_settings->setGrayscaleSegments(set.value("grayscaleSegments", false).toBool());
     m_settings->setGrayscaleSCode(set.value("grayscaleSCode", true).toBool());
-    m_settings->setDrawModeVectors(set.value("drawModeVectors", true).toBool());    
+    m_settings->setDrawModeVectors(set.value("drawModeVectors", true).toBool());
     m_settings->setLineWidth(set.value("lineWidth", 1).toDouble());
     m_settings->setArcLength(set.value("arcLength", 0).toDouble());
     m_settings->setArcDegree(set.value("arcDegree", 0).toDouble());
@@ -2678,8 +2678,8 @@ void frmMain::loadSettings()
     loadPlugins();
     emit pluginsLoaded();
 
-    // Adjust docks width 
-    int w = qMax(ui->dockDevice->widget()->sizeHint().width(), 
+    // Adjust docks width
+    int w = qMax(ui->dockDevice->widget()->sizeHint().width(),
         ui->dockModification->widget()->sizeHint().width());
     ui->dockDevice->setMinimumWidth(w);
     ui->dockDevice->setMaximumWidth(w + ui->scrollArea->verticalScrollBar()->width());
@@ -2691,11 +2691,12 @@ void frmMain::loadSettings()
         // Buttons
     int b = (w - ui->grpControl->layout()->margin() * 2 - ui->grpControl->layout()->spacing() * 3) / 4 * 0.8;
     int c = b * 0.8;
-    setStyleSheet(styleSheet() + QString("\nStyledToolButton[adjustSize='true'] {\n\
-	    min-width: %1px;\n\
-	    min-height: %1px;\n\
-	    qproperty-iconSize: %2px;\n\
-        }").arg(b).arg(c));
+    setStyleSheet(styleSheet() + QString(R"CSS(
+StyledToolButton[adjustSize='true'] {
+    min-width: %1px;
+    min-height: %1px;
+    qproperty-iconSize: %2px;
+})CSS").arg(b).arg(c));
     ensurePolished();
 
     foreach (QDockWidget *w, findChildren<QDockWidget*>()) w->setStyleSheet("");
@@ -2714,7 +2715,7 @@ void frmMain::loadSettings()
     foreach (QString s, hiddenPanels) {
         QGroupBox *b = findChild<QGroupBox*>(s);
         if (b) b->setHidden(true);
-    }    
+    }
 
     QStringList collapsedPanels = set.value("collapsedPanels").toStringList();
     foreach (QString s, collapsedPanels) {
@@ -2727,7 +2728,7 @@ void frmMain::loadSettings()
 
         // Maximized window state
     show();
-    qApp->processEvents();    
+    qApp->processEvents();
     restoreState(set.value("formMainState").toByteArray());
 
     // Setup coords textboxes
@@ -2741,11 +2742,11 @@ void frmMain::loadSettings()
 
     // Shortcuts
     qRegisterMetaTypeStreamOperators<ShortcutsMap>("ShortcutsMap");
-    
+
     ShortcutsMap m;
     QByteArray ba = set.value("shortcuts").toByteArray();
     QDataStream s(&ba, QIODevice::ReadOnly);
-    
+
     s >> m;
     for (int i = 0; i < m.count(); i++) {
         QAction *a = findChild<QAction*>(m.keys().at(i));
@@ -2815,7 +2816,7 @@ void frmMain::saveSettings()
     set.setValue("header", ui->tblProgram->horizontalHeader()->saveState());
     set.setValue("settingsSplitMain", m_settings->ui->splitMain->saveState());
     set.setValue("formGeometry", this->saveGeometry());
-    set.setValue("formSettingsGeometry", m_settings->saveGeometry()); 
+    set.setValue("formSettingsGeometry", m_settings->saveGeometry());
 
     set.setValue("autoCompletion", m_settings->autoCompletion());
     set.setValue("units", m_settings->units());
@@ -2904,7 +2905,7 @@ void frmMain::saveSettings()
         QGroupBox *b = findChild<QGroupBox*>(s);
         if (b && b->isHidden()) hiddenPanels << s;
         if (b && b->isCheckable() && !b->isChecked()) collapsedPanels << s;
-    }    
+    }
     set.setValue("hiddenPanels", hiddenPanels);
     set.setValue("collapsedPanels", collapsedPanels);
 
@@ -2987,7 +2988,7 @@ void frmMain::applySettings() {
     m_codeDrawer->setDrawMode(m_settings->drawModeVectors() ? GcodeDrawer::Vectors : GcodeDrawer::Raster);
     m_codeDrawer->setGrayscaleMin(m_settings->laserPowerMin());
     m_codeDrawer->setGrayscaleMax(m_settings->laserPowerMax());
-    m_codeDrawer->update();    
+    m_codeDrawer->update();
 
     m_selectionDrawer.setColor(m_settings->colors("ToolpathHighlight"));
 
@@ -3052,17 +3053,17 @@ void frmMain::loadPlugins()
             QTranslator *translator = new QTranslator();
             if (translator->load(translationFileName)) qApp->installTranslator(translator);
             else delete translator;
-        }        
+        }
 
         // Script
         QFile f;
         f.setFileName(pluginsDir + p + "/script.js");
         if (f.open(QFile::ReadOnly)) {
             QScriptEngine *se = new QScriptEngine();
-            
+
             QScriptValue sv = se->newObject();
             sv.setProperty("importExtension", se->newFunction(frmMain::importExtension));
-            sv.setProperty("path", pluginsDir + p);            
+            sv.setProperty("path", pluginsDir + p);
             se->globalObject().setProperty("script", sv);
             connect(se, &QScriptEngine::signalHandlerException, this, &frmMain::onScriptException);
 
@@ -3125,7 +3126,7 @@ void frmMain::loadPlugins()
                     connect(box, &QGroupBox::toggled, bw, &QWidget::setVisible);
 
                     // Add panel to user window
-                    static_cast<QVBoxLayout*>(ui->scrollContentsUser->layout())->insertWidget(0, box);                
+                    static_cast<QVBoxLayout*>(ui->scrollContentsUser->layout())->insertWidget(0, box);
                 }
             }
 
@@ -3316,7 +3317,7 @@ void frmMain::sendNextFileCommands() {
     while ((bufferLength() + command.length() + 1) <= BUFFERLENGTH
         && m_fileCommandIndex < m_currentModel->rowCount() - 1
         && !(!m_commands.isEmpty() && GcodePreprocessorUtils::removeComment(m_commands.last().command).contains(M230))
-        ) 
+        )
     {
         m_currentModel->setData(m_currentModel->index(m_fileCommandIndex, 2), GCodeItem::Sent);
         sendCommand(command, m_fileCommandIndex, m_settings->showProgramCommands());
@@ -3327,7 +3328,7 @@ void frmMain::sendNextFileCommands() {
 
 QString frmMain::evaluateCommand(QString command)
 {
-    // Evaluate script  
+    // Evaluate script
     QRegExp sx("\\{([^\\}]+)\\}");
     QScriptValue v;
     QString vs;
@@ -3401,7 +3402,7 @@ void frmMain::updateParser()
 }
 
 void frmMain::storeParserState()
-{    
+{
     m_storedParserStatus = ui->glwVisualizer->parserStatus().remove(
                 QRegExp("GC:|\\[|\\]|G[01234]\\s|M[0345]+\\s|\\sF[\\d\\.]+|\\sS[\\d\\.]+"));
 }
@@ -3417,7 +3418,7 @@ void frmMain::restoreOffsets()
     sendCommand(QString("%4G53G90X%1Y%2Z%3").arg(ui->txtMPosX->value())
                                        .arg(ui->txtMPosY->value())
                                        .arg(ui->txtMPosZ->value())
-                                       .arg(m_settings->units() ? "G20" : "G21"), 
+                                       .arg(m_settings->units() ? "G20" : "G21"),
                                        -2, m_settings->showUICommands());
 
     sendCommand(QString("%4G92X%1Y%2Z%3").arg(ui->txtWPosX->value())
@@ -3439,7 +3440,7 @@ void frmMain::storeOffsetsVars(QString response)
             gx.cap(3).toDouble(),
             gx.cap(4).toDouble()
         ));
-            
+
         p += gx.matchedLength();
     }
 
@@ -3828,7 +3829,7 @@ void frmMain::setupCoordsTextboxes()
     ui->txtWPosY->setMaximum(bound);
     ui->txtWPosZ->setDecimals(prec);
     ui->txtWPosZ->setMinimum(-bound);
-    ui->txtWPosZ->setMaximum(bound);    
+    ui->txtWPosZ->setMaximum(bound);
 }
 
 void frmMain::updateControlsState() {
@@ -3839,7 +3840,7 @@ void frmMain::updateControlsState() {
     ui->grpState->setEnabled(portOpened);
     ui->grpControl->setEnabled(portOpened);
     ui->widgetSpindle->setEnabled(portOpened);
-    ui->widgetJog->setEnabled(portOpened && ((m_senderState == SenderStopped) 
+    ui->widgetJog->setEnabled(portOpened && ((m_senderState == SenderStopped)
         || (m_senderState == SenderChangingTool)));
     ui->cboCommand->setEnabled(portOpened && (!ui->chkKeyboardControl->isChecked()));
     ui->cmdCommandSend->setEnabled(portOpened);
@@ -3865,7 +3866,7 @@ void frmMain::updateControlsState() {
     ui->actFileSaveAs->setEnabled(m_programModel.rowCount() > 1);
 
     ui->tblProgram->setEditTriggers((m_senderState != SenderStopped) ? QAbstractItemView::NoEditTriggers :
-        QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked | 
+        QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked |
         QAbstractItemView::EditKeyPressed | QAbstractItemView::AnyKeyPressed);
 
     if (!portOpened) {
@@ -3931,7 +3932,7 @@ void frmMain::updateControlsState() {
 
     ui->cmdFileSend->menu()->actions().first()->setEnabled(!ui->cmdHeightMapMode->isChecked());
 
-    m_selectionDrawer.setVisible(!ui->cmdHeightMapMode->isChecked());    
+    m_selectionDrawer.setVisible(!ui->cmdHeightMapMode->isChecked());
 }
 
 void frmMain::updateLayouts()
@@ -4137,11 +4138,11 @@ bool frmMain::eventFilter(QObject *obj, QEvent *event)
             }
         }
 
-        if ((m_senderState != SenderTransferring) && (m_senderState != SenderStopping) 
-            && ui->chkKeyboardControl->isChecked() && !ev->isAutoRepeat()) 
+        if ((m_senderState != SenderTransferring) && (m_senderState != SenderStopping)
+            && ui->chkKeyboardControl->isChecked() && !ev->isAutoRepeat())
         {
             static QList<QAction*> acts;
-            if (acts.isEmpty()) acts << ui->actJogXMinus << ui->actJogXPlus 
+            if (acts.isEmpty()) acts << ui->actJogXMinus << ui->actJogXPlus
                                      << ui->actJogYMinus << ui->actJogYPlus
                                      << ui->actJogZMinus << ui->actJogZPlus;
 
@@ -4157,10 +4158,10 @@ bool frmMain::eventFilter(QObject *obj, QEvent *event)
                         buttons.at(i)->setDown(true);
                     }
                 } else if (buttons.at(i)->isDown() && (event->type() == QEvent::KeyRelease)) {
-                    if ((acts.at(i)->shortcut().matches(ks) == QKeySequence::ExactMatch) 
+                    if ((acts.at(i)->shortcut().matches(ks) == QKeySequence::ExactMatch)
                         || (acts.at(i)->shortcut().toString().contains(ks.toString()))
                         || (ks.toString().contains(acts.at(i)->shortcut().toString()))
-                        ) 
+                        )
                     {
                         buttons.at(i)->released();
                         buttons.at(i)->setDown(false);
@@ -4182,14 +4183,14 @@ bool frmMain::eventFilter(QObject *obj, QEvent *event)
     }
 
     // Drag & drop panels
-    if (!ui->actViewLockPanels->isChecked() && obj->inherits("QGroupBox") 
+    if (!ui->actViewLockPanels->isChecked() && obj->inherits("QGroupBox")
         && (obj->parent()->objectName() == "scrollContentsDevice"
         || obj->parent()->objectName() == "scrollContentsModification"
         || obj->parent()->objectName() == "scrollContentsUser")
         && obj->objectName().startsWith("grp")) {
 
         if (event->type() == QEvent::MouseButtonPress) {
-            
+
             QMouseEvent *e = static_cast<QMouseEvent*>(event);
             m_mousePressPos = e->pos();
 
@@ -4206,7 +4207,7 @@ bool frmMain::eventFilter(QObject *obj, QEvent *event)
 
                 QPixmap *pix = new QPixmap(static_cast<QWidget*>(obj)->size());
                 static_cast<QWidget*>(obj)->render(pix);
-                
+
                 drag->setMimeData(mimeData);
                 drag->setPixmap(*pix);
                 drag->exec();
@@ -4370,7 +4371,7 @@ void frmMain::jogContinuous()
                 while (m_deviceState == DeviceJog) qApp->processEvents();
                 block = false;
             }
-            
+
             // Bounds
             QVector3D b = m_settings->machineBounds();
             // Current machine coords
@@ -4380,7 +4381,7 @@ void frmMain::jogContinuous()
             // Minimum distance to bounds
             double d = 0;
             if (m_settings->softLimitsEnabled()) {
-                t = QVector3D(j.x() * b.x() < 0 ? 0 - m.x() : b.x() - m.x(), 
+                t = QVector3D(j.x() * b.x() < 0 ? 0 - m.x() : b.x() - m.x(),
                               j.y() * b.y() < 0 ? 0 - m.y() : b.y() - m.y(),
                               j.z() * b.z() < 0 ? 0 - m.z() : b.z() - m.z());
                 for (int i = 0; i < 3; i++) if ((j[i] && (qAbs(t[i]) < d)) || (j[i] && !d)) d = qAbs(t[i]);
@@ -4500,7 +4501,7 @@ QString frmMain::getLineInitCommands(int row)
     QVector<QList<int>> lineIndexes = parser->getLinesIndexes();
     QString commands;
     int lineNumber = m_currentModel->data(m_currentModel->index(commandIndex, 4)).toInt();
-    
+
     if (lineNumber != -1) {
         LineSegment* firstSegment = list.at(lineIndexes.at(lineNumber).first());
         LineSegment* lastSegment = list.at(lineIndexes.at(lineNumber).last());

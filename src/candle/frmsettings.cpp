@@ -29,7 +29,7 @@ protected:
 
         QString shiftedKeys = "~!@#$%^&*()_+{}|:?><\"";
         QString key = s.right(1);
-        
+
         if (pEvent->modifiers() & Qt::KeypadModifier) s = "Num+" + s;
         else if (!key.isEmpty() && shiftedKeys.contains(key)) {
             s.remove("Shift+");
@@ -166,7 +166,7 @@ void frmSettings::undo()
 void frmSettings::addCustomSettings(QGroupBox *box)
 {
     static_cast<QVBoxLayout*>(ui->scrollAreaWidgetContents->layout())->addWidget(box);
-    
+
     ui->listCategories->addItem(box->title());
     ui->listCategories->item(ui->listCategories->count() - 1)->setData(Qt::UserRole, box->objectName());
 
@@ -820,7 +820,7 @@ void frmSettings::on_cmdDefaults_clicked()
     d["actSpindleOnOff"] = "Num+0";
     d["actSpindleSpeedPlus"] = "Num+*";
     d["actSpindleSpeedMinus"] = "Num+/";
-    
+
     QTableWidget *table = ui->tblShortcuts;
 
     for (int i = 0; i < table->rowCount(); i++) {

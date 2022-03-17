@@ -73,5 +73,5 @@ QString ColorPickerPlugin::domXml() const
            "   </rect>\n"
            "  </property>\n"
            " </widget>\n"
-           "</ui>\n";    
+           "</ui>\n";
 }

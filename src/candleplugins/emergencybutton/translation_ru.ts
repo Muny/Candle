@@ -6,6 +6,6 @@
     <message>
         <source>Emergency button</source>
         <translation>Аварийная кнопка</translation>
-    </message>   
+    </message>
     </context>
 </TS>

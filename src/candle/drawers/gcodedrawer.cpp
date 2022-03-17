@@ -4,7 +4,7 @@
 #include "gcodedrawer.h"
 
 GcodeDrawer::GcodeDrawer() : QObject()
-{   
+{
     m_geometryUpdated = false;
     m_pointSize = 6;
     m_ignoreZ = false;
@@ -157,7 +157,7 @@ bool GcodeDrawer::updateVectors()
         if (i < 0 || i > list->count() - 1) continue;
         vertexIndex = list->at(i)->vertexIndex();
         if (vertexIndex >= 0) {
-            // Update vertex array            
+            // Update vertex array
             if (data) {
                 data[vertexIndex].color = getSegmentColorVector(list->at(i));
                 data[vertexIndex + 1].color = data[vertexIndex].color;

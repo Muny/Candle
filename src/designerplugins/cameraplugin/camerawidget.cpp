@@ -9,14 +9,14 @@
 #include <QPainter>
 #include <QVBoxLayout>
 
-CameraWidget::CameraWidget(QWidget *parent): QWidget(parent), m_camera(0), m_viewFinder(0), 
+CameraWidget::CameraWidget(QWidget *parent): QWidget(parent), m_camera(0), m_viewFinder(0),
     m_resolution(QSize(1280, 720)), m_zoom(1.0), m_mousePos(QPoint(0, 0))
 {
     m_viewFinder = new QCameraViewfinder(this);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     setLayout(layout);
-    
+
     m_scrollArea = new QScrollArea(this);
     m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -242,7 +242,7 @@ void CameraWidget::mouseMoveEvent(QMouseEvent *e)
 
     if (e->buttons() == Qt::LeftButton && e->modifiers() == Qt::ShiftModifier) {
 
-        QPointF d = QPointF((double)(e->pos() - m_mousePos).x() / m_overlay->width(), 
+        QPointF d = QPointF((double)(e->pos() - m_mousePos).x() / m_overlay->width(),
             (double)(e->pos() - m_mousePos).y() / m_overlay->height());
 
         QPointF o = m_aimPos + d;
@@ -251,7 +251,7 @@ void CameraWidget::mouseMoveEvent(QMouseEvent *e)
     } else if (e->buttons() == Qt::LeftButton) {
         QPoint d = e->pos() - m_mousePos;
 
-        setPos(QVariantList() << m_scrollArea->horizontalScrollBar()->value() - d.x() 
+        setPos(QVariantList() << m_scrollArea->horizontalScrollBar()->value() - d.x()
             << m_scrollArea->verticalScrollBar()->value() - d.y());
 
         m_mousePos = e->pos();

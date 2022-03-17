@@ -25,7 +25,7 @@ function init()
 {
     loader.setWorkingDirectory(new QDir(pluginPath));
     loader.addPluginPath(appPath);
-    
+
     app.settingsLoaded.connect(onAppSettingsLoaded);
     app.settingsSaved.connect(onAppSettingsSaved);
     app.settingsAboutToShow.connect(onAppSettingsAboutToShow);
@@ -38,7 +38,7 @@ function createPanelWidget()
 {
     var f = new QFile(pluginPath + "/widget.ui");
 
-    if (f.open(QIODevice.ReadOnly)) {        
+    if (f.open(QIODevice.ReadOnly)) {
         uiPanel = loader.load(f);
     }
     return uiPanel;
@@ -48,9 +48,9 @@ function createSettingsWidget()
 {
     var f = new QFile(pluginPath + "/settings.ui");
 
-    if (f.open(QIODevice.ReadOnly)) {        
+    if (f.open(QIODevice.ReadOnly)) {
         uiSettings = loader.load(f);
-        
+
         var t = uiSettings.tblButtons;
         t.verticalHeader().defaultAlignment = Qt.AlignCenter;
         t.setItemDelegateForColumn(0, new CodeDelegate(t));
@@ -138,7 +138,7 @@ function onAppSettingsLoaded()
     buttonSize = app.buttonSize();
 
     var b = settings.value("buttons");
-    
+
     restoreButtonsTable(b);
     updateButtons();
     updateActions();
@@ -268,7 +268,7 @@ function updateButtons()
             w.minimumHeight = buttonSize;
             w.sizePolicy = new QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed);
             w.enabled = false;
-            lay.addWidget(w, i / 4, i % 4);    
+            lay.addWidget(w, i / 4, i % 4);
         }
     }
 
@@ -298,7 +298,7 @@ function updateActions()
         a.objectName = "actUserCommandsButton" + (i + 1);
         a.triggered.connect(onTriggered(i));
         storedActions.push(a);
-        app.addAction(a);    
+        app.addAction(a);
     }
 
     for (var i = 0; i < storedActions.length; i++) {
@@ -388,7 +388,7 @@ CodeDelegate.prototype.setEditorData = function(editor, index)
 
     var c = editor.textCursor();
     c.movePosition(QTextCursor.End);
-    editor.setTextCursor(c);    
+    editor.setTextCursor(c);
 }
 
 CodeDelegate.prototype.setModelData = function(editor, model, index)
@@ -412,7 +412,7 @@ CodeDelegate.prototype.updateEditorGeometry = function(editor, option, index)
 CodeDelegate.prototype.paint = function(painter, option, index)
 {
     var q = index.data();
-    
+
     if (option.state() & QStyle.State_Selected) {
         painter.fillRect(option.rect(), new QColor(0xcdcdff));
     }
@@ -429,10 +429,10 @@ CodeDelegate.prototype.paint = function(painter, option, index)
             if ((i == (k - 1)) && (k < n)) s += "..."; else s += l[i];
             if (i < (k - 1)) s += "\n";
         }
-    
+
         painter.drawText(r, this.alignment | 0, s, r);
     }
-    
+
     if (option.state() & QStyle.State_HasFocus) {
         var p = new QPen();
         p.setStyle(Qt.DotLine);
