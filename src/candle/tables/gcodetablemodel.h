@@ -6,16 +6,33 @@
 
 #include <QAbstractTableModel>
 #include <QString>
+#include "../parser/gcodearg.h"
 
 struct GCodeItem
 {
     enum States { InQueue, Sent, Processed, Skipped };
 
-    QString command;
-    char state;
+    GCodeItem() = default;
+    GCodeItem(QString&& c) : command(c), up_command(command.toUpper()) { updateArgs(); }
+    GCodeItem(const QString& c) : command(c), up_command(command.toUpper()) { updateArgs(); }
+
+    void setCommand(const QString& c);
+
+    const QString& getCommand() const { return command; }
+    const QString& getUCommand() const { return up_command; }
+
+    const GCodeArgList& getArgs() const { return args; }
+
+    char state = InQueue;
     QString response;
-    int line;
-    QStringList args;
+    int line = 0;
+
+private:
+    void updateArgs();
+
+    QString command;
+    QString up_command;
+    GCodeArgList args;
 };
 
 class GCodeTableModel : public QAbstractTableModel

@@ -41,7 +41,7 @@ public:
 
     void reset(const QVector3D &initialPoint = QVector3D(qQNaN(), qQNaN(), qQNaN()));
     PointSegment *addCommand(const QString& command);
-    PointSegment *addCommand(const QStringList &args);
+    PointSegment *addCommand(const GCodeArgList &args);
     const QVector3D& getCurrentPoint() const { return m_currentPoint; }
     QList<PointSegment *> expandArc();
     QStringList preprocessCommands(const QStringList& commands);
@@ -83,11 +83,11 @@ private:
     // The gcode.
     QList<PointSegment*> m_points;
 
-    PointSegment *processCommand(const QStringList &args);
-    void handleMCode(float code, const QStringList &args);
-    PointSegment *handleGCode(float code, const QStringList &args);
+    PointSegment *processCommand(const GCodeArgList &args);
+    void setState(BaseSegment *bs, bool zOnly = false, bool fase = false) const;
     PointSegment *addLinearPointSegment(const QVector3D &nextPoint, bool fastTraverse);
-    PointSegment *addArcPointSegment(const QVector3D &nextPoint, bool clockwise, const QStringList &args);
+    PointSegment *addArcPointSegment(const QVector3D &nextPoint, bool clockwise, const QVector3D &center);
+    PointSegment *addArcPointSegment(const QVector3D &nextPoint, bool clockwise, double r);
     void setLastGcodeCommand(float num);
 };
 

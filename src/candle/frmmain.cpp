@@ -1036,8 +1036,6 @@ void frmMain::on_chkHeightMapUse_clicked(bool checked)
             // Modifying linesegments
             QList<LineSegment*> *list = m_viewParser.getLines();
             QRectF borderRect = borderRectFromTextboxes();
-            double x, y, z;
-            QVector3D point;
 
             progress.setLabelText(tr("Subdividing segments..."));
             progress.setMaximum(list->count() - 1);
@@ -1067,15 +1065,15 @@ void frmMain::on_chkHeightMapUse_clicked(bool checked)
 
             for (int i = 0; i < list->count(); i++) {
                 if (i == 0) {
-                    x = list->at(i)->getStart().x();
-                    y = list->at(i)->getStart().y();
-                    z = list->at(i)->getStart().z() + Interpolation::bicubicInterpolate(borderRect, &m_heightMapModel, x, y);
+                    double x = list->at(i)->getStart().x();
+                    double y = list->at(i)->getStart().y();
+                    double z = list->at(i)->getStart().z() + Interpolation::bicubicInterpolate(borderRect, &m_heightMapModel, x, y);
                     list->at(i)->setStart(QVector3D(x, y, z));
                 } else list->at(i)->setStart(list->at(i - 1)->getEnd());
 
-                x = list->at(i)->getEnd().x();
-                y = list->at(i)->getEnd().y();
-                z = list->at(i)->getEnd().z() + Interpolation::bicubicInterpolate(borderRect, &m_heightMapModel, x, y);
+                double x = list->at(i)->getEnd().x();
+                double y = list->at(i)->getEnd().y();
+                double z = list->at(i)->getEnd().z() + Interpolation::bicubicInterpolate(borderRect, &m_heightMapModel, x, y);
                 list->at(i)->setEnd(QVector3D(x, y, z));
 
                 if (progress.isVisible() && (i % PROGRESSSTEP == 0)) {
@@ -1089,92 +1087,80 @@ void frmMain::on_chkHeightMapUse_clicked(bool checked)
             progress.setMaximum(m_programModel.rowCount() - 2);
 
             // Modifying g-code program
-            QString command;
-            QStringList args;
-            int line;
             QString newCommand;
-            GCodeItem item;
             int lastSegmentIndex = 0;
             int lastCommandIndex = -1;
-
-            // Search strings
-            QString coords("XxYyZzIiJjKkRr");
-            QString g("Gg");
-            QString m("Mm");
-
-            char codeChar;          // Single code char G1 -> G
-            float codeNum;          // Code number      G1 -> 1
-
-            QString lastCode;
-            bool isLinearMove;
-            bool hasCommand;
+            bool hasLastCode = false;
 
             m_programLoading = true;
             for (int i = 0; i < m_programModel.rowCount() - 1; i++) {
-                command = m_programModel.data().at(i).command;
-                line = m_programModel.data().at(i).line;
-                isLinearMove = false;
-                hasCommand = false;
+                const GCodeItem& item = m_programModel.data().at(i);
+
+                int line = item.line;
+                bool isLinearMove = false;
+                bool hasCommand = false;
 
                 if (line < 0 || line == lastCommandIndex || lastSegmentIndex == list->count() - 1) {
-                    item.command = command;
                     m_programHeightmapModel.data().append(item);
                 } else {
                     // Get commands args
-                    args = m_programModel.data().at(i).args;
+                    const GCodeArgList &args = item.getArgs();
                     newCommand.clear();
 
                     // Parse command args
-                    foreach (QString arg, args) {                   // arg examples: G1, G2, M3, X100...
-                        codeChar = arg.at(0).toLatin1();            // codeChar: G, M, X...
-                        if (!coords.contains(codeChar)) {           // Not parameter
-                            codeNum = arg.mid(1).toDouble();
-                            if (g.contains(codeChar)) {             // 'G'-command
-                                // Store 'G0' & 'G1'
-                                if (codeNum == 0.0f || codeNum == 1.0f) {
-                                    lastCode = arg;
-                                    isLinearMove = true;            // Store linear move
-                                }
+                    foreach (const GCodeArg& arg, args) {           // arg examples: G1, G2, M3, X100...
+                        char codeChar = arg.cmd.toLatin1();         // codeChar: G, M, X...
+                        if ((codeChar >= 'X' && codeChar <= 'Z') ||
+                            (codeChar >= 'I' && codeChar <= 'K') ||
+                            codeChar == 'R') continue;
 
-                                // Replace 'G2' & 'G3' with 'G1'
-                                if (codeNum == 2.0f || codeNum == 3.0f) {
-                                    newCommand.append("G1");
-                                    isLinearMove = true;
-                                // Drop plane command for arcs
-                                } else if (codeNum != 17.0f && codeNum != 18.0f && codeNum != 19.0f) {
-                                    newCommand.append(arg);
-                                }
+                        if (codeChar == 'G') { // 'G'-command
+                            float codeNum = arg.param.toDouble();
 
-                                hasCommand = true;                  // Command has 'G'
-                            } else {
-                                if (m.contains(codeChar))
-                                    hasCommand = true;              // Command has 'M'
-                                newCommand.append(arg);       // Other commands
+                            // Store 'G0' & 'G1'
+                            if (codeNum == 0.0f || codeNum == 1.0f) {
+                                hasLastCode = true;
+                                isLinearMove = true;            // Store linear move
                             }
+
+                            // Replace 'G2' & 'G3' with 'G1'
+                            if (codeNum == 2.0f || codeNum == 3.0f) {
+                                newCommand.append("G1");
+                                isLinearMove = true;
+                            // Drop plane command for arcs
+                            } else if (codeNum != 17.0f && codeNum != 18.0f && codeNum != 19.0f) {
+                                newCommand.append(arg.cmd).append(arg.param);
+                            }
+
+                            hasCommand = true;                  // Command has 'G'
+                        } else {
+                            if (codeChar == 'M')
+                                hasCommand = true;              // Command has 'M'
+                            newCommand.append(arg.cmd).append(arg.param); // Other commands
                         }
                     }
 
                     // Find first linesegment by command index
                     for (int j = lastSegmentIndex; j < list->count(); j++) {
                         if (list->at(j)->getLineNumber() == line) {
-                            if (!qIsNaN(list->at(j)->getEnd().length()) && (isLinearMove || (!hasCommand && !lastCode.isEmpty()))) {
+                            if (!qIsNaN(list->at(j)->getEnd().length()) && (isLinearMove || (!hasCommand && hasLastCode))) {
                                 // Create new commands for each linesegment with given command index
                                 while ((j < list->count()) && (list->at(j)->getLineNumber() == line)) {
 
-                                    point = list->at(j)->getEnd();
-                                    if (!list->at(j)->isAbsolute()) point -= list->at(j)->getStart();
-                                    if (!list->at(j)->isMetric()) point /= 25.4f;
+                                    const QVector3D &point = list->at(j)->getEnd();
 
-                                    item.command = newCommand + QString("X%1Y%2Z%3")
-                                            .arg(point.x(), 0, 'f', 3).arg(point.y(), 0, 'f', 3).arg(point.z(), 0, 'f', 3);
-                                    m_programHeightmapModel.data().append(item);
+                                    m_programHeightmapModel.data().append(
+                                        GCodeItem(newCommand + QString("X%1Y%2Z%3")
+                                            .arg(point.x(), 0, 'f', 3)
+                                            .arg(point.y(), 0, 'f', 3)
+                                            .arg(point.z(), 0, 'f', 3))
+                                    );
 
                                     if (!newCommand.isEmpty()) newCommand.clear();
                                     j++;
                                 }
                             // Copy original command if not G0 or G1
                             } else {
-                                item.command = command;
                                 m_programHeightmapModel.data().append(item);
                             }
 
@@ -3363,23 +3349,18 @@ void frmMain::updateParser()
     }
 
     for (int i = 0; i < m_currentModel->rowCount() - 1; i++) {
-        // Get stored args
-        args = m_currentModel->data().at(i).args;
+        GCodeItem& gi = m_currentModel->data()[i];
 
-        // Store args if none
-        if (args.isEmpty()) {
-            stripped = GcodePreprocessorUtils::removeComment(m_currentModel->data().at(i).command);
-            args = GcodePreprocessorUtils::splitCommand(stripped);
-            m_currentModel->data()[i].args = args;
-        }
+        // Get stored args
+        const GCodeArgList& args = gi.getArgs();
 
         // Add command to parser
         gp.addCommand(args);
 
         // Update table model
-        m_currentModel->data()[i].state = GCodeItem::InQueue;
-        m_currentModel->data()[i].response = QString();
-        m_currentModel->data()[i].line = gp.getCommandNumber();
+        gi.state = GCodeItem::InQueue;
+        gi.response.clear();
+        gi.line = gp.getCommandNumber();
 
         if (progress.isVisible() && (i % PROGRESSSTEP == 0)) {
             progress.setValue(i);
@@ -3514,8 +3495,6 @@ void frmMain::loadFile(QList<QString> data)
 
     QString command;
     QString stripped;
-    QString trimmed;
-    QList<QString> args;
     GCodeItem item;
 
     // Prepare model
@@ -3535,19 +3514,14 @@ void frmMain::loadFile(QList<QString> data)
         command = data.takeFirst();
 
         // Trim command
-        trimmed = command.trimmed();
+        QString trimmed = command.trimmed();
 
         if (!trimmed.isEmpty()) {
-            // Split command
-            stripped = GcodePreprocessorUtils::removeComment(command);
-            args = GcodePreprocessorUtils::splitCommand(stripped);
+            GCodeItem item(std::move(trimmed));
 
-            gp.addCommand(args);
+            gp.addCommand(item.getArgs());
 
-            item.command = trimmed;
-            item.state = GCodeItem::InQueue;
             item.line = gp.getCommandNumber();
-            item.args = args;
 
             m_programModel.data().append(item);
         }
