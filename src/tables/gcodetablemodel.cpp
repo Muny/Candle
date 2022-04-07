@@ -14,17 +14,16 @@ void GCodeItem::updateArgs() {
     args = GcodePreprocessorUtils::splitCommand(getUCommand());
 }
 
-const QStringList GCodeTableModel::m_headers({
-    tr("#"),
-    tr("Command"),
-    tr("State"),
-    tr("Response"),
-    tr("Line"),
-    tr("Args")
-});
-
 GCodeTableModel::GCodeTableModel(QObject *parent) :
-    QAbstractTableModel(parent)
+    QAbstractTableModel(parent),
+    m_headers({
+        tr("#"),
+        tr("Command"),
+        tr("State"),
+        tr("Response"),
+        tr("Line"),
+        tr("Args")
+    })
 {
 }
 

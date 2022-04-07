@@ -63,7 +63,7 @@ public slots:
 
 private:
     QList<GCodeItem> m_data;
-    static const QStringList m_headers;
+    const QStringList m_headers;
 };
 
 #endif // GCODETABLEMODEL_H

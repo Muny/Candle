@@ -60,20 +60,6 @@ const QStringList frmMain::m_status({
     "Jog"
 });
 
-const QStringList frmMain::m_statusCaptions({
-    tr("Unknown"),
-    tr("Idle"),
-    tr("Alarm"),
-    tr("Run"),
-    tr("Home"),
-    tr("Hold"),
-    tr("Hold"),
-    tr("Queue"),
-    tr("Check"),
-    tr("Door"),
-    tr("Jog")
-});
-
 const QStringList frmMain::m_statusBackColors({
     "red",
     "palette(button)",
@@ -105,7 +91,20 @@ const QStringList frmMain::m_statusForeColors({
 
 frmMain::frmMain(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::frmMain)
+    ui(new Ui::frmMain),
+    m_statusCaptions({
+        tr("Unknown"),
+        tr("Idle"),
+        tr("Alarm"),
+        tr("Run"),
+        tr("Home"),
+        tr("Hold"),
+        tr("Hold"),
+        tr("Queue"),
+        tr("Check"),
+        tr("Door"),
+        tr("Jog")
+    })
 {
     // Loading settings
     m_settingsFileName = qApp->applicationDirPath() + "/settings.ini";

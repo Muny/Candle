@@ -257,7 +257,7 @@ private:
     QBasicTimer m_timerToolAnimation;
 
     static const QStringList m_status;
-    static const QStringList m_statusCaptions;
+    const QStringList m_statusCaptions;
     static const QStringList m_statusBackColors;
     static const QStringList m_statusForeColors;
 
