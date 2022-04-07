@@ -113,6 +113,8 @@ frmMain::frmMain(QWidget *parent) :
     m_settings = new frmSettings(this);
     ui->setupUi(this);
 
+    m_uiReady = true;
+
 #ifdef WINDOWS
     if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) {
         m_taskBarButton = NULL;
@@ -1490,6 +1492,8 @@ void frmMain::hideEvent(QHideEvent *he)
 void frmMain::resizeEvent(QResizeEvent *re)
 {
     Q_UNUSED(re)
+
+    if (!m_uiReady) return;
 
     placeVisualizerButtons();
     resizeCheckBoxes();

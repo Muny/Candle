@@ -214,6 +214,7 @@ private:
     const int BUFFERLENGTH = 127;
 
     Ui::frmMain *ui;
+    bool m_uiReady = false;
     GcodeViewParse m_viewParser;
     GcodeViewParse m_probeParser;
 
