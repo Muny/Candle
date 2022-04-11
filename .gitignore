@@ -78,3 +78,6 @@ bin
 
 #rc
 src/candle/Candle_resource.rc
+
+# Translations
+*.qm

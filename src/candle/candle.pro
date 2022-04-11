@@ -126,15 +126,3 @@ macx {
 }
 
 LIBS += -L$$CWLIBDIR -lcustomwidgets
-
-qtPrepareTool(LRELEASE, lrelease)
-for(tsfile, TRANSLATIONS) {
-    qmfile = $$tsfile
-    qmfile ~= s,.ts$,.qm,
-    qmdir = $$dirname(qmfile)
-    !exists($$qmdir) {
-        mkpath($$qmdir)|error("Aborting.")
-    }
-    command = $$LRELEASE -removeidentical $$tsfile -qm $$qmfile
-    system($$command)|error("Failed to run: $$command")
-}
