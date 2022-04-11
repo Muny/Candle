@@ -485,30 +485,31 @@ void GLWidget::paintEvent(QPaintEvent *pe) {
     QPen pen(m_colorText);
     painter.setPen(pen);
 
-    double x = 10;
-    double y = height() - 60;
-
-    painter.drawText(QPoint(x, y), QString("X: %1 ... %2").arg(m_xMin, 0, 'f', 3).arg(m_xMax, 0, 'f', 3));
-    painter.drawText(QPoint(x, y + 15), QString("Y: %1 ... %2").arg(m_yMin, 0, 'f', 3).arg(m_yMax, 0, 'f', 3));
-    painter.drawText(QPoint(x, y + 30), QString("Z: %1 ... %2").arg(m_zMin, 0, 'f', 3).arg(m_zMax, 0, 'f', 3));
-    painter.drawText(QPoint(x, y + 45), QString("%1 / %2 / %3").arg(m_xSize, 0, 'f', 3).arg(m_ySize, 0, 'f', 3).arg(m_zSize, 0, 'f', 3));
-
     QFontMetrics fm(painter.font());
 
-    painter.drawText(QPoint(x, fm.height() + 10), m_parserStatus);
-    painter.drawText(QPoint(x, fm.height() * 2 + 10), m_speedState);
-    painter.drawText(QPoint(x, fm.height() * 3 + 10), m_pinState);
+    double lh = fm.height();
+    double x = 10;
+    double y = height() - lh * 4;
+
+    painter.drawText(QPoint(x, y), QString("X: %1 ... %2").arg(m_xMin, 0, 'f', 3).arg(m_xMax, 0, 'f', 3));
+    painter.drawText(QPoint(x, y + lh), QString("Y: %1 ... %2").arg(m_yMin, 0, 'f', 3).arg(m_yMax, 0, 'f', 3));
+    painter.drawText(QPoint(x, y + lh * 2), QString("Z: %1 ... %2").arg(m_zMin, 0, 'f', 3).arg(m_zMax, 0, 'f', 3));
+    painter.drawText(QPoint(x, y + lh * 3), QString("%1 / %2 / %3").arg(m_xSize, 0, 'f', 3).arg(m_ySize, 0, 'f', 3).arg(m_zSize, 0, 'f', 3));
+
+    painter.drawText(QPoint(x, lh + 10), m_parserStatus);
+    painter.drawText(QPoint(x, lh * 2 + 10), m_speedState);
+    painter.drawText(QPoint(x, lh * 3 + 10), m_pinState);
 
     QString str = QString(tr("Vertices: %1")).arg(vertices);
-    painter.drawText(QPoint(width() - fm.horizontalAdvance(str) - 10, y + 30), str);
+    painter.drawText(QPoint(width() - fm.horizontalAdvance(str) - 10, y + lh * 2), str);
     str = QString("FPS: %1").arg(m_fps);
-    painter.drawText(QPoint(width() - fm.horizontalAdvance(str) - 10, y + 45), str);
+    painter.drawText(QPoint(width() - fm.horizontalAdvance(str) - 10, y + lh * 3), str);
 
     str = m_spendTime.toString("hh:mm:ss") + " / " + m_estimatedTime.toString("hh:mm:ss");
     painter.drawText(QPoint(width() - fm.horizontalAdvance(str) - 10, y), str);
 
     str = m_bufferState;
-    painter.drawText(QPoint(width() - fm.horizontalAdvance(str) - 10, y + 15), str);
+    painter.drawText(QPoint(width() - fm.horizontalAdvance(str) - 10, y + lh), str);
 
     m_frames++;
 
