@@ -2,13 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru_RU">
 <context>
-    <name>frmMain</name>
-    <message>
-        <source>Coordinate system</source>
-        <translation>Система координат</translation>
-    </message>
-    </context>
-    <context>
     <name>CoordinateSystem</name>
     <message>
         <source>Offsets:</source>
@@ -29,6 +22,13 @@
     <message>
         <source>Zero All</source>
         <translation>Обнулить все</translation>
+    </message>
+</context>
+<context>
+    <name>frmMain</name>
+    <message>
+        <source>Coordinate system</source>
+        <translation>Система координат</translation>
     </message>
 </context>
 </TS>

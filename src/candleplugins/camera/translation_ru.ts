@@ -7,8 +7,8 @@
         <source>Camera</source>
         <translation>Камера</translation>
     </message>
-    </context>
-    <context>
+</context>
+<context>
     <name>pluginCameraSettings</name>
     <message>
         <source>Name:</source>

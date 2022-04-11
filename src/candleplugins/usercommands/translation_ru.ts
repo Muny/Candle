@@ -2,17 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru_RU">
 <context>
+    <name></name>
     <message>
         <source>User button</source>
         <translation>Пользовательская кнопка</translation>
     </message>
-    <name>frmMain</name>
-    <message>
-        <source>User commands</source>
-        <translation>Пользовательские команды</translation>
-    </message>
-    </context>
-    <context>
+</context>
+<context>
     <name>UserCommandsSettings</name>
     <message>
         <source>Hint</source>
@@ -45,6 +41,13 @@
     <message>
         <source>Remove all</source>
         <translation>Удалить все</translation>
+    </message>
+</context>
+<context>
+    <name>frmMain</name>
+    <message>
+        <source>User commands</source>
+        <translation>Пользовательские команды</translation>
     </message>
 </context>
 </TS>
