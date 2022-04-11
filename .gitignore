@@ -62,3 +62,6 @@ bin/*
 /src/Candle_resource.aps
 /src/Candle_resource.rc
 /src/ui_*
+
+# Translations
+*.qm
