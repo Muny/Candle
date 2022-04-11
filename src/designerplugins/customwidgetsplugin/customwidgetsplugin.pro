@@ -2,6 +2,9 @@ CONFIG += plugin
 TEMPLATE = lib
 QT += widgets uiplugin multimedia multimediawidgets
 
+macx:DESTDIR = ../../../Candle.app/Contents/MacOS
+else:DESTDIR = ../../../bin
+
 TARGET = customwidgets
 
 DEFINES += CUSTOMWIDGETS_EXPORT

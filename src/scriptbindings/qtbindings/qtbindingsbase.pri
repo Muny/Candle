@@ -2,11 +2,8 @@ TEMPLATE = lib
 DEPENDPATH += .
 INCLUDEPATH += .
 
-CONFIG(debug) {
-    DESTDIR = $$PWD/../plugins/script_debug
-} else {
-    DESTDIR = $$PWD/../plugins/script
-}
+macx:DESTDIR = ../../../../Candle.app/Contents/MacOS/script
+else:DESTDIR = ../../../../bin/script
 
 win32:{
     QMAKE_CXXFLAGS += /MP /GS /Zi
