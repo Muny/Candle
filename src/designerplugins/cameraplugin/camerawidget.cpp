@@ -267,7 +267,13 @@ void CameraWidget::wheelEvent(QWheelEvent *e)
     double prevZoom = m_zoom;
     m_zoom = qBound<double>(1, m_zoom * f, 8);
 
-    QPointF deltaPos = e->position() / prevZoom - m_scrollArea->widget()->pos() / prevZoom;
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    QPoint pos = e->pos();
+#else
+    QPointF pos = e->position();
+#endif
+
+    QPointF deltaPos = pos / prevZoom - m_scrollArea->widget()->pos() / prevZoom;
     QPointF delta = deltaPos * m_zoom - deltaPos * prevZoom;
     QPoint d = delta.toPoint();
 

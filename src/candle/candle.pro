@@ -102,7 +102,10 @@ RESOURCES += \
 
 INCLUDEPATH += ../designerplugins/customwidgetsplugin
 
-LIBS += -L../designerplugins/customwidgetsplugin -lcustomwidgets
+CONFIG(release): BTYPE=release
+CONFIG(debug): BTYPE=debug
+
+LIBS += -L../designerplugins/customwidgetsplugin/$$BTYPE -lcustomwidgets
 
 qtPrepareTool(LRELEASE, lrelease)
 for(tsfile, TRANSLATIONS) {
