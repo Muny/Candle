@@ -27,6 +27,9 @@ contains(QT_CONFIG, opengles.) {
     target.path = /home/pi
 }
 
+macx:DESTDIR = .
+else:DESTDIR = ./bin
+
 TARGET = Candle
 TEMPLATE = app
 VERSION = 1.1.9
@@ -36,7 +39,7 @@ ICON = images/candle.icns
 DEFINES += sNan=\"65536\"
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
-TRANSLATIONS += translations/candle_en.ts translations/candle_ru.ts translations/candle_es.ts translations/candle_fr.ts translations/candle_pt.ts
+TRANSLATIONS += translations/candle_ru.ts translations/candle_es.ts translations/candle_fr.ts translations/candle_pt.ts
 
 SOURCES += main.cpp\
         frmmain.cpp \
@@ -111,3 +114,7 @@ RESOURCES += \
     images.qrc
 
 CONFIG += c++11
+CONFIG += lrelease
+
+macx:LRELEASE_DIR = ./Candle.app/Contents/MacOS/translations
+else:LRELEASE_DIR = ./bin/translations

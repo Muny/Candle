@@ -17,7 +17,7 @@ endif()
 add_compile_definitions(APP_VERSION="1.1.9")
 add_compile_definitions(QT_NO_DEBUG)
 
-find_package(Qt5 COMPONENTS Core Widgets OpenGL SerialPort REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets OpenGL SerialPort LinguistTools REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR})
 
@@ -26,10 +26,9 @@ file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/*.cpp
                     ${PROJECT_SOURCE_DIR}/parser/*.cpp
                     ${PROJECT_SOURCE_DIR}/widgets/*.cpp
                     ${PROJECT_SOURCE_DIR}/tables/*.cpp
-if(APPLE)
-                    ${PROJECT_SOURCE_DIR}/images/candle.icns
-endif()
                     )
+
+file(GLOB TRANSLATIONS ${PROJECT_SOURCE_DIR}/translations/*.ts)
 
 qt5_add_resources(SHADER_RSC
     ${PROJECT_SOURCE_DIR}/shaders.qrc
@@ -39,13 +38,24 @@ qt5_add_resources(SHADER_RSC
 
 if(APPLE)
     set(APP_ICON_MACOSX ${PROJECT_SOURCE_DIR}/images/candle.icns)
+    list(APPEND SRC_FILES ${APP_ICON_MACOSX})
     set_source_files_properties(${APP_ICON_MACOSX} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
     add_executable(Candle MACOSX_BUNDLE ${SRC_FILES} ${SHADER_RSC})
     set_target_properties(Candle PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/Info.plist)
+
+    set(LRELEASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/Candle.app/Contents/MacOS/translations)
 else()
     add_executable(Candle ${SRC_FILES} ${SHADER_RSC})
+
+    set(LRELEASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/translations)
 endif()
+
+set_source_files_properties(${TRANSLATIONS} PROPERTIES OUTPUT_LOCATION ${LRELEASE_DIR})
+file(MAKE_DIRECTORY ${LRELEASE_DIR})
+
+qt5_add_translation(QM_FILES ${TRANSLATIONS})
+add_custom_target(translations ALL DEPENDS ${QM_FILES})
 
 target_link_libraries(Candle
     Qt5::Core
