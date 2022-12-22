@@ -1,0 +1,20 @@
+app-id: com.github.Denvi.Candle
+runtime: org.kde.Platform
+runtime-version: '5.15-22.08'
+sdk: org.kde.Sdk
+command: Candle
+finish-args:
+    - --share=ipc
+    - --socket=x11
+    - --socket=wayland
+    - --filesystem=host
+    - --device=all
+modules:
+  - name: candle
+    buildsystem: cmake
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+      - -DDEFAULT_SETTINGS_LOCATION=ON
+    sources:
+        - type: dir
+          path: src
