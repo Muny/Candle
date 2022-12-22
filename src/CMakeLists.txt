@@ -17,6 +17,12 @@ endif()
 add_compile_definitions(APP_VERSION="1.1.9")
 add_compile_definitions(QT_NO_DEBUG)
 
+set(DEFAULT_SETTINGS_LOCATION OFF CACHE BOOL "Store settings in user config dir")
+
+if(${DEFAULT_SETTINGS_LOCATION})
+add_compile_definitions(DEFAULT_SETTINGS_LOCATION)
+endif()
+
 find_package(Qt5 COMPONENTS Core Widgets OpenGL SerialPort LinguistTools REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR})
@@ -49,6 +55,9 @@ else()
     add_executable(Candle ${SRC_FILES} ${SHADER_RSC})
 
     set(LRELEASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/translations)
+
+    install(TARGETS Candle RUNTIME DESTINATION bin)
+    install(FILES ${QM_FILES} DESTINATION bin/translations)
 endif()
 
 set_source_files_properties(${TRANSLATIONS} PROPERTIES OUTPUT_LOCATION ${LRELEASE_DIR})

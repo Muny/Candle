@@ -331,7 +331,11 @@ double frmMain::toolZPosition()
 
 void frmMain::preloadSettings()
 {
+#if (DEFAULT_SETTINGS_LOCATION)
+    QSettings set(QSettings::IniFormat, QSettings::UserScope, "com.github.Denvi");
+#else
     QSettings set(m_settingsFileName, QSettings::IniFormat);
+#endif
     set.setIniCodec("UTF-8");
 
     qApp->setStyleSheet(QString(qApp->styleSheet()).replace(QRegExp("font-size:\\s*\\d+"), "font-size: " + set.value("fontSize", "8").toString()));
@@ -344,7 +348,11 @@ void frmMain::preloadSettings()
 
 void frmMain::loadSettings()
 {
+#if (DEFAULT_SETTINGS_LOCATION)
+    QSettings set(QSettings::IniFormat, QSettings::UserScope, "com.github.Denvi");
+#else
     QSettings set(m_settingsFileName, QSettings::IniFormat);
+#endif
     set.setIniCodec("UTF-8");
 
     m_settingsLoading = true;
@@ -498,7 +506,11 @@ void frmMain::loadSettings()
 
 void frmMain::saveSettings()
 {
+#if (DEFAULT_SETTINGS_LOCATION)
+    QSettings set(QSettings::IniFormat, QSettings::UserScope, "com.github.Denvi");
+#else
     QSettings set(m_settingsFileName, QSettings::IniFormat);
+#endif
     set.setIniCodec("UTF-8");
 
     set.setValue("port", m_settings->port());
