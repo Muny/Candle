@@ -57,7 +57,9 @@ else()
     set(LRELEASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/translations)
 
     install(TARGETS Candle RUNTIME DESTINATION bin)
-    install(FILES ${QM_FILES} DESTINATION bin/translations)
+    install(FILES images/candle_256.png DESTINATION share/icons/hicolor/256x256/apps
+            RENAME candle.png)
+    install(FILES candle.desktop DESTINATION share/applications)
 endif()
 
 set_source_files_properties(${TRANSLATIONS} PROPERTIES OUTPUT_LOCATION ${LRELEASE_DIR})
@@ -65,6 +67,10 @@ file(MAKE_DIRECTORY ${LRELEASE_DIR})
 
 qt5_add_translation(QM_FILES ${TRANSLATIONS})
 add_custom_target(translations ALL DEPENDS ${QM_FILES})
+
+if(NOT APPLE)
+    install(FILES ${QM_FILES} DESTINATION bin/translations)
+endif()
 
 target_link_libraries(Candle
     Qt5::Core

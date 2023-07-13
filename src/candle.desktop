@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Candle
+GenericName=GRBL Controller
+TryExec=Candle
+Exec=Candle %F
+Terminal=false
+Type=Application
+Icon=candle
+Categories=Utility;
+StartupNotify=true
+MimeType=text/x-ngc;
+X-Desktop-File-Install-Version=0.23
