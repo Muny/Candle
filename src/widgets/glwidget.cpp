@@ -388,6 +388,35 @@ void GLWidget::updateView()
     m_viewMatrix.rotate(-90, 1.0, 0.0, 0.0);
 }
 
+// from glext.h
+#ifndef GL_PROGRAM_POINT_SIZE
+#define GL_PROGRAM_POINT_SIZE 0x8642
+#endif
+
+#ifndef GL_MULTISAMPLE
+#define GL_MULTISAMPLE        0x809D
+#endif
+
+#ifndef GL_LINE_SMOOTH
+#define GL_LINE_SMOOTH        0x0B20
+#endif
+
+#ifndef GL_POINT_SMOOTH
+#define GL_POINT_SMOOTH       0x0B10
+#endif
+
+#ifndef GL_POINT_SMOOTH_HINT
+#define GL_POINT_SMOOTH_HINT  0x0C51
+#endif
+
+#ifndef GL_LINE_SMOOTH_HINT
+#define GL_LINE_SMOOTH_HINT   0x0C52
+#endif
+
+#ifndef GL_MULTISAMPLE
+#define GL_MULTISAMPLE        0x809D
+#endif
+
 #ifdef GLES
 void GLWidget::paintGL() {
 #else

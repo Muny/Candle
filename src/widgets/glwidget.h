@@ -4,9 +4,9 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#ifndef GLES
 #include <QGLWidget>
-#else
+
+#ifdef GLES
 #include <QOpenGLWidget>
 #endif
 
