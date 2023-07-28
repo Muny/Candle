@@ -10,14 +10,16 @@ Supported functions:
 
 System requirements for running "Candle":
 -------------------
-* Windows/Linux x86
+* Windows/Linux/OSX x86
 * CPU with SSE2 instruction set support
 * Graphics card with OpenGL 2.0 support
 * 120 MB free storage space
 
 Build requirements:
 ------------------
-Qt 5.4.2 with MinGW/GCC compiler
+Qt 5.4.2+ with MinGW/GCC compiler
+
+Debian/Ubuntu: build-essential qtbase5-dev qtbase5-dev-tools qttools5-dev libqt5serialport5-dev
 
 Downloads:
 ----------
@@ -28,8 +30,9 @@ Experimental versions:
 
 For GRBL v1.1 firmware
 
-* Windows: [candle_1.1.7.zip](https://github.com/Denvi/Candle/releases/download/v1.1/Candle_1.1.7.zip)
-* Linux: [candle_1.1.7.tar.gz](https://github.com/Denvi/Candle/releases/download/v1.1/Candle_1.1.7.tar.gz)
+* Windows: [Candle_1.1.9_64bit.zip](https://github.com/mar0x/Candle/releases/download/v1.1.9/Candle_1.1.9_64bit.zip)
+* Linux: [Candle-1.1.9-x86_64.AppImage](https://github.com/mar0x/Candle/releases/download/v1.1.9/Candle-1.1.9-x86_64.AppImage)
+* OS X: [Candle-1.1.9.dmg](https://github.com/mar0x/Candle/releases/download/v1.1.9/Candle-1.1.9.dmg)
 
 (for GRBL v0.9 and below use Candle 1.0)
 
