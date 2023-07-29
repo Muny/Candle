@@ -1,0 +1,51 @@
+name: Build Linux
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        qt-version: ['5.12.12', '5.15.2']
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        aqtversion: '==3.1.*'
+        version: '${{ matrix.qt-version }}'
+        target: 'desktop'
+        modules: 'qtscript'
+        arch: 'gcc_64'
+
+    - name: Build using cmake
+      run: |
+        cmake -S src -B build-qt-${{ matrix.qt-version }}-cmake -DCMAKE_INSTALL_PREFIX=/usr -DDEFAULT_SETTINGS_LOCATION=ON
+        make -C build-qt-${{ matrix.qt-version }}-cmake all
+
+    - name: Install cmake build
+      run: |
+        make -C build-qt-${{ matrix.qt-version }}-cmake install DESTDIR=$(pwd)/root
+
+    - name: Install LinuxDeploy
+      uses: miurahr/install-linuxdeploy-action@v1
+      with:
+        plugins: qt appimage
+        dir: ${{ github.workspace }}
+
+    - name: Linux Deploy Qt
+      run: |
+        linuxdeploy-x86_64.AppImage --appimage-extract
+        linuxdeploy-plugin-qt-x86_64.AppImage --appimage-extract
+        linuxdeploy-plugin-appimage-x86_64.AppImage --appimage-extract
+        rm -f linuxdeploy-*x86_64.AppImage
+        ./squashfs-root/usr/bin/linuxdeploy --appdir root --plugin qt --output appimage
+
+    - name: Archive Candle
+      uses: actions/upload-artifact@v3
+      with:
+        name: candle-qt-${{ matrix.qt-version }}-linux
+        path: Candle-x86_64.AppImage

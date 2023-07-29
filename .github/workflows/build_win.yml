@@ -1,4 +1,4 @@
-name: Build on Windows, win32
+name: Build Windows
 
 on: [push, pull_request]
 

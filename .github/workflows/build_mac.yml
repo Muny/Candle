@@ -1,0 +1,46 @@
+name: Build Mac
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        qt-version: ['5.12.12', '5.15.2']
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        aqtversion: '==3.1.*'
+        version: '${{ matrix.qt-version }}'
+        target: 'desktop'
+        modules: 'qtscript'
+        arch: 'clang_64'
+
+    - name: Build using qmake
+      run: |
+        mkdir build-qt-${{ matrix.qt-version }}-qmake
+        cd build-qt-${{ matrix.qt-version }}-qmake
+        qmake -r ../src/candle.pro
+        make all
+        cd ..
+
+    - name: Build using cmake
+      run: |
+        cmake -S src -B build-qt-${{ matrix.qt-version }}-cmake -DDEFAULT_SETTINGS_LOCATION=ON
+        make -C build-qt-${{ matrix.qt-version }}-cmake all
+
+    - name: Mac Deploy Qt
+      run: |
+        macdeployqt build-qt-${{ matrix.qt-version }}-cmake/Candle.app -dmg
+
+    - name: Archive Candle
+      uses: actions/upload-artifact@v3
+      with:
+        name: candle-qt-${{ matrix.qt-version }}-mac
+        path: build-qt-${{ matrix.qt-version }}-cmake/Candle.dmg
+
