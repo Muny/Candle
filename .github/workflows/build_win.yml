@@ -8,29 +8,24 @@ jobs:
     strategy:
       matrix:
         qt-version: ['5.12.12', '5.15.2']
+        arch: [win32, win64]
+        include:
+          - qt-version: '5.12.12'
+            mingw: mingw73
+          - qt-version: '5.15.2'
+            mingw: mingw81
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: Install Qt (5.12.12)
+    - name: Install Qt
       uses: jurplel/install-qt-action@v3
-      if: contains(matrix.qt-version, '5.12.12')
       with:
         aqtversion: '==3.1.*'
         version: '${{ matrix.qt-version }}'
         target: 'desktop'
         modules: 'qtscript'
-        arch: 'win32_mingw73'
-
-    - name: Install Qt (5.15.2)
-      uses: jurplel/install-qt-action@v3
-      if: contains(matrix.qt-version, '5.15.2')
-      with:
-        aqtversion: '==3.1.*'
-        version: '${{ matrix.qt-version }}'
-        target: 'desktop'
-        modules: 'qtscript'
-        arch: 'win32_mingw81'
+        arch: '${{ matrix.arch }}_${{ matrix.mingw }}'
 
     - name: Run qmake
       run: qmake -r src/candle.pro

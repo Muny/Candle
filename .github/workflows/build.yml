@@ -9,6 +9,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         qt-version: ['5.12.12', '5.15.2']
+        include:
+          - os: macos-latest
+            arch: clang_64
+          - os: ubuntu-latest
+            arch: gcc_64
 
     steps:
     - uses: actions/checkout@v2
@@ -17,28 +22,31 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install Qt (MacOS)
+    - name: Install Qt
       uses: jurplel/install-qt-action@v3
-      if: contains(matrix.os, 'macos')
       with:
         aqtversion: '==3.1.*'
         version: '${{ matrix.qt-version }}'
         target: 'desktop'
         modules: 'qtscript'
-        arch: 'clang_64'
+        arch: '${{ matrix.arch }}'
 
-    - name: Install Qt (Linux)
-      uses: jurplel/install-qt-action@v3
-      if: contains(matrix.os, 'ubuntu')
+    - name: Build using qmake
+      run: |
+        mkdir build-qmake
+        cd build-qmake
+        qmake -r ../src/candle.pro
+        make all
+        cd ..
+
+    - name: Build using cmake
+      run: |
+        cmake -S src -B build-cmake -DCMAKE_INSTALL_PREFIX=/usr -DDEFAULT_SETTINGS_LOCATION=ON
+        make -C build-cmake all
+        make -C build-cmake install DESTDIR=$(pwd)/root
+
+    - name: Archive incomplete distro
+      uses: actions/upload-artifact@v3
       with:
-        aqtversion: '==3.1.*'
-        version: '${{ matrix.qt-version }}'
-        target: 'desktop'
-        modules: 'qtscript'
-        arch: 'gcc_64'
-
-    - name: Run qmake
-      run: qmake -r src/candle.pro
-
-    - name: Build
-      run: make all install
+        name: incomplete-dist
+        path: root
