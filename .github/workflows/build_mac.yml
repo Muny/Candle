@@ -21,26 +21,18 @@ jobs:
         modules: 'qtscript'
         arch: 'clang_64'
 
-    - name: Build using qmake
-      run: |
-        mkdir build-qt-${{ matrix.qt-version }}-qmake
-        cd build-qt-${{ matrix.qt-version }}-qmake
-        qmake -r ../src/candle.pro
-        make all
-        cd ..
+    - name: Run cmake
+      run: cmake -S src -B build -DDEFAULT_SETTINGS_LOCATION=ON
 
-    - name: Build using cmake
-      run: |
-        cmake -S src -B build-qt-${{ matrix.qt-version }}-cmake -DDEFAULT_SETTINGS_LOCATION=ON
-        make -C build-qt-${{ matrix.qt-version }}-cmake all
+    - name: Make
+      run: make -C build all
 
-    - name: Mac Deploy Qt
-      run: |
-        macdeployqt build-qt-${{ matrix.qt-version }}-cmake/Candle.app -dmg
+    - name: Deploy Qt
+      run: macdeployqt build/Candle.app -dmg
 
     - name: Archive Candle
       uses: actions/upload-artifact@v3
       with:
         name: candle-qt-${{ matrix.qt-version }}-mac
-        path: build-qt-${{ matrix.qt-version }}-cmake/Candle.dmg
+        path: build/Candle.dmg
 

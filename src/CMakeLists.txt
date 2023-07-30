@@ -17,6 +17,8 @@ if (HAVE_SSE3)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse3")
 endif()
 
+include(GNUInstallDirs)
+
 if(APPLE)
     add_compile_definitions(Q_OS_MAC)
 endif()
@@ -62,10 +64,12 @@ else()
 
     set(LRELEASE_DIR ${CMAKE_CURRENT_BINARY_DIR}/translations)
 
-    install(TARGETS Candle RUNTIME DESTINATION bin)
-    install(FILES images/candle_256.png DESTINATION share/icons/hicolor/256x256/apps
-            RENAME candle.png)
-    install(FILES candle.desktop DESTINATION share/applications)
+    install(TARGETS Candle RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    if (UNIX)
+        install(FILES images/candle_256.png DESTINATION share/icons/hicolor/256x256/apps
+                RENAME candle.png)
+        install(FILES candle.desktop DESTINATION share/applications)
+    endif()
 endif()
 
 set_source_files_properties(${TRANSLATIONS} PROPERTIES OUTPUT_LOCATION ${LRELEASE_DIR})

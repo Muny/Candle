@@ -28,12 +28,26 @@ jobs:
         arch: 'win${{ matrix.arch }}_mingw${{ matrix.mingw }}'
         tools: 'tools_mingw,qt.tools.win${{ matrix.arch }}_mingw${{ matrix.mingw }}0'
 
-    - name: Build
-      run: |
-        $env:Path = $env:IQTA_TOOLS + '/mingw${{ matrix.mingw }}0_${{ matrix.arch }}/bin;' + $env:Path
-        mkdir build-qmake
-        cd build-qmake
-        qmake -r ../src/candle.pro
-        mingw32-make all
-        cd ..
+    - name: Set Path
+      run: echo ($env:IQTA_TOOLS + '/mingw${{ matrix.mingw }}0_${{ matrix.arch }}/bin') >> $env:GITHUB_PATH
 
+    - name: Run cmake
+      run: cmake -S src -B build -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=$env:Qt5_Dir -DCMAKE_INSTALL_PREFIX=
+
+    - name: Make
+      run: mingw32-make -C build all
+
+    - name: Install
+      run: mingw32-make -C build install DESTDIR="$pwd/root"
+
+    - name: Deploy Qt
+      run: windeployqt root\bin
+
+    - name: Rename artifact
+      run: move root\bin root\Candle
+
+    - name: Archive Candle
+      uses: actions/upload-artifact@v3
+      with:
+        name: candle-qt-${{ matrix.qt-version }}-win${{ matrix.arch }}
+        path: root/Candle

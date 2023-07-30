@@ -21,14 +21,14 @@ jobs:
         modules: 'qtscript'
         arch: 'gcc_64'
 
-    - name: Build using cmake
-      run: |
-        cmake -S src -B build-qt-${{ matrix.qt-version }}-cmake -DCMAKE_INSTALL_PREFIX=/usr -DDEFAULT_SETTINGS_LOCATION=ON
-        make -C build-qt-${{ matrix.qt-version }}-cmake all
+    - name: Run cmake
+      run: cmake -S src -B build -DCMAKE_INSTALL_PREFIX=/usr -DDEFAULT_SETTINGS_LOCATION=ON
 
-    - name: Install cmake build
-      run: |
-        make -C build-qt-${{ matrix.qt-version }}-cmake install DESTDIR=$(pwd)/root
+    - name: Make
+      run: make -C build all
+
+    - name: Install
+      run: make -C build install DESTDIR=$(pwd)/root
 
     - name: Install LinuxDeploy
       uses: miurahr/install-linuxdeploy-action@v1
@@ -36,7 +36,7 @@ jobs:
         plugins: qt appimage
         dir: ${{ github.workspace }}
 
-    - name: Linux Deploy Qt
+    - name: Deploy Qt
       run: |
         linuxdeploy-x86_64.AppImage --appimage-extract
         linuxdeploy-plugin-qt-x86_64.AppImage --appimage-extract
