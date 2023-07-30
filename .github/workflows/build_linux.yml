@@ -22,7 +22,7 @@ jobs:
         arch: 'gcc_64'
 
     - name: Run cmake
-      run: cmake -S src -B build -DCMAKE_INSTALL_PREFIX=/usr -DDEFAULT_SETTINGS_LOCATION=ON
+      run: cmake -S src -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DDEFAULT_SETTINGS_LOCATION=ON
 
     - name: Make
       run: make -C build all

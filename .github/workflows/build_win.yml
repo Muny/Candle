@@ -32,7 +32,7 @@ jobs:
       run: echo ($env:IQTA_TOOLS + '/mingw${{ matrix.mingw }}0_${{ matrix.arch }}/bin') >> $env:GITHUB_PATH
 
     - name: Run cmake
-      run: cmake -S src -B build -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=$env:Qt5_Dir -DCMAKE_INSTALL_PREFIX=
+      run: cmake -S src -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$env:Qt5_Dir -DCMAKE_INSTALL_PREFIX=
 
     - name: Make
       run: mingw32-make -C build all
@@ -41,13 +41,10 @@ jobs:
       run: mingw32-make -C build install DESTDIR="$pwd/root"
 
     - name: Deploy Qt
-      run: windeployqt root\bin
-
-    - name: Rename artifact
-      run: move root\bin root\Candle
+      run: windeployqt --release root\bin
 
     - name: Archive Candle
       uses: actions/upload-artifact@v3
       with:
         name: candle-qt-${{ matrix.qt-version }}-win${{ matrix.arch }}
-        path: root/Candle
+        path: root/bin

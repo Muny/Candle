@@ -22,7 +22,7 @@ jobs:
         arch: 'clang_64'
 
     - name: Run cmake
-      run: cmake -S src -B build -DDEFAULT_SETTINGS_LOCATION=ON
+      run: cmake -S src -B build -DCMAKE_BUILD_TYPE=Release -DDEFAULT_SETTINGS_LOCATION=ON
 
     - name: Make
       run: make -C build all
