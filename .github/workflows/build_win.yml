@@ -8,12 +8,12 @@ jobs:
     strategy:
       matrix:
         qt-version: ['5.12.12', '5.15.2']
-        arch: [win32, win64]
+        arch: ['32', '64']
         include:
           - qt-version: '5.12.12'
-            mingw: mingw73
+            mingw: '73'
           - qt-version: '5.15.2'
-            mingw: mingw81
+            mingw: '81'
 
     steps:
     - uses: actions/checkout@v3
@@ -25,11 +25,15 @@ jobs:
         version: '${{ matrix.qt-version }}'
         target: 'desktop'
         modules: 'qtscript'
-        arch: '${{ matrix.arch }}_${{ matrix.mingw }}'
-
-    - name: Run qmake
-      run: qmake -r src/candle.pro
+        arch: 'win${{ matrix.arch }}_mingw${{ matrix.mingw }}'
+        tools: 'tools_mingw,qt.tools.win${{ matrix.arch }}_mingw${{ matrix.mingw }}0'
 
     - name: Build
-      run: make all install
+      run: |
+        $env:Path = $env:IQTA_TOOLS + '/mingw${{ matrix.mingw }}0_${{ matrix.arch }}/bin;' + $env:Path
+        mkdir build-qmake
+        cd build-qmake
+        qmake -r ../src/candle.pro
+        mingw32-make all
+        cd ..
 
