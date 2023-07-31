@@ -157,16 +157,16 @@ if(WIN32)
     #    endforeach()
 
 elseif (UNIX) #LINUX
-    find_program(Q_MAKE_EXE qmake)
-    find_program(CQT_EXE cqtdeployer)
-    if(NOT EXISTS ${CQT_EXE})
-        message("the cqtdeployer not exits please install the cqtdeployer and run cmake again!")
-        return()
-    endif()
-    add_custom_target(
-        deploy
-        COMMAND cqtdeployer clear -bin ${CURENT_PROJECT} -qmake ${Q_MAKE_EXE} -libDir ${PROJECT_SOURCE_DIR} -qmlDir ${PROJECT_SOURCE_DIR} -recursiveDepth 5
-        COMMENT "Deploy: cqtdeployer clear -bin ${CURENT_PROJECT} -qmake ${Q_MAKE_EXE} -libDir ${PROJECT_SOURCE_DIR} -qmlDir ${PROJECT_SOURCE_DIR} -recursiveDepth 5"
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-    )
+#    find_program(Q_MAKE_EXE qmake)
+#    find_program(CQT_EXE cqtdeployer)
+#    if(NOT EXISTS ${CQT_EXE})
+#        message("the cqtdeployer not exits please install the cqtdeployer and run cmake again!")
+#        return()
+#    endif()
+#    add_custom_target(
+#        deploy
+#        COMMAND cqtdeployer clear -bin ${CURENT_PROJECT} -qmake ${Q_MAKE_EXE} -libDir ${PROJECT_SOURCE_DIR} -qmlDir ${PROJECT_SOURCE_DIR} -recursiveDepth 5
+#        COMMENT "Deploy: cqtdeployer clear -bin ${CURENT_PROJECT} -qmake ${Q_MAKE_EXE} -libDir ${PROJECT_SOURCE_DIR} -qmlDir ${PROJECT_SOURCE_DIR} -recursiveDepth 5"
+#        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+#    )
 endif()
