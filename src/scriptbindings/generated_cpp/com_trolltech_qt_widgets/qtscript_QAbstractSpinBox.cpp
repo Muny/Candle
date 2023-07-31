@@ -354,12 +354,12 @@ static void qtscript_QAbstractSpinBox_StepEnabled_fromScriptValue(const QScriptV
     else if (var.userType() == qMetaTypeId<QAbstractSpinBox::StepEnabledFlag>())
         out = qvariant_cast<QAbstractSpinBox::StepEnabledFlag>(var);
     else
-        out = 0;
+        out = QAbstractSpinBox::StepEnabled();
 }
 
 static QScriptValue qtscript_construct_QAbstractSpinBox_StepEnabled(QScriptContext *context, QScriptEngine *engine)
 {
-    QAbstractSpinBox::StepEnabled result = 0;
+    QAbstractSpinBox::StepEnabled result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QAbstractSpinBox::StepEnabled>(context->argument(0).toInt32());
     } else {

@@ -215,12 +215,12 @@ static void qtscript_QNetworkInterface_InterfaceFlags_fromScriptValue(const QScr
     else if (var.userType() == qMetaTypeId<QNetworkInterface::InterfaceFlag>())
         out = qvariant_cast<QNetworkInterface::InterfaceFlag>(var);
     else
-        out = 0;
+        out = QNetworkInterface::InterfaceFlags();
 }
 
 static QScriptValue qtscript_construct_QNetworkInterface_InterfaceFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    QNetworkInterface::InterfaceFlags result = 0;
+    QNetworkInterface::InterfaceFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QNetworkInterface::InterfaceFlags>(context->argument(0).toInt32());
     } else {

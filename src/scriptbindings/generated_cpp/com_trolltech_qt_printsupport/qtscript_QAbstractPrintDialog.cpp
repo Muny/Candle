@@ -261,7 +261,7 @@ static void qtscript_QAbstractPrintDialog_PrintDialogOptions_fromScriptValue(con
 
 static QScriptValue qtscript_construct_QAbstractPrintDialog_PrintDialogOptions(QScriptContext *context, QScriptEngine *engine)
 {
-    QAbstractPrintDialog::PrintDialogOptions result = 0;
+    QAbstractPrintDialog::PrintDialogOptions result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QAbstractPrintDialog::PrintDialogOptions>(context->argument(0).toInt32());
     } else {

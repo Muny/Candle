@@ -364,12 +364,12 @@ static void qtscript_QDir_SortFlags_fromScriptValue(const QScriptValue &value, Q
     else if (var.userType() == qMetaTypeId<QDir::SortFlag>())
         out = qvariant_cast<QDir::SortFlag>(var);
     else
-        out = 0;
+        out = QDir::SortFlags();
 }
 
 static QScriptValue qtscript_construct_QDir_SortFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    QDir::SortFlags result = 0;
+    QDir::SortFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QDir::SortFlags>(context->argument(0).toInt32());
     } else {
@@ -547,12 +547,12 @@ static void qtscript_QDir_Filters_fromScriptValue(const QScriptValue &value, QDi
     else if (var.userType() == qMetaTypeId<QDir::Filter>())
         out = qvariant_cast<QDir::Filter>(var);
     else
-        out = 0;
+        out = QDir::Filters();
 }
 
 static QScriptValue qtscript_construct_QDir_Filters(QScriptContext *context, QScriptEngine *engine)
 {
-    QDir::Filters result = 0;
+    QDir::Filters result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QDir::Filters>(context->argument(0).toInt32());
     } else {

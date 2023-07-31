@@ -924,12 +924,12 @@ static void qtscript_QGraphicsItem_GraphicsItemFlags_fromScriptValue(const QScri
     else if (var.userType() == qMetaTypeId<QGraphicsItem::GraphicsItemFlag>())
         out = qvariant_cast<QGraphicsItem::GraphicsItemFlag>(var);
     else
-        out = 0;
+        out = QGraphicsItem::GraphicsItemFlags();
 }
 
 static QScriptValue qtscript_construct_QGraphicsItem_GraphicsItemFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    QGraphicsItem::GraphicsItemFlags result = 0;
+    QGraphicsItem::GraphicsItemFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QGraphicsItem::GraphicsItemFlags>(context->argument(0).toInt32());
     } else {

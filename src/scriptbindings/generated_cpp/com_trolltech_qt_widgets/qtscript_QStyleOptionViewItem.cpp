@@ -190,12 +190,12 @@ static void qtscript_QStyleOptionViewItem_ViewItemFeatures_fromScriptValue(const
     else if (var.userType() == qMetaTypeId<QStyleOptionViewItem::ViewItemFeature>())
         out = qvariant_cast<QStyleOptionViewItem::ViewItemFeature>(var);
     else
-        out = 0;
+        out = QStyleOptionViewItem::ViewItemFeatures();
 }
 
 static QScriptValue qtscript_construct_QStyleOptionViewItem_ViewItemFeatures(QScriptContext *context, QScriptEngine *engine)
 {
-    QStyleOptionViewItem::ViewItemFeatures result = 0;
+    QStyleOptionViewItem::ViewItemFeatures result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QStyleOptionViewItem::ViewItemFeatures>(context->argument(0).toInt32());
     } else {

@@ -1093,12 +1093,12 @@ static void qtscript_QLocale_NumberOptions_fromScriptValue(const QScriptValue &v
     else if (var.userType() == qMetaTypeId<QLocale::NumberOption>())
         out = qvariant_cast<QLocale::NumberOption>(var);
     else
-        out = 0;
+        out = QLocale::NumberOptions();
 }
 
 static QScriptValue qtscript_construct_QLocale_NumberOptions(QScriptContext *context, QScriptEngine *engine)
 {
-    QLocale::NumberOptions result = 0;
+    QLocale::NumberOptions result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QLocale::NumberOptions>(context->argument(0).toInt32());
     } else {

@@ -254,12 +254,12 @@ static void qtscript_QGLContext_BindOptions_fromScriptValue(const QScriptValue &
     else if (var.userType() == qMetaTypeId<QGLContext::BindOption>())
         out = qvariant_cast<QGLContext::BindOption>(var);
     else
-        out = 0;
+        out = QGLContext::BindOptions();
 }
 
 static QScriptValue qtscript_construct_QGLContext_BindOptions(QScriptContext *context, QScriptEngine *engine)
 {
-    QGLContext::BindOptions result = 0;
+    QGLContext::BindOptions result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QGLContext::BindOptions>(context->argument(0).toInt32());
     } else {

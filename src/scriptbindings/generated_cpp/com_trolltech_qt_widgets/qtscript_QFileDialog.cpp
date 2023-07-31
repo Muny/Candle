@@ -363,12 +363,12 @@ static void qtscript_QFileDialog_Options_fromScriptValue(const QScriptValue &val
     else if (var.userType() == qMetaTypeId<QFileDialog::Option>())
         out = qvariant_cast<QFileDialog::Option>(var);
     else
-        out = 0;
+        out = QFileDialog::Options();
 }
 
 static QScriptValue qtscript_construct_QFileDialog_Options(QScriptContext *context, QScriptEngine *engine)
 {
-    QFileDialog::Options result = 0;
+    QFileDialog::Options result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QFileDialog::Options>(context->argument(0).toInt32());
     } else {

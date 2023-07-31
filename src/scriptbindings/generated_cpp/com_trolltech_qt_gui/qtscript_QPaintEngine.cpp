@@ -317,12 +317,12 @@ static void qtscript_QPaintEngine_PaintEngineFeatures_fromScriptValue(const QScr
     else if (var.userType() == qMetaTypeId<QPaintEngine::PaintEngineFeature>())
         out = qvariant_cast<QPaintEngine::PaintEngineFeature>(var);
     else
-        out = 0;
+        out = QPaintEngine::PaintEngineFeatures();
 }
 
 static QScriptValue qtscript_construct_QPaintEngine_PaintEngineFeatures(QScriptContext *context, QScriptEngine *engine)
 {
-    QPaintEngine::PaintEngineFeatures result = 0;
+    QPaintEngine::PaintEngineFeatures result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QPaintEngine::PaintEngineFeatures>(context->argument(0).toInt32());
     } else {
@@ -595,12 +595,12 @@ static void qtscript_QPaintEngine_DirtyFlags_fromScriptValue(const QScriptValue 
     else if (var.userType() == qMetaTypeId<QPaintEngine::DirtyFlag>())
         out = qvariant_cast<QPaintEngine::DirtyFlag>(var);
     else
-        out = 0;
+        out = QPaintEngine::DirtyFlags();
 }
 
 static QScriptValue qtscript_construct_QPaintEngine_DirtyFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    QPaintEngine::DirtyFlags result = 0;
+    QPaintEngine::DirtyFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QPaintEngine::DirtyFlags>(context->argument(0).toInt32());
     } else {

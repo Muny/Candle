@@ -236,12 +236,12 @@ static void qtscript_QDockWidget_DockWidgetFeatures_fromScriptValue(const QScrip
     else if (var.userType() == qMetaTypeId<QDockWidget::DockWidgetFeature>())
         out = qvariant_cast<QDockWidget::DockWidgetFeature>(var);
     else
-        out = 0;
+        out = QDockWidget::DockWidgetFeatures();
 }
 
 static QScriptValue qtscript_construct_QDockWidget_DockWidgetFeatures(QScriptContext *context, QScriptEngine *engine)
 {
-    QDockWidget::DockWidgetFeatures result = 0;
+    QDockWidget::DockWidgetFeatures result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QDockWidget::DockWidgetFeatures>(context->argument(0).toInt32());
     } else {

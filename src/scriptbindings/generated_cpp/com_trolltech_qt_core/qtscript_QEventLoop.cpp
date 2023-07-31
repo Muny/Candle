@@ -196,12 +196,12 @@ static void qtscript_QEventLoop_ProcessEventsFlags_fromScriptValue(const QScript
     else if (var.userType() == qMetaTypeId<QEventLoop::ProcessEventsFlag>())
         out = qvariant_cast<QEventLoop::ProcessEventsFlag>(var);
     else
-        out = 0;
+        out = QEventLoop::ProcessEventsFlags();
 }
 
 static QScriptValue qtscript_construct_QEventLoop_ProcessEventsFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    QEventLoop::ProcessEventsFlags result = 0;
+    QEventLoop::ProcessEventsFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QEventLoop::ProcessEventsFlags>(context->argument(0).toInt32());
     } else {

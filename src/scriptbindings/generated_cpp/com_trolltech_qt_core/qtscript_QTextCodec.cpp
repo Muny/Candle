@@ -227,12 +227,12 @@ static void qtscript_QTextCodec_ConversionFlags_fromScriptValue(const QScriptVal
     else if (var.userType() == qMetaTypeId<QTextCodec::ConversionFlag>())
         out = qvariant_cast<QTextCodec::ConversionFlag>(var);
     else
-        out = 0;
+        out = QTextCodec::ConversionFlags();
 }
 
 static QScriptValue qtscript_construct_QTextCodec_ConversionFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    QTextCodec::ConversionFlags result = 0;
+    QTextCodec::ConversionFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QTextCodec::ConversionFlags>(context->argument(0).toInt32());
     } else {

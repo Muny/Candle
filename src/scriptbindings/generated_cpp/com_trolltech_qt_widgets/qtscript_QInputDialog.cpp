@@ -342,12 +342,12 @@ static void qtscript_QInputDialog_InputDialogOptions_fromScriptValue(const QScri
     else if (var.userType() == qMetaTypeId<QInputDialog::InputDialogOption>())
         out = qvariant_cast<QInputDialog::InputDialogOption>(var);
     else
-        out = 0;
+        out = QInputDialog::InputDialogOptions();
 }
 
 static QScriptValue qtscript_construct_QInputDialog_InputDialogOptions(QScriptContext *context, QScriptEngine *engine)
 {
-    QInputDialog::InputDialogOptions result = 0;
+    QInputDialog::InputDialogOptions result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QInputDialog::InputDialogOptions>(context->argument(0).toInt32());
     } else {

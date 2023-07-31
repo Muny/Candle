@@ -1585,12 +1585,12 @@ static void qtscript_QStyle_State_fromScriptValue(const QScriptValue &value, QSt
     else if (var.userType() == qMetaTypeId<QStyle::StateFlag>())
         out = qvariant_cast<QStyle::StateFlag>(var);
     else
-        out = 0;
+        out = QStyle::State();
 }
 
 static QScriptValue qtscript_construct_QStyle_State(QScriptContext *context, QScriptEngine *engine)
 {
-    QStyle::State result = 0;
+    QStyle::State result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QStyle::State>(context->argument(0).toInt32());
     } else {

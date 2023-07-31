@@ -192,12 +192,12 @@ static void qtscript_QItemSelectionModel_SelectionFlags_fromScriptValue(const QS
     else if (var.userType() == qMetaTypeId<QItemSelectionModel::SelectionFlag>())
         out = qvariant_cast<QItemSelectionModel::SelectionFlag>(var);
     else
-        out = 0;
+        out = QItemSelectionModel::SelectionFlags();
 }
 
 static QScriptValue qtscript_construct_QItemSelectionModel_SelectionFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    QItemSelectionModel::SelectionFlags result = 0;
+    QItemSelectionModel::SelectionFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QItemSelectionModel::SelectionFlags>(context->argument(0).toInt32());
     } else {

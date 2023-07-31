@@ -279,12 +279,12 @@ static void qtscript_QTextBoundaryFinder_BoundaryReasons_fromScriptValue(const Q
     else if (var.userType() == qMetaTypeId<QTextBoundaryFinder::BoundaryReason>())
         out = qvariant_cast<QTextBoundaryFinder::BoundaryReason>(var);
     else
-        out = 0;
+        out = QTextBoundaryFinder::BoundaryReasons();
 }
 
 static QScriptValue qtscript_construct_QTextBoundaryFinder_BoundaryReasons(QScriptContext *context, QScriptEngine *engine)
 {
-    QTextBoundaryFinder::BoundaryReasons result = 0;
+    QTextBoundaryFinder::BoundaryReasons result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QTextBoundaryFinder::BoundaryReasons>(context->argument(0).toInt32());
     } else {

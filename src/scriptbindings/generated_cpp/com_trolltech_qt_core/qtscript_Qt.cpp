@@ -269,12 +269,12 @@ static void qtscript_Qt_TextInteractionFlags_fromScriptValue(const QScriptValue 
     else if (var.userType() == qMetaTypeId<Qt::TextInteractionFlag>())
         out = qvariant_cast<Qt::TextInteractionFlag>(var);
     else
-        out = 0;
+        out = Qt::TextInteractionFlags();
 }
 
 static QScriptValue qtscript_construct_Qt_TextInteractionFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::TextInteractionFlags result = 0;
+    Qt::TextInteractionFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::TextInteractionFlags>(context->argument(0).toInt32());
     } else {
@@ -1504,12 +1504,12 @@ static void qtscript_Qt_DropActions_fromScriptValue(const QScriptValue &value, Q
     else if (var.userType() == qMetaTypeId<Qt::DropAction>())
         out = qvariant_cast<Qt::DropAction>(var);
     else
-        out = 0;
+        out = Qt::DropActions();
 }
 
 static QScriptValue qtscript_construct_Qt_DropActions(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::DropActions result = 0;
+    Qt::DropActions result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::DropActions>(context->argument(0).toInt32());
     } else {
@@ -1721,12 +1721,12 @@ static void qtscript_Qt_WindowFlags_fromScriptValue(const QScriptValue &value, Q
     else if (var.userType() == qMetaTypeId<Qt::WindowType>())
         out = qvariant_cast<Qt::WindowType>(var);
     else
-        out = 0;
+        out = Qt::WindowFlags();
 }
 
 static QScriptValue qtscript_construct_Qt_WindowFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::WindowFlags result = 0;
+    Qt::WindowFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::WindowFlags>(context->argument(0).toInt32());
     } else {
@@ -1892,12 +1892,12 @@ static void qtscript_Qt_ImageConversionFlags_fromScriptValue(const QScriptValue 
     else if (var.userType() == qMetaTypeId<Qt::ImageConversionFlag>())
         out = qvariant_cast<Qt::ImageConversionFlag>(var);
     else
-        out = 0;
+        out = Qt::ImageConversionFlags();
 }
 
 static QScriptValue qtscript_construct_Qt_ImageConversionFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::ImageConversionFlags result = 0;
+    Qt::ImageConversionFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::ImageConversionFlags>(context->argument(0).toInt32());
     } else {
@@ -2225,12 +2225,12 @@ static void qtscript_Qt_MatchFlags_fromScriptValue(const QScriptValue &value, Qt
     else if (var.userType() == qMetaTypeId<Qt::MatchFlag>())
         out = qvariant_cast<Qt::MatchFlag>(var);
     else
-        out = 0;
+        out = Qt::MatchFlags();
 }
 
 static QScriptValue qtscript_construct_Qt_MatchFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::MatchFlags result = 0;
+    Qt::MatchFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::MatchFlags>(context->argument(0).toInt32());
     } else {
@@ -2607,12 +2607,12 @@ static void qtscript_Qt_ItemFlags_fromScriptValue(const QScriptValue &value, Qt:
     else if (var.userType() == qMetaTypeId<Qt::ItemFlag>())
         out = qvariant_cast<Qt::ItemFlag>(var);
     else
-        out = 0;
+        out = Qt::ItemFlags();
 }
 
 static QScriptValue qtscript_construct_Qt_ItemFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::ItemFlags result = 0;
+    Qt::ItemFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::ItemFlags>(context->argument(0).toInt32());
     } else {
@@ -2841,12 +2841,12 @@ static void qtscript_Qt_KeyboardModifiers_fromScriptValue(const QScriptValue &va
     else if (var.userType() == qMetaTypeId<Qt::KeyboardModifier>())
         out = qvariant_cast<Qt::KeyboardModifier>(var);
     else
-        out = 0;
+        out = Qt::KeyboardModifiers();
 }
 
 static QScriptValue qtscript_construct_Qt_KeyboardModifiers(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::KeyboardModifiers result = 0;
+    Qt::KeyboardModifiers result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::KeyboardModifiers>(context->argument(0).toInt32());
     } else {
@@ -3146,12 +3146,12 @@ static void qtscript_Qt_DockWidgetAreas_fromScriptValue(const QScriptValue &valu
     else if (var.userType() == qMetaTypeId<Qt::DockWidgetArea>())
         out = qvariant_cast<Qt::DockWidgetArea>(var);
     else
-        out = 0;
+        out = Qt::DockWidgetAreas();
 }
 
 static QScriptValue qtscript_construct_Qt_DockWidgetAreas(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::DockWidgetAreas result = 0;
+    Qt::DockWidgetAreas result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::DockWidgetAreas>(context->argument(0).toInt32());
     } else {
@@ -3408,12 +3408,12 @@ static void qtscript_Qt_InputMethodHints_fromScriptValue(const QScriptValue &val
     else if (var.userType() == qMetaTypeId<Qt::InputMethodHint>())
         out = qvariant_cast<Qt::InputMethodHint>(var);
     else
-        out = 0;
+        out = Qt::InputMethodHints();
 }
 
 static QScriptValue qtscript_construct_Qt_InputMethodHints(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::InputMethodHints result = 0;
+    Qt::InputMethodHints result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::InputMethodHints>(context->argument(0).toInt32());
     } else {
@@ -3860,12 +3860,12 @@ static void qtscript_Qt_MouseButtons_fromScriptValue(const QScriptValue &value, 
     else if (var.userType() == qMetaTypeId<Qt::MouseButton>())
         out = qvariant_cast<Qt::MouseButton>(var);
     else
-        out = 0;
+        out = Qt::MouseButtons();
 }
 
 static QScriptValue qtscript_construct_Qt_MouseButtons(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::MouseButtons result = 0;
+    Qt::MouseButtons result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::MouseButtons>(context->argument(0).toInt32());
     } else {
@@ -6052,12 +6052,12 @@ static void qtscript_Qt_GestureFlags_fromScriptValue(const QScriptValue &value, 
     else if (var.userType() == qMetaTypeId<Qt::GestureFlag>())
         out = qvariant_cast<Qt::GestureFlag>(var);
     else
-        out = 0;
+        out = Qt::GestureFlags();
 }
 
 static QScriptValue qtscript_construct_Qt_GestureFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::GestureFlags result = 0;
+    Qt::GestureFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::GestureFlags>(context->argument(0).toInt32());
     } else {
@@ -6436,12 +6436,12 @@ static void qtscript_Qt_Alignment_fromScriptValue(const QScriptValue &value, Qt:
     else if (var.userType() == qMetaTypeId<Qt::AlignmentFlag>())
         out = qvariant_cast<Qt::AlignmentFlag>(var);
     else
-        out = 0;
+        out = Qt::Alignment();
 }
 
 static QScriptValue qtscript_construct_Qt_Alignment(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::Alignment result = 0;
+    Qt::Alignment result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::Alignment>(context->argument(0).toInt32());
     } else {
@@ -7311,12 +7311,12 @@ static void qtscript_Qt_Orientations_fromScriptValue(const QScriptValue &value, 
     else if (var.userType() == qMetaTypeId<Qt::Orientation>())
         out = qvariant_cast<Qt::Orientation>(var);
     else
-        out = 0;
+        out = Qt::Orientations();
 }
 
 static QScriptValue qtscript_construct_Qt_Orientations(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::Orientations result = 0;
+    Qt::Orientations result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::Orientations>(context->argument(0).toInt32());
     } else {
@@ -7634,12 +7634,12 @@ static void qtscript_Qt_ToolBarAreas_fromScriptValue(const QScriptValue &value, 
     else if (var.userType() == qMetaTypeId<Qt::ToolBarArea>())
         out = qvariant_cast<Qt::ToolBarArea>(var);
     else
-        out = 0;
+        out = Qt::ToolBarAreas();
 }
 
 static QScriptValue qtscript_construct_Qt_ToolBarAreas(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::ToolBarAreas result = 0;
+    Qt::ToolBarAreas result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::ToolBarAreas>(context->argument(0).toInt32());
     } else {
@@ -7933,12 +7933,12 @@ static void qtscript_Qt_TouchPointStates_fromScriptValue(const QScriptValue &val
     else if (var.userType() == qMetaTypeId<Qt::TouchPointState>())
         out = qvariant_cast<Qt::TouchPointState>(var);
     else
-        out = 0;
+        out = Qt::TouchPointStates();
 }
 
 static QScriptValue qtscript_construct_Qt_TouchPointStates(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::TouchPointStates result = 0;
+    Qt::TouchPointStates result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::TouchPointStates>(context->argument(0).toInt32());
     } else {
@@ -8086,12 +8086,12 @@ static void qtscript_Qt_WindowStates_fromScriptValue(const QScriptValue &value, 
     else if (var.userType() == qMetaTypeId<Qt::WindowState>())
         out = qvariant_cast<Qt::WindowState>(var);
     else
-        out = 0;
+        out = Qt::WindowStates();
 }
 
 static QScriptValue qtscript_construct_Qt_WindowStates(QScriptContext *context, QScriptEngine *engine)
 {
-    Qt::WindowStates result = 0;
+    Qt::WindowStates result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<Qt::WindowStates>(context->argument(0).toInt32());
     } else {

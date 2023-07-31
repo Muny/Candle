@@ -186,12 +186,12 @@ static void qtscript_QDirIterator_IteratorFlags_fromScriptValue(const QScriptVal
     else if (var.userType() == qMetaTypeId<QDirIterator::IteratorFlag>())
         out = qvariant_cast<QDirIterator::IteratorFlag>(var);
     else
-        out = 0;
+        out = QDirIterator::IteratorFlags();
 }
 
 static QScriptValue qtscript_construct_QDirIterator_IteratorFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    QDirIterator::IteratorFlags result = 0;
+    QDirIterator::IteratorFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QDirIterator::IteratorFlags>(context->argument(0).toInt32());
     } else {

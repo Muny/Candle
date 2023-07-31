@@ -201,12 +201,12 @@ static void qtscript_QGLShader_ShaderType_fromScriptValue(const QScriptValue &va
     else if (var.userType() == qMetaTypeId<QGLShader::ShaderTypeBit>())
         out = qvariant_cast<QGLShader::ShaderTypeBit>(var);
     else
-        out = 0;
+        out = QGLShader::ShaderType();
 }
 
 static QScriptValue qtscript_construct_QGLShader_ShaderType(QScriptContext *context, QScriptEngine *engine)
 {
-    QGLShader::ShaderType result = 0;
+    QGLShader::ShaderType result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QGLShader::ShaderType>(context->argument(0).toInt32());
     } else {

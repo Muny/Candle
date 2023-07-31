@@ -416,12 +416,12 @@ static void qtscript_QTextStream_NumberFlags_fromScriptValue(const QScriptValue 
     else if (var.userType() == qMetaTypeId<QTextStream::NumberFlag>())
         out = qvariant_cast<QTextStream::NumberFlag>(var);
     else
-        out = 0;
+        out = QTextStream::NumberFlags();
 }
 
 static QScriptValue qtscript_construct_QTextStream_NumberFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    QTextStream::NumberFlags result = 0;
+    QTextStream::NumberFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QTextStream::NumberFlags>(context->argument(0).toInt32());
     } else {

@@ -192,12 +192,12 @@ static void qtscript_QTextItem_RenderFlags_fromScriptValue(const QScriptValue &v
     else if (var.userType() == qMetaTypeId<QTextItem::RenderFlag>())
         out = qvariant_cast<QTextItem::RenderFlag>(var);
     else
-        out = 0;
+        out = QTextItem::RenderFlags();
 }
 
 static QScriptValue qtscript_construct_QTextItem_RenderFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    QTextItem::RenderFlags result = 0;
+    QTextItem::RenderFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QTextItem::RenderFlags>(context->argument(0).toInt32());
     } else {

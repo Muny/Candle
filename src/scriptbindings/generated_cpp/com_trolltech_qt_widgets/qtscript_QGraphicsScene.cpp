@@ -418,12 +418,12 @@ static void qtscript_QGraphicsScene_SceneLayers_fromScriptValue(const QScriptVal
     else if (var.userType() == qMetaTypeId<QGraphicsScene::SceneLayer>())
         out = qvariant_cast<QGraphicsScene::SceneLayer>(var);
     else
-        out = 0;
+        out = QGraphicsScene::SceneLayers();
 }
 
 static QScriptValue qtscript_construct_QGraphicsScene_SceneLayers(QScriptContext *context, QScriptEngine *engine)
 {
-    QGraphicsScene::SceneLayers result = 0;
+    QGraphicsScene::SceneLayers result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QGraphicsScene::SceneLayers>(context->argument(0).toInt32());
     } else {

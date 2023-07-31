@@ -385,12 +385,12 @@ static void qtscript_QMessageBox_StandardButtons_fromScriptValue(const QScriptVa
     else if (var.userType() == qMetaTypeId<QMessageBox::StandardButton>())
         out = qvariant_cast<QMessageBox::StandardButton>(var);
     else
-        out = 0;
+        out = QMessageBox::StandardButtons();
 }
 
 static QScriptValue qtscript_construct_QMessageBox_StandardButtons(QScriptContext *context, QScriptEngine *engine)
 {
-    QMessageBox::StandardButtons result = 0;
+    QMessageBox::StandardButtons result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QMessageBox::StandardButtons>(context->argument(0).toInt32());
     } else {

@@ -412,12 +412,12 @@ static void qtscript_QTextDocument_FindFlags_fromScriptValue(const QScriptValue 
     else if (var.userType() == qMetaTypeId<QTextDocument::FindFlag>())
         out = qvariant_cast<QTextDocument::FindFlag>(var);
     else
-        out = 0;
+        out = QTextDocument::FindFlags();
 }
 
 static QScriptValue qtscript_construct_QTextDocument_FindFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    QTextDocument::FindFlags result = 0;
+    QTextDocument::FindFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QTextDocument::FindFlags>(context->argument(0).toInt32());
     } else {

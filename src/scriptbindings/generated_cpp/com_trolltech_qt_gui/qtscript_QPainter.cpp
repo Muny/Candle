@@ -719,12 +719,12 @@ static void qtscript_QPainter_RenderHints_fromScriptValue(const QScriptValue &va
     else if (var.userType() == qMetaTypeId<QPainter::RenderHint>())
         out = qvariant_cast<QPainter::RenderHint>(var);
     else
-        out = 0;
+        out = QPainter::RenderHints();
 }
 
 static QScriptValue qtscript_construct_QPainter_RenderHints(QScriptContext *context, QScriptEngine *engine)
 {
-    QPainter::RenderHints result = 0;
+    QPainter::RenderHints result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QPainter::RenderHints>(context->argument(0).toInt32());
     } else {

@@ -235,12 +235,12 @@ static void qtscript_QSql_ParamType_fromScriptValue(const QScriptValue &value, Q
     else if (var.userType() == qMetaTypeId<QSql::ParamTypeFlag>())
         out = qvariant_cast<QSql::ParamTypeFlag>(var);
     else
-        out = 0;
+        out = QSql::ParamType();
 }
 
 static QScriptValue qtscript_construct_QSql_ParamType(QScriptContext *context, QScriptEngine *engine)
 {
-    QSql::ParamType result = 0;
+    QSql::ParamType result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QSql::ParamType>(context->argument(0).toInt32());
     } else {

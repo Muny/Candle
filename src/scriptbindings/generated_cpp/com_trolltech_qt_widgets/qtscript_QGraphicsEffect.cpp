@@ -256,12 +256,12 @@ static void qtscript_QGraphicsEffect_ChangeFlags_fromScriptValue(const QScriptVa
     else if (var.userType() == qMetaTypeId<QGraphicsEffect::ChangeFlag>())
         out = qvariant_cast<QGraphicsEffect::ChangeFlag>(var);
     else
-        out = 0;
+        out = QGraphicsEffect::ChangeFlags();
 }
 
 static QScriptValue qtscript_construct_QGraphicsEffect_ChangeFlags(QScriptContext *context, QScriptEngine *engine)
 {
-    QGraphicsEffect::ChangeFlags result = 0;
+    QGraphicsEffect::ChangeFlags result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QGraphicsEffect::ChangeFlags>(context->argument(0).toInt32());
     } else {

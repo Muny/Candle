@@ -323,12 +323,12 @@ static void qtscript_QMainWindow_DockOptions_fromScriptValue(const QScriptValue 
     else if (var.userType() == qMetaTypeId<QMainWindow::DockOption>())
         out = qvariant_cast<QMainWindow::DockOption>(var);
     else
-        out = 0;
+        out = QMainWindow::DockOptions();
 }
 
 static QScriptValue qtscript_construct_QMainWindow_DockOptions(QScriptContext *context, QScriptEngine *engine)
 {
-    QMainWindow::DockOptions result = 0;
+    QMainWindow::DockOptions result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QMainWindow::DockOptions>(context->argument(0).toInt32());
     } else {

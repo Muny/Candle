@@ -172,12 +172,12 @@ static void qtscript_QStyleOptionFrame_FrameFeatures_fromScriptValue(const QScri
     else if (var.userType() == qMetaTypeId<QStyleOptionFrame::FrameFeature>())
         out = qvariant_cast<QStyleOptionFrame::FrameFeature>(var);
     else
-        out = 0;
+        out = QStyleOptionFrame::FrameFeatures();
 }
 
 static QScriptValue qtscript_construct_QStyleOptionFrame_FrameFeatures(QScriptContext *context, QScriptEngine *engine)
 {
-    QStyleOptionFrame::FrameFeatures result = 0;
+    QStyleOptionFrame::FrameFeatures result;
     if ((context->argumentCount() == 1) && context->argument(0).isNumber()) {
         result = static_cast<QStyleOptionFrame::FrameFeatures>(context->argument(0).toInt32());
     } else {
