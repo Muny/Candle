@@ -4,44 +4,25 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        qt-version: ['5.12.9', '5.15.2']
-        exclude:
-          # The MingW installer below only supports MingW 8.1, 5.15.0 and up are the only Qt versions that support MingW 8.1
-          - os: windows-latest
-            qt-version: '5.12.9'
+        qt-version: ['5.12.12', '5.15.2']
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup Python3
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+    - uses: actions/checkout@v3
 
-    - name: Install Qt (Windows)
-      uses: jurplel/install-qt-action@v2
-      if: contains(matrix.os, 'windows')
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
       with:
+        aqtversion: '==3.1.*'
         version: '${{ matrix.qt-version }}'
         target: 'desktop'
         modules: 'qtscript'
-        arch: 'win64_mingw81'
-
-    - name: Install Qt (Linux, MacOS)
-      uses: jurplel/install-qt-action@v2
-      if: "!contains(matrix.os, 'windows')"
-      with:
-        version: '${{ matrix.qt-version }}'
-        target: 'desktop'
-        modules: 'qtscript'
-        tools: 'tools_mingw,8.1.0,qt.tools.win64_mingw810'
-
+        arch: 'gcc_64'
 
     - name: Run qmake
       run: qmake -r candle.pro
 
     - name: Build
-      run: make all install
+      run: make all
