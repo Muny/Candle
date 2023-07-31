@@ -8,6 +8,29 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set_property(GLOBAL PROPERTY CXX_STANDARD 11)
 set_property(GLOBAL PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+set(VQt Qt${QT_VERSION_MAJOR})
+
+function(vqt_find_package)
+  find_package(${VQt} ${ARGV})
+endfunction()
+
+function(vqt_add_resources)
+  if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt6_add_resources(${ARGV})
+  else()
+    qt5_add_resources(${ARGV})
+  endif()
+endfunction()
+
+function(vqt_add_translation)
+  if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt_add_translation(${ARGV})
+  else()
+    qt5_add_translation(${ARGV})
+  endif()
+endfunction()
+
 add_definitions(
 #    -DQT_MESSAGELOGCONTEXT# qDebug()
 #    -DQT_DISABLE_DEPRECATED_BEFORE=0x060000
@@ -36,17 +59,6 @@ endif()
 include_directories(src/designerplugins/customwidgetsplugin)
 
 add_subdirectory(src/candle)
-
 add_subdirectory(src/designerplugins)
-
 add_subdirectory(src/candleplugins)
-
 add_subdirectory(src/scriptbindings)
-
-
-
-
-
-
-
-
