@@ -147,7 +147,6 @@ static const QDockWidget::DockWidgetFeature qtscript_QDockWidget_DockWidgetFeatu
     , QDockWidget::DockWidgetClosable
     , QDockWidget::DockWidgetMovable
     , QDockWidget::DockWidgetFloatable
-    , QDockWidget::AllDockWidgetFeatures
     , QDockWidget::DockWidgetVerticalTitleBar
     , QDockWidget::DockWidgetFeatureMask
     , QDockWidget::Reserved
@@ -158,7 +157,6 @@ static const char * const qtscript_QDockWidget_DockWidgetFeature_keys[] = {
     , "DockWidgetClosable"
     , "DockWidgetMovable"
     , "DockWidgetFloatable"
-    , "AllDockWidgetFeatures"
     , "DockWidgetVerticalTitleBar"
     , "DockWidgetFeatureMask"
     , "Reserved"

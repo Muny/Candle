@@ -683,7 +683,7 @@ void frmMain::on_actViewLockWindows_toggled(bool checked)
     QList<QDockWidget*> dl = findChildren<QDockWidget*>();
 
     foreach (QDockWidget *d, dl) {
-        d->setFeatures(checked ? QDockWidget::NoDockWidgetFeatures : QDockWidget::AllDockWidgetFeatures);
+        d->setFeatures(checked ? QDockWidget::NoDockWidgetFeatures : (QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable));
     }
 }
 

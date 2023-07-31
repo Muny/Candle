@@ -428,7 +428,7 @@ QLabel[overrided=&quot;false&quot;] {
   </widget>
   <widget class="QDockWidget" name="dockModification">
    <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
+    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetFloatable</set>
    </property>
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
@@ -1254,7 +1254,7 @@ QLabel[overrided=&quot;false&quot;] {
   </widget>
   <widget class="QDockWidget" name="dockDevice">
    <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
+    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetFloatable</set>
    </property>
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
@@ -2382,7 +2382,7 @@ QLabel[overrided=&quot;false&quot;] {
   </widget>
   <widget class="QDockWidget" name="dockVisualizer">
    <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
+    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetFloatable</set>
    </property>
    <property name="windowTitle">
     <string>Visualizer</string>
@@ -2563,7 +2563,7 @@ QLabel[overrided=&quot;false&quot;] {
   </widget>
   <widget class="QDockWidget" name="dockConsole">
    <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
+    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetFloatable</set>
    </property>
    <property name="windowTitle">
     <string>Console</string>
