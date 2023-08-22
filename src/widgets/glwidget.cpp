@@ -463,11 +463,11 @@ void GLWidget::paintEvent(QPaintEvent *pe) {
 
         // Update geometries in current opengl context
         foreach (ShaderDrawable *drawable, m_shaderDrawables)
-            if (drawable->needsUpdateGeometry()) drawable->updateGeometry(m_shaderProgram.get());
+            if (drawable->needsUpdateGeometry()) drawable->updateGeometry(m_shaderProgram.data());
 
         // Draw geometries
         foreach (ShaderDrawable *drawable, m_shaderDrawables) {
-            drawable->draw(m_shaderProgram.get());
+            drawable->draw(m_shaderProgram.data());
             if (drawable->visible()) vertices += drawable->getVertexCount();
         }
 
@@ -499,6 +499,10 @@ void GLWidget::paintEvent(QPaintEvent *pe) {
     painter.drawText(QPoint(x, lh + 10), m_parserStatus);
     painter.drawText(QPoint(x, lh * 2 + 10), m_speedState);
     painter.drawText(QPoint(x, lh * 3 + 10), m_pinState);
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+#define horizontalAdvance width
+#endif
 
     QString str = QString(tr("Vertices: %1")).arg(vertices);
     painter.drawText(QPoint(this->width() - fm.horizontalAdvance(str) - 10, y + lh * 2), str);
