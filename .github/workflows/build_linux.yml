@@ -4,9 +4,10 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-22.04, ubuntu-20.04]
         qt-version: ['5.12.12', '5.15.2']
 
     steps:
@@ -36,16 +37,14 @@ jobs:
         plugins: qt appimage
         dir: ${{ github.workspace }}
 
+    - name: Install fuse
+      run: /usr/bin/sudo apt-get install fuse
+
     - name: Deploy Qt
-      run: |
-        linuxdeploy-x86_64.AppImage --appimage-extract
-        linuxdeploy-plugin-qt-x86_64.AppImage --appimage-extract
-        linuxdeploy-plugin-appimage-x86_64.AppImage --appimage-extract
-        rm -f linuxdeploy-*x86_64.AppImage
-        ./squashfs-root/usr/bin/linuxdeploy --appdir root --plugin qt --output appimage
+      run: linuxdeploy-x86_64.AppImage --appdir root --plugin qt --output appimage
 
     - name: Archive Candle
       uses: actions/upload-artifact@v3
       with:
-        name: candle-qt-${{ matrix.qt-version }}-linux
+        name: candle-qt-${{ matrix.qt-version }}-${{ matrix.os }}
         path: Candle-x86_64.AppImage
