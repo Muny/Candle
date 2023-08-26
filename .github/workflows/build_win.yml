@@ -28,6 +28,12 @@ jobs:
         arch: 'win${{ matrix.arch }}_mingw${{ matrix.mingw }}'
         tools: 'tools_mingw,qt.tools.win${{ matrix.arch }}_mingw${{ matrix.mingw }}0'
 
+    - name: Install pefile
+      run: python -m pip install pefile
+
+    - name: Fix qwindows.dll
+      run: python tools/pe_set_stripped.py $env:QT_PLUGIN_PATH\platforms\qwindows.dll
+
     - name: Set Path
       run: echo ($env:IQTA_TOOLS + '/mingw${{ matrix.mingw }}0_${{ matrix.arch }}/bin') >> $env:GITHUB_PATH
 
