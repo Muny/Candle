@@ -1,13 +1,19 @@
-name: Build
+name: Build Windows
 
 on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     strategy:
       matrix:
         qt-version: ['5.12.12', '5.15.2']
+        arch: ['32', '64']
+        include:
+          - qt-version: '5.12.12'
+            mingw: '73'
+          - qt-version: '5.15.2'
+            mingw: '81'
 
     steps:
     - uses: actions/checkout@v3
@@ -19,10 +25,32 @@ jobs:
         version: '${{ matrix.qt-version }}'
         target: 'desktop'
         modules: 'qtscript'
-        arch: 'gcc_64'
+        arch: 'win${{ matrix.arch }}_mingw${{ matrix.mingw }}'
+        tools: 'tools_mingw,qt.tools.win${{ matrix.arch }}_mingw${{ matrix.mingw }}0'
 
-    - name: Run qmake
-      run: qmake -r candle.pro
+    - name: Install pefile
+      run: python -m pip install pefile
 
-    - name: Build
-      run: make all
+    - name: Fix qwindows.dll
+      run: python tools/pe_set_stripped.py $env:QT_PLUGIN_PATH\platforms\qwindows.dll
+
+    - name: Set Path
+      run: echo ($env:IQTA_TOOLS + '/mingw${{ matrix.mingw }}0_${{ matrix.arch }}/bin') >> $env:GITHUB_PATH
+
+    - name: Run cmake
+      run: cmake -S src -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$env:Qt5_Dir -DCMAKE_INSTALL_PREFIX=
+
+    - name: Make
+      run: mingw32-make -C build all
+
+    - name: Install
+      run: mingw32-make -C build install DESTDIR="$pwd/root"
+
+    - name: Deploy Qt
+      run: windeployqt --release root\bin
+
+    - name: Archive Candle
+      uses: actions/upload-artifact@v3
+      with:
+        name: candle-qt-${{ matrix.qt-version }}-win${{ matrix.arch }}
+        path: root/bin
